@@ -1,26 +1,67 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --lab-bg: #f7f9fb;
+  --lab-surface: rgba(255, 255, 255, 0.78);
+  --lab-surface-strong: #ffffff;
+  --lab-ink: #111827;
+  --lab-muted: #667085;
+  --lab-line: rgba(17, 24, 39, 0.1);
+  --lab-accent: #67d4ff;
+  --lab-accent-strong: #0891b2;
+  --lab-radius-sm: 12px;
+  --lab-radius-md: 20px;
+  --lab-radius-lg: 28px;
+  --lab-shadow-soft: 0 24px 80px rgba(15, 23, 42, 0.08);
 }
 
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
+  --color-lab-bg: var(--lab-bg);
+  --color-lab-surface: var(--lab-surface);
+  --color-lab-surface-strong: var(--lab-surface-strong);
+  --color-lab-ink: var(--lab-ink);
+  --color-lab-muted: var(--lab-muted);
+  --color-lab-line: var(--lab-line);
+  --color-lab-accent: var(--lab-accent);
+  --color-lab-accent-strong: var(--lab-accent-strong);
+  --radius-lab-sm: var(--lab-radius-sm);
+  --radius-lab-md: var(--lab-radius-md);
+  --radius-lab-lg: var(--lab-radius-lg);
+  --shadow-lab-soft: var(--lab-shadow-soft);
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+body {
+  background: var(--lab-bg);
+  color: var(--lab-ink);
+  font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+h1,
+h2,
+h3 {
+  font-weight: 600;
+  letter-spacing: -0.02em;
+  color: var(--lab-ink);
+}
+
+h1 {
+  font-size: clamp(2.5rem, 4vw + 1rem, 4rem);
+  line-height: 1.05;
+}
+
+h2 {
+  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
+  line-height: 1.15;
+}
+
+h3 {
+  font-size: 1.25rem;
+  line-height: 1.3;
+}
+
+p {
+  color: var(--lab-muted);
+  line-height: 1.6;
 }

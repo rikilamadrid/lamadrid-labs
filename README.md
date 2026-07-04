@@ -1,36 +1,62 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Lamadrid Labs Context Kit
 
-## Getting Started
+This folder contains the starter context for building the Lamadrid Labs website with Claude Code, Codex, or another coding agent.
 
-First, run the development server:
+Lamadrid Labs is the umbrella brand for Ricardo Lamadrid's products, experiments, client services, and future creative work.
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+## What is Lamadrid Labs?
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Lamadrid Labs is an independent software studio focused on thoughtful software, design engineering, frontend architecture, and AI workflow systems.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+The website should feel like a clean digital laboratory:
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- Simple
+- Precise
+- Calm
+- Modern
+- Trustworthy
+- Lightly playful
+- Product-focused
 
-## Learn More
+It should showcase current work and make room for future products.
 
-To learn more about Next.js, take a look at the following resources:
+## Current showcase items
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+- **RicardoOS** — Ricardo's personal website / operating-system-inspired portfolio
+- **Marina Cuesta** — a clean website project for Marina Cuesta
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## What's included
 
-## Deploy on Vercel
+- `CLAUDE.md` — the main repo guide
+- `AGENTS.md` — lightweight pointer for AGENTS-aware tools
+- `CHANGELOG.md` — Keep a Changelog starter
+- `context/project-overview.md` — product, stack, architecture, design, and constraints
+- `context/coding-standards.md` — code conventions
+- `context/ai-interaction.md` — working agreement for agent collaboration
+- `context/current-feature.md` — live tracker for what is active right now
+- `context/history.md` — append-only completed-work log
+- `context/features/example-feature-spec.md` — model feature spec
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+## How to use it
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+1. Create the new Lamadrid Labs repo.
+2. Copy `CLAUDE.md`, `AGENTS.md`, and `CHANGELOG.md` to the repo root.
+3. Copy the `context/` folder into the repo root.
+4. Ask Claude Code to read `CLAUDE.md` first.
+5. Start with the scope in `context/current-feature.md`.
+6. Keep all showcased projects data-driven so the site can grow.
+
+## Recommended default stack
+
+- Next.js 16 App Router
+- React 19
+- TypeScript strict mode
+- Tailwind CSS v4
+- shadcn/ui + Radix primitives when useful
+- Motion/Framer Motion only for subtle polish
+- Typed local data first
+- MDX only if case studies or writing require it
+
+## Brand note
+
+Do not make this feel like a generic freelance agency website. It should feel like a small, intentional software laboratory where products, experiments, and client work are documented with care.

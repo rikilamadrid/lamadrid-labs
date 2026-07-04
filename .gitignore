@@ -39,3 +39,9 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# local working docs & agent config (kept out of the shared repo)
+/.claude/
+/CLAUDE.md
+/AGENTS.md
+/context/
