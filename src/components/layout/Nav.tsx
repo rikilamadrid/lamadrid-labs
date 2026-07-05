@@ -1,11 +1,14 @@
 "use client";
 
 import { useState } from "react";
+import { useDictionary } from "@/components/i18n/LocaleProvider";
+import { LanguageToggle } from "@/components/ui/LanguageToggle";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { navLinks } from "@/data/navigation";
 
 export function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const dict = useDictionary();
 
   return (
     <header className="fixed inset-x-0 top-4 z-50 px-4">
@@ -13,7 +16,7 @@ export function Nav() {
         href="#main-content"
         className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-50 focus:rounded-lab-sm focus:bg-lab-surface-strong focus:px-4 focus:py-2 focus:text-sm focus:text-lab-ink focus:outline-none focus:ring-2 focus:ring-lab-accent-strong"
       >
-        Skip to content
+        {dict.nav.skipToContent}
       </a>
       <div className="mx-auto max-w-3xl">
         <nav
@@ -41,12 +44,13 @@ export function Nav() {
                     href={link.href}
                     className="text-sm text-lab-muted outline-none transition-colors hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
                   >
-                    {link.label}
+                    {dict.nav[link.key]}
                   </a>
                 </li>
               ))}
             </ul>
 
+            <LanguageToggle />
             <ThemeToggle />
 
             <button
@@ -54,7 +58,7 @@ export function Nav() {
               className="inline-flex items-center justify-center rounded-full p-2 text-lab-ink outline-none focus-visible:ring-2 focus-visible:ring-lab-accent-strong md:hidden"
               aria-expanded={isMenuOpen}
               aria-controls="mobile-nav-menu"
-              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              aria-label={isMenuOpen ? dict.nav.closeMenu : dict.nav.openMenu}
               onClick={() => setIsMenuOpen((open) => !open)}
             >
               <svg
@@ -96,7 +100,7 @@ export function Nav() {
                   className="block rounded-lab-sm px-2 py-2 text-sm text-lab-muted outline-none hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  {link.label}
+                  {dict.nav[link.key]}
                 </a>
               </li>
             ))}

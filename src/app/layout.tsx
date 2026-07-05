@@ -1,9 +1,11 @@
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { AmbientParticles } from "@/components/layout/AmbientParticles";
 import { Footer } from "@/components/layout/Footer";
 import { Nav } from "@/components/layout/Nav";
 import { ScrollProgress } from "@/components/layout/ScrollProgress";
+import { LOCALE_INIT_SCRIPT } from "@/lib/locale";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
@@ -38,15 +40,22 @@ export default function RootLayout({
           // Sets the theme class before paint to avoid a flash of the wrong theme.
           dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }}
         />
+        <script
+          // Sets <html lang> before paint so the active locale is correct on
+          // first render — no flash, no hydration mismatch.
+          dangerouslySetInnerHTML={{ __html: LOCALE_INIT_SCRIPT }}
+        />
       </head>
       <body id="top" className="min-h-full flex flex-col pt-24">
-        <AmbientParticles />
-        <ScrollProgress />
-        <Nav />
-        <div className="relative z-10 flex flex-1 flex-col">
-          {children}
-          <Footer />
-        </div>
+        <LocaleProvider>
+          <AmbientParticles />
+          <ScrollProgress />
+          <Nav />
+          <div className="relative z-10 flex flex-1 flex-col">
+            {children}
+            <Footer />
+          </div>
+        </LocaleProvider>
       </body>
     </html>
   );

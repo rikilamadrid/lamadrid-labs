@@ -14,6 +14,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Lab design tokens (color, radius, shadow) and base typography wired into Tailwind v4.
 - Homepage `Hero` section (`src/components/sections/Hero.tsx`) with kicker badge, gradient headline, and CTAs.
 - Light/dark theme toggle in the `Nav` (`src/components/ui/ThemeToggle.tsx`): dark stays the default, with a deliberately retuned light token set. Defaults to OS preference, persists the explicit choice, applies the theme pre-hydration to avoid a flash, and respects `prefers-reduced-motion`.
+- EN · FR · ES language toggle in the `Nav` (`src/components/ui/LanguageToggle.tsx`) with typed local dictionaries (`src/data/i18n/{en,fr,es}.ts`). English is the default and runtime fallback; a shared `Dictionary` type forces every locale to provide the same keys. `LocaleProvider` supplies the active dictionary and syncs `document.title` / meta description; a pre-hydration script sets `<html lang>` before paint. The choice persists to `localStorage` and honors `navigator.language` on first visit. Nav, Hero, and Footer now source all copy from the dictionaries.
 
 ### Changed
 
