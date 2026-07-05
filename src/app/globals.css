@@ -38,10 +38,15 @@
   --font-mono: var(--font-geist-mono);
 }
 
+html {
+  overflow-x: hidden;
+}
+
 body {
   background: var(--lab-bg);
   color: var(--lab-ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  overflow-x: hidden;
 }
 
 h1,
@@ -115,5 +120,92 @@ p {
   to {
     opacity: 1;
     transform: none;
+  }
+}
+
+/* ─── Ambient particles ─── */
+
+.lab-particles {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+
+.lab-particle {
+  position: absolute;
+  border-radius: 999px;
+  opacity: 0.18;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lab-particle {
+    animation: lab-particle-float ease-in-out infinite alternate;
+  }
+}
+
+@keyframes lab-particle-float {
+  from {
+    transform: translate3d(0, 0, 0);
+    opacity: 0.1;
+  }
+  to {
+    transform: translate3d(0, -40px, 0);
+    opacity: 0.24;
+  }
+}
+
+/* ─── Scroll progress pipe ─── */
+
+.lab-pipe {
+  position: fixed;
+  left: 28px;
+  top: 50%;
+  transform: translateY(-50%);
+  height: 56vh;
+  width: 2px;
+  border-radius: 999px;
+  background: var(--lab-line);
+  z-index: 40;
+  pointer-events: none;
+}
+
+.lab-pipe-fill {
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  border-radius: 999px;
+  background: linear-gradient(180deg, var(--lab-accent), var(--lab-accent-secondary));
+  box-shadow: var(--lab-shadow-glow);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .lab-pipe-fill {
+    transition: height 0.15s ease;
+  }
+}
+
+.lab-pipe-node {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  background: var(--lab-surface-strong);
+  border: 1px solid var(--lab-line-strong);
+}
+
+.lab-pipe-node.is-active {
+  background: var(--lab-accent);
+  border-color: var(--lab-accent);
+  box-shadow: 0 0 10px var(--lab-accent);
+}
+
+@media (max-width: 900px) {
+  .lab-pipe {
+    display: none;
   }
 }

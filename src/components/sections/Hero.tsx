@@ -4,6 +4,10 @@ export function Hero() {
       <div className="lab-grid-overlay" aria-hidden="true" />
       <div
         aria-hidden="true"
+        className="absolute left-1/2 top-1/2 h-[42rem] w-[42rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-lab-accent/[0.07] blur-[120px]"
+      />
+      <div
+        aria-hidden="true"
         className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-lab-accent/10 blur-3xl"
       />
       <div
@@ -12,12 +16,12 @@ export function Hero() {
       />
 
       <div className="lab-fade-up relative mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-lab-line bg-lab-surface px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-lab-muted">
+        <span className="inline-flex max-w-full items-center gap-2 rounded-full border border-lab-line bg-lab-surface px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-lab-muted sm:text-xs">
           <span
             aria-hidden="true"
-            className="h-1.5 w-1.5 rounded-full bg-lab-accent shadow-lab-glow"
+            className="h-1.5 w-1.5 flex-none rounded-full bg-lab-accent shadow-lab-glow"
           />
-          Independent software laboratory
+          <span className="min-w-0 text-center">Independent software laboratory</span>
         </span>
 
         <h1 className="max-w-2xl">
