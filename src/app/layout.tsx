@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { AmbientParticles } from "@/components/layout/AmbientParticles";
@@ -19,9 +19,41 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
+const TITLE =
+  "Lamadrid Labs — Thoughtful software, AI workflows, and digital products";
+const DESCRIPTION =
+  "Lamadrid Labs is an independent software studio by Ricardo Lamadrid, building elegant websites, product prototypes, AI workflows, and digital experiments.";
+
 export const metadata: Metadata = {
-  title: "Lamadrid Labs",
-  description: "Lamadrid Labs — an independent software studio.",
+  metadataBase: new URL("https://lamadridlabs.com"),
+  title: TITLE,
+  description: DESCRIPTION,
+  manifest: "/site.webmanifest",
+  icons: {
+    icon: [
+      { url: "/favicon.ico" },
+      { url: "/favicon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/favicon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png" }],
+  },
+  openGraph: {
+    title: TITLE,
+    description: DESCRIPTION,
+    type: "website",
+    url: "https://lamadridlabs.com",
+    images: ["/og-image.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: TITLE,
+    description: DESCRIPTION,
+    images: ["/og-image.png"],
+  },
+};
+
+export const viewport: Viewport = {
+  themeColor: "#020812",
 };
 
 export default function RootLayout({
