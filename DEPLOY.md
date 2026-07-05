@@ -9,8 +9,11 @@ routes, server actions, ISR, or `next/image` optimization API.
 - **Target:** Hostinger Premium Web Hosting, FTPS upload.
 - **Build output:** `next build` produces static HTML/CSS/JS in `out/`
   (`output: "export"` in `next.config.ts`).
-- **Server directory:** `public_html/` — confirmed against the actual hPanel
-  FTP account for `lamadridlabs.com` ("Folder to upload files").
+- **Server directory:** `./` — the FTP account for `lamadridlabs.com` is
+  already jailed to `public_html/` as its home directory, confirmed via
+  hPanel File Manager. Using `public_html/` here would nest a duplicate
+  `public_html/public_html/` and leave the real doc root serving Hostinger's
+  `default.php` placeholder instead of the site.
 - **Secrets:** `FTP_SERVER`, `FTP_USERNAME`, `FTP_PASSWORD` must exist as
   GitHub Actions repo secrets before the deploy workflow can run.
 
