@@ -1,0 +1,44 @@
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: npm
+
+      - run: npm ci
+      - run: npm run build
+
+      - name: Copy .htaccess into export
+        run: cp deploy/.htaccess out/.htaccess
+
+      # Hostinger's FTPS endpoint occasionally drops GitHub-runner IPs on
+      # port 21 mid-transfer; wretry retries the nested action with backoff
+      # instead of failing the whole run.
+      #
+      # server-dir is "public_html/" — confirmed against the real hPanel
+      # FTP account for lamadridlabs.com ("Folder to upload files").
+      - name: Deploy to Hostinger (FTPS)
+        uses: Wandalen/wretry.action@v3
+        with:
+          action: SamKirkland/FTP-Deploy-Action@v4.4.0
+          attempt_limit: 3
+          attempt_delay: 30000
+          with: |
+            server=${{ secrets.FTP_SERVER }}
+            username=${{ secrets.FTP_USERNAME }}
+            password=${{ secrets.FTP_PASSWORD }}
+            protocol=ftps
+            local-dir=./out/
+            server-dir=public_html/
+            exclude=**/.well-known/**
+            state-name=.ftp-deploy-sync-state-${{ github.sha }}.json
