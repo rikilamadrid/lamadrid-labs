@@ -34,11 +34,12 @@ jobs:
           attempt_limit: 3
           attempt_delay: 30000
           with: |
-            server=${{ secrets.FTP_SERVER }}
-            username=${{ secrets.FTP_USERNAME }}
-            password=${{ secrets.FTP_PASSWORD }}
-            protocol=ftps
-            local-dir=./out/
-            server-dir=public_html/
-            exclude=**/.well-known/**
-            state-name=.ftp-deploy-sync-state-${{ github.sha }}.json
+            server: ${{ secrets.FTP_SERVER }}
+            username: ${{ secrets.FTP_USERNAME }}
+            password: ${{ secrets.FTP_PASSWORD }}
+            protocol: ftps
+            local-dir: ./out/
+            server-dir: public_html/
+            exclude: |
+              **/.well-known/**
+            state-name: .ftp-deploy-sync-state-${{ github.sha }}.json
