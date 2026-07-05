@@ -1,4 +1,10 @@
+"use client";
+
+import { useDictionary } from "@/components/i18n/LocaleProvider";
+
 export function Hero() {
+  const dict = useDictionary();
+
   return (
     <section className="relative isolate overflow-hidden px-6 py-24 sm:py-32">
       <div className="lab-grid-overlay" aria-hidden="true" />
@@ -21,32 +27,31 @@ export function Hero() {
             aria-hidden="true"
             className="h-1.5 w-1.5 flex-none rounded-full bg-lab-accent shadow-lab-glow"
           />
-          <span className="min-w-0 text-center">Independent software laboratory</span>
+          <span className="min-w-0 text-center">{dict.hero.eyebrow}</span>
         </span>
 
         <h1 className="max-w-2xl">
-          Ideas enter.
+          {dict.hero.titleFirst}
           <br />
-          <span className="lab-gradient-text">Software</span> leaves.
+          {dict.hero.titleBefore}
+          <span className="lab-gradient-text">{dict.hero.titleHighlight}</span>
+          {dict.hero.titleAfter}
         </h1>
 
-        <p className="max-w-md">
-          Lamadrid Labs is the clean, focused home for the products,
-          experiments, and client work built by Ricardo Lamadrid.
-        </p>
+        <p className="max-w-md">{dict.hero.lead}</p>
 
         <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
           <a
             href="#work"
             className="inline-flex items-center justify-center rounded-full bg-lab-accent px-6 py-3 text-sm font-semibold text-lab-bg outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
           >
-            See the work
+            {dict.hero.ctaPrimary}
           </a>
           <a
             href="#services"
             className="lab-glass inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-lab-ink outline-none transition-colors hover:text-lab-accent focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
           >
-            What we build
+            {dict.hero.ctaSecondary}
           </a>
         </div>
       </div>
