@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { ThemeToggle } from "@/components/ui/ThemeToggle";
 import { navLinks } from "@/data/navigation";
 
 export function Nav() {
@@ -32,51 +33,55 @@ export function Nav() {
             </span>
           </a>
 
-          <ul className="hidden items-center gap-6 md:flex">
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  className="text-sm text-lab-muted outline-none transition-colors hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
-                >
-                  {link.label}
-                </a>
-              </li>
-            ))}
-          </ul>
+          <div className="flex items-center gap-2 md:gap-4">
+            <ul className="hidden items-center gap-6 md:flex">
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    className="text-sm text-lab-muted outline-none transition-colors hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+                  >
+                    {link.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
 
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-full p-2 text-lab-ink outline-none focus-visible:ring-2 focus-visible:ring-lab-accent-strong md:hidden"
-            aria-expanded={isMenuOpen}
-            aria-controls="mobile-nav-menu"
-            aria-label={isMenuOpen ? "Close menu" : "Open menu"}
-            onClick={() => setIsMenuOpen((open) => !open)}
-          >
-            <svg
-              width="20"
-              height="20"
-              viewBox="0 0 20 20"
-              fill="none"
-              aria-hidden="true"
+            <ThemeToggle />
+
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-full p-2 text-lab-ink outline-none focus-visible:ring-2 focus-visible:ring-lab-accent-strong md:hidden"
+              aria-expanded={isMenuOpen}
+              aria-controls="mobile-nav-menu"
+              aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+              onClick={() => setIsMenuOpen((open) => !open)}
             >
-              {isMenuOpen ? (
-                <path
-                  d="M4 4L16 16M16 4L4 16"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              ) : (
-                <path
-                  d="M3 5H17M3 10H17M3 15H17"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  strokeLinecap="round"
-                />
-              )}
-            </svg>
-          </button>
+              <svg
+                width="20"
+                height="20"
+                viewBox="0 0 20 20"
+                fill="none"
+                aria-hidden="true"
+              >
+                {isMenuOpen ? (
+                  <path
+                    d="M4 4L16 16M16 4L4 16"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                ) : (
+                  <path
+                    d="M3 5H17M3 10H17M3 15H17"
+                    stroke="currentColor"
+                    strokeWidth="1.5"
+                    strokeLinecap="round"
+                  />
+                )}
+              </svg>
+            </button>
+          </div>
         </nav>
 
         {isMenuOpen && (

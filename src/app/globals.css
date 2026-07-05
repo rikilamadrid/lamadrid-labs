@@ -1,6 +1,7 @@
 @import "tailwindcss";
 
 :root {
+  color-scheme: dark;
   --lab-bg: #060b14;
   --lab-surface: rgba(13, 21, 32, 0.72);
   --lab-surface-strong: #111c2e;
@@ -16,6 +17,23 @@
   --lab-radius-lg: 28px;
   --lab-shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.45);
   --lab-shadow-glow: 0 0 40px rgba(61, 214, 181, 0.14);
+}
+
+/* ─── Light theme: a clean daytime lab, retuned rather than inverted ─── */
+:root[data-theme="light"] {
+  color-scheme: light;
+  --lab-bg: #eef2f7;
+  --lab-surface: rgba(255, 255, 255, 0.72);
+  --lab-surface-strong: #ffffff;
+  --lab-ink: #0d1b2a;
+  --lab-muted: #40596a;
+  --lab-line: rgba(13, 27, 42, 0.1);
+  --lab-line-strong: rgba(13, 27, 42, 0.2);
+  --lab-accent: #0e9e84;
+  --lab-accent-strong: #0b8670;
+  --lab-accent-secondary: #6244e6;
+  --lab-shadow-soft: 0 24px 60px rgba(13, 27, 42, 0.12);
+  --lab-shadow-glow: 0 0 36px rgba(14, 158, 132, 0.16);
 }
 
 @theme inline {
@@ -47,6 +65,27 @@ body {
   color: var(--lab-ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
   overflow-x: hidden;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  body {
+    transition:
+      background-color 0.4s ease,
+      color 0.4s ease;
+  }
+}
+
+/* ─── Theme toggle icon: driven by data-theme so it is correct at first paint ─── */
+.theme-icon-sun {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-icon-moon {
+  display: none;
+}
+
+:root[data-theme="light"] .theme-icon-sun {
+  display: block;
 }
 
 h1,
