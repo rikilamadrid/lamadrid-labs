@@ -1,0 +1,51 @@
+export function Hero() {
+  return (
+    <section className="relative isolate overflow-hidden px-6 py-24 sm:py-32">
+      <div className="lab-grid-overlay" aria-hidden="true" />
+      <div
+        aria-hidden="true"
+        className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-lab-accent/10 blur-3xl"
+      />
+      <div
+        aria-hidden="true"
+        className="absolute -right-16 top-40 h-64 w-64 rounded-full bg-lab-accent-secondary/10 blur-3xl"
+      />
+
+      <div className="lab-fade-up relative mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
+        <span className="inline-flex items-center gap-2 rounded-full border border-lab-line bg-lab-surface px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.16em] text-lab-muted">
+          <span
+            aria-hidden="true"
+            className="h-1.5 w-1.5 rounded-full bg-lab-accent shadow-lab-glow"
+          />
+          Independent software laboratory
+        </span>
+
+        <h1 className="max-w-2xl">
+          Ideas enter.
+          <br />
+          <span className="lab-gradient-text">Software</span> leaves.
+        </h1>
+
+        <p className="max-w-md">
+          Lamadrid Labs is the clean, focused home for the products,
+          experiments, and client work built by Ricardo Lamadrid.
+        </p>
+
+        <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+          <a
+            href="#work"
+            className="inline-flex items-center justify-center rounded-full bg-lab-accent px-6 py-3 text-sm font-semibold text-lab-bg outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+          >
+            See the work
+          </a>
+          <a
+            href="#services"
+            className="lab-glass inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-lab-ink outline-none transition-colors hover:text-lab-accent focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+          >
+            What we build
+          </a>
+        </div>
+      </div>
+    </section>
+  );
+}

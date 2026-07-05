@@ -12,10 +12,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Initial website direction for a simple, clean digital laboratory experience.
 - Initial showcase scope for RicardoOS and Marina Cuesta.
 - Lab design tokens (color, radius, shadow) and base typography wired into Tailwind v4.
+- Homepage `Hero` section (`src/components/sections/Hero.tsx`) with kicker badge, gradient headline, and CTAs.
 
 ### Changed
 
-- None yet.
+- Reworked the visual direction from a light "laboratory white" theme to a dark "lab at night" theme (deep navy background, glass panels, teal + violet signal colors, grid overlay), inspired by the `LLprototype3` prototype.
+- Restyled `Nav` into a floating glass pill; restyled `Footer` onto the new dark tokens.
 
 ### Fixed
 
