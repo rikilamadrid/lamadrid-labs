@@ -27,6 +27,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Reworked the visual direction from a light "laboratory white" theme to a dark "lab at night" theme (deep navy background, glass panels, teal + violet signal colors, grid overlay), inspired by the `LLprototype3` prototype.
 - Restyled `Nav` into a floating glass pill; restyled `Footer` onto the new dark tokens.
 - Refined homepage visual detail with shared section/header/eyebrow/card surface utilities, lighter card blur/shadow treatment, normalized letter spacing, and tighter section rhythm.
+- Documented the Feature 17 decision to skip a dedicated `/work` route while the site only has two projects that fit comfortably on the homepage.
 
 ### Fixed
 
