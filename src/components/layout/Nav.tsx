@@ -25,13 +25,17 @@ export function Nav() {
         >
           <a
             href="#top"
+            aria-label="Lamadrid Labs"
             className="flex items-center gap-2.5 outline-none focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
           >
             <span
               aria-hidden="true"
               className="h-6 w-6 flex-none rounded-full bg-gradient-to-br from-lab-accent to-lab-accent-secondary shadow-lab-glow"
             />
-            <span className="text-sm font-semibold tracking-[0.1em] text-lab-ink">
+            <span
+              aria-hidden="true"
+              className="hidden text-sm font-semibold tracking-[0.1em] text-lab-ink sm:inline"
+            >
               Lamadrid Labs
             </span>
           </a>
@@ -91,7 +95,7 @@ export function Nav() {
         {isMenuOpen && (
           <ul
             id="mobile-nav-menu"
-            className="lab-glass mt-2 flex flex-col gap-1 rounded-lab-lg px-4 py-3 md:hidden"
+            className="lab-glass-solid mt-2 flex flex-col gap-1 rounded-lab-lg px-4 py-3 md:hidden"
           >
             {navLinks.map((link) => (
               <li key={link.href}>
