@@ -1,6 +1,7 @@
 "use client";
 
 import { useDictionary } from "@/components/i18n/LocaleProvider";
+import { MotionReveal } from "@/components/ui/MotionPrimitives";
 
 export function Hero() {
   const dict = useDictionary();
@@ -21,7 +22,7 @@ export function Hero() {
         className="absolute -right-16 top-40 h-64 w-64 rounded-full bg-lab-accent-secondary/10 blur-3xl"
       />
 
-      <div className="lab-fade-up relative mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
+      <MotionReveal className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
         <span className="inline-flex max-w-full items-center gap-2 rounded-full border border-lab-line bg-lab-surface px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-lab-muted sm:text-xs">
           <span
             aria-hidden="true"
@@ -54,7 +55,7 @@ export function Hero() {
             {dict.hero.ctaSecondary}
           </a>
         </div>
-      </div>
+      </MotionReveal>
     </section>
   );
 }

@@ -1,6 +1,7 @@
 "use client";
 
 import { useDictionary } from "@/components/i18n/LocaleProvider";
+import { MotionCard, MotionReveal } from "@/components/ui/MotionPrimitives";
 import { services } from "@/data/services";
 
 export function Services() {
@@ -9,7 +10,7 @@ export function Services() {
   return (
     <section id="services" className="relative px-6 py-24 sm:py-32">
       <div className="mx-auto max-w-5xl">
-        <div className="lab-fade-up mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
+        <MotionReveal className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
           <span className="inline-flex items-center gap-2 rounded-full border border-lab-line bg-lab-surface px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-lab-muted sm:text-xs">
             <span
               aria-hidden="true"
@@ -20,15 +21,18 @@ export function Services() {
 
           <h2>{dict.services.title}</h2>
           <p className="max-w-md">{dict.services.lead}</p>
-        </div>
+        </MotionReveal>
 
         <ul className="mt-16 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {services.map((service) => {
+          {services.map((service, index) => {
             const content = dict.services.items[service.id];
 
             return (
               <li key={service.id}>
-                <div className="lab-glass flex h-full flex-col gap-4 rounded-lab-lg p-8">
+                <MotionCard
+                  delay={index * 0.07}
+                  className="lab-glass flex h-full flex-col gap-4 rounded-lab-lg p-8"
+                >
                   <h3 className="text-lab-ink">{content.title}</h3>
 
                   <p>{content.summary}</p>
@@ -47,7 +51,7 @@ export function Services() {
                       </li>
                     ))}
                   </ul>
-                </div>
+                </MotionCard>
               </li>
             );
           })}

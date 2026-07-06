@@ -1,6 +1,7 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { useDictionary } from "@/components/i18n/LocaleProvider";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -8,7 +9,59 @@ import { navLinks } from "@/data/navigation";
 
 export function Nav() {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [activeHref, setActiveHref] = useState("");
+  const shouldReduceMotion = useReducedMotion();
   const dict = useDictionary();
+
+  useEffect(() => {
+    const sections = navLinks
+      .map((link) => document.querySelector(link.href))
+      .filter((section): section is Element => Boolean(section));
+
+    if (sections.length === 0) {
+      return;
+    }
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const activeEntry = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio)[0];
+
+        if (activeEntry?.target.id) {
+          setActiveHref(`#${activeEntry.target.id}`);
+        }
+      },
+      {
+        rootMargin: "-35% 0px -50% 0px",
+        threshold: [0, 0.25, 0.5, 0.75],
+      },
+    );
+
+    const syncTopState = () => {
+      if (window.scrollY < 120) {
+        setActiveHref("");
+      }
+    };
+
+    sections.forEach((section) => observer.observe(section));
+    syncTopState();
+    window.addEventListener("scroll", syncTopState, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener("scroll", syncTopState);
+    };
+  }, []);
+
+  const menuMotion = shouldReduceMotion
+    ? {}
+    : {
+        initial: { opacity: 0, y: -8 },
+        animate: { opacity: 1, y: 0 },
+        exit: { opacity: 0, y: -8 },
+        transition: { duration: 0.22, ease: [0.22, 1, 0.36, 1] as const },
+      };
 
   return (
     <header className="fixed inset-x-0 top-4 z-50 px-4">
@@ -46,7 +99,10 @@ export function Nav() {
                 <li key={link.href}>
                   <a
                     href={link.href}
-                    className="text-sm text-lab-muted outline-none transition-colors hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+                    aria-current={activeHref === link.href ? "page" : undefined}
+                    className={`lab-nav-link text-sm text-lab-muted outline-none transition-colors hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong${
+                      activeHref === link.href ? " is-active" : ""
+                    }`}
                   >
                     {dict.nav[link.key]}
                   </a>
@@ -92,24 +148,32 @@ export function Nav() {
           </div>
         </nav>
 
-        {isMenuOpen && (
-          <ul
-            id="mobile-nav-menu"
-            className="lab-glass-solid mt-2 flex flex-col gap-1 rounded-lab-lg px-4 py-3 md:hidden"
-          >
-            {navLinks.map((link) => (
-              <li key={link.href}>
-                <a
-                  href={link.href}
-                  className="block rounded-lab-sm px-2 py-2 text-sm text-lab-muted outline-none hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  {dict.nav[link.key]}
-                </a>
-              </li>
-            ))}
-          </ul>
-        )}
+        <AnimatePresence initial={false}>
+          {isMenuOpen && (
+            <motion.ul
+              id="mobile-nav-menu"
+              className="lab-glass-solid mt-2 flex flex-col gap-1 rounded-lab-lg px-4 py-3 md:hidden"
+              {...menuMotion}
+            >
+              {navLinks.map((link) => (
+                <li key={link.href}>
+                  <a
+                    href={link.href}
+                    aria-current={
+                      activeHref === link.href ? "page" : undefined
+                    }
+                    className={`lab-nav-link block rounded-lab-sm px-2 py-2 text-sm text-lab-muted outline-none hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong${
+                      activeHref === link.href ? " is-active" : ""
+                    }`}
+                    onClick={() => setIsMenuOpen(false)}
+                  >
+                    {dict.nav[link.key]}
+                  </a>
+                </li>
+              ))}
+            </motion.ul>
+          )}
+        </AnimatePresence>
       </div>
     </header>
   );

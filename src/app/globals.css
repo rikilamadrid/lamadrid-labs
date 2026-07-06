@@ -58,6 +58,7 @@
 
 html {
   overflow-x: hidden;
+  scroll-padding-top: 7rem;
 }
 
 body {
@@ -68,10 +69,30 @@ body {
 }
 
 @media (prefers-reduced-motion: no-preference) {
+  html {
+    scroll-behavior: smooth;
+  }
+
   body {
     transition:
       background-color 0.4s ease,
       color 0.4s ease;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+
+  .hover\:-translate-y-0\.5:hover,
+  .hover\:-translate-y-1:hover {
+    transform: none;
   }
 }
 
@@ -155,6 +176,15 @@ p {
   color: transparent;
 }
 
+.lab-nav-link.is-active {
+  color: var(--lab-ink);
+}
+
+.lab-nav-link.is-active::selection {
+  color: var(--lab-bg);
+  background: var(--lab-accent);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .lab-fade-up {
     animation: lab-fade-up 0.7s ease both;
@@ -225,15 +255,13 @@ p {
   top: 0;
   left: 0;
   right: 0;
+  height: 100%;
   border-radius: 999px;
   background: linear-gradient(180deg, var(--lab-accent), var(--lab-accent-secondary));
   box-shadow: var(--lab-shadow-glow);
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .lab-pipe-fill {
-    transition: height 0.15s ease;
-  }
+  transform: scaleY(var(--scroll-progress, 0));
+  transform-origin: top;
+  will-change: transform;
 }
 
 .lab-pipe-node {
