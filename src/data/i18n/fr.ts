@@ -112,6 +112,15 @@ export const fr: Dictionary = {
       },
     },
   },
+  about: {
+    eyebrow: "À propos",
+    title: "La personne derrière le laboratoire",
+    lead: "Lamadrid Labs, c'est une seule personne qui travaille comme un petit studio.",
+    paragraphs: [
+      "Ricardo Lamadrid est un ingénieur logiciel qui conçoit des produits de bout en bout — des détails d'interface jusqu'aux systèmes qui les sous-tendent. Lamadrid Labs, c'est là où vit ce travail : projets personnels, projets clients et, à l'occasion, une expérience qui ne trouve sa place nulle part ailleurs.",
+      "Le fil conducteur, c'est le soin apporté. Chaque projet reçoit la même attention, qu'il s'agisse d'un outil personnel ou du produit d'un client — un code propre, un design réfléchi et un logiciel qui semble pensé plutôt qu'assemblé.",
+    ],
+  },
   footer: {
     rights: "Tous droits réservés.",
   },

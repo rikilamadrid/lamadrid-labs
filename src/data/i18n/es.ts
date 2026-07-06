@@ -112,6 +112,15 @@ export const es: Dictionary = {
       },
     },
   },
+  about: {
+    eyebrow: "Acerca de",
+    title: "La persona detrás del laboratorio",
+    lead: "Lamadrid Labs es una sola persona, trabajando como un pequeño estudio.",
+    paragraphs: [
+      "Ricardo Lamadrid es un ingeniero de software que construye productos de principio a fin — desde los detalles de la interfaz hasta los sistemas que hay detrás. Lamadrid Labs es donde vive ese trabajo: proyectos personales, trabajo de cliente y algún experimento ocasional que no encaja en ningún otro lado.",
+      "El hilo conductor es el cuidado. Cada proyecto recibe la misma atención al detalle, ya sea una herramienta personal o el producto de un cliente — código limpio, diseño cuidado y software que se siente pensado, no ensamblado.",
+    ],
+  },
   footer: {
     rights: "Todos los derechos reservados.",
   },
