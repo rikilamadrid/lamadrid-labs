@@ -1,46 +1,32 @@
+export type ProjectId = "ricardo-os" | "marina-cuesta";
+
 export type ProjectStatus = "live" | "active" | "coming-soon" | "archived";
 
+export type ProjectType = "product" | "website" | "experiment" | "case-study";
+
 export interface LabProject {
-  id: string;
-  title: string;
-  shortName?: string;
-  type: "product" | "website" | "experiment" | "case-study";
+  id: ProjectId;
+  type: ProjectType;
   status: ProjectStatus;
-  summary: string;
-  description?: string;
-  tags: string[];
   url?: string;
   repositoryUrl?: string;
   featured?: boolean;
 }
 
+// Translated title/summary/tags live in src/data/i18n/*.ts under work.projects[id].
 // Placeholder URLs — swap for final links when available.
 export const projects: LabProject[] = [
   {
     id: "ricardo-os",
-    title: "RicardoOS",
-    shortName: "RicardoOS",
     type: "product",
-    status: "active",
-    summary:
-      "Ricardo's personal website reimagined as an operating-system-inspired portfolio experience.",
-    description:
-      "An experimental personal operating system: a playful, tactile interface for exploring Ricardo's work, writing, and experiments.",
-    tags: ["Next.js", "React", "Interaction Design", "Personal"],
+    status: "live",
     url: "https://ricardolamadrid.com",
     featured: true,
   },
   {
     id: "marina-cuesta",
-    title: "Marina Cuesta",
-    shortName: "Marina Cuesta",
     type: "website",
     status: "live",
-    summary:
-      "A polished, custom website built for Marina Cuesta — an example of clean design and careful implementation.",
-    description:
-      "A bespoke website focused on clear typography, calm layout, and production-ready front-end craft.",
-    tags: ["Web Design", "Next.js", "Client Work"],
     url: "https://marinacuesta.com",
     featured: true,
   },
