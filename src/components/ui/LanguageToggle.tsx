@@ -37,7 +37,7 @@ export function LanguageToggle() {
             title={LOCALE_NAMES[code]}
             className={`rounded-full px-2 py-1 text-[11px] font-semibold tracking-[0.08em] outline-none transition-colors focus-visible:ring-2 focus-visible:ring-lab-accent-strong ${
               isActive
-                ? "bg-lab-accent text-lab-bg"
+                ? "bg-lab-accent text-lab-accent-ink"
                 : "text-lab-muted hover:text-lab-ink"
             }`}
           >

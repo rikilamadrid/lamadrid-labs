@@ -12,6 +12,7 @@
   --lab-accent: #3dd6b5;
   --lab-accent-strong: #23c39f;
   --lab-accent-secondary: #7b5ffc;
+  --lab-accent-ink: #060b14;
   --lab-radius-sm: 12px;
   --lab-radius-md: 20px;
   --lab-radius-lg: 28px;
@@ -32,6 +33,7 @@
   --lab-accent: #0e9e84;
   --lab-accent-strong: #0b8670;
   --lab-accent-secondary: #6244e6;
+  --lab-accent-ink: #060b14;
   --lab-shadow-soft: 0 24px 60px rgba(13, 27, 42, 0.12);
   --lab-shadow-glow: 0 0 36px rgba(14, 158, 132, 0.16);
 }
@@ -47,6 +49,7 @@
   --color-lab-accent: var(--lab-accent);
   --color-lab-accent-strong: var(--lab-accent-strong);
   --color-lab-accent-secondary: var(--lab-accent-secondary);
+  --color-lab-accent-ink: var(--lab-accent-ink);
   --radius-lab-sm: var(--lab-radius-sm);
   --radius-lab-md: var(--lab-radius-md);
   --radius-lab-lg: var(--lab-radius-lg);
