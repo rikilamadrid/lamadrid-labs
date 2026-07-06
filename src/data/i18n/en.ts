@@ -112,6 +112,15 @@ export const en = {
       },
     },
   },
+  about: {
+    eyebrow: "About",
+    title: "The person behind the lab",
+    lead: "Lamadrid Labs is one person, working like a small studio.",
+    paragraphs: [
+      "Ricardo Lamadrid is a software engineer who builds products end to end — from interface details to the systems underneath them. Lamadrid Labs is where that work lives: personal projects, client work, and the occasional experiment that doesn't fit anywhere else.",
+      "The throughline is care. Every project gets the same attention to craft, whether it's a personal tool or a client's product — clean code, thoughtful design, and software that feels considered rather than assembled.",
+    ],
+  },
   footer: {
     rights: "All rights reserved.",
   },
