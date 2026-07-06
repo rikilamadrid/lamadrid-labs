@@ -8,14 +8,11 @@ export function Services() {
   const dict = useDictionary();
 
   return (
-    <section id="services" className="relative px-6 py-24 sm:py-32">
+    <section id="services" className="lab-section">
       <div className="mx-auto max-w-5xl">
-        <MotionReveal className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-lab-line bg-lab-surface px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-lab-muted sm:text-xs">
-            <span
-              aria-hidden="true"
-              className="h-1.5 w-1.5 rounded-full bg-lab-accent shadow-lab-glow"
-            />
+        <MotionReveal className="lab-section-header">
+          <span className="lab-eyebrow">
+            <span aria-hidden="true" className="lab-eyebrow-dot" />
             {dict.services.eyebrow}
           </span>
 
@@ -28,10 +25,10 @@ export function Services() {
             const content = dict.services.items[service.id];
 
             return (
-              <li key={service.id}>
+              <li key={service.id} className="min-w-0">
                 <MotionCard
                   delay={index * 0.07}
-                  className="lab-glass flex h-full flex-col gap-4 rounded-lab-lg p-8"
+                  className="lab-card-surface flex h-full min-w-0 flex-col gap-4 rounded-lab-lg p-7 sm:p-8"
                 >
                   <h3 className="text-lab-ink">{content.title}</h3>
 

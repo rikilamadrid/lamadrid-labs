@@ -31,14 +31,11 @@ export function WorkShowcase() {
   const dict = useDictionary();
 
   return (
-    <section id="work" className="relative px-6 py-24 sm:py-32">
+    <section id="work" className="lab-section">
       <div className="mx-auto max-w-5xl">
-        <MotionReveal className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-lab-line bg-lab-surface px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-lab-muted sm:text-xs">
-            <span
-              aria-hidden="true"
-              className="h-1.5 w-1.5 rounded-full bg-lab-accent shadow-lab-glow"
-            />
+        <MotionReveal className="lab-section-header">
+          <span className="lab-eyebrow">
+            <span aria-hidden="true" className="lab-eyebrow-dot" />
             {dict.work.eyebrow}
           </span>
 
@@ -51,16 +48,16 @@ export function WorkShowcase() {
             const content = dict.work.projects[project.id];
 
             return (
-              <li key={project.id}>
+              <li key={project.id} className="min-w-0">
                 <MotionLinkCard
                   href={project.url ?? "#"}
                   target="_blank"
                   rel="noreferrer"
                   delay={index * 0.08}
-                  className="lab-glass group flex h-full flex-col gap-4 rounded-lab-lg p-8 outline-none focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+                  className="lab-card-surface group flex h-full min-w-0 flex-col gap-4 rounded-lab-lg p-7 outline-none focus-visible:ring-2 focus-visible:ring-lab-accent-strong sm:p-8"
                 >
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="text-xs font-semibold uppercase tracking-[0.1em] text-lab-muted">
+                  <div className="flex min-w-0 items-center justify-between gap-3">
+                    <span className="lab-card-kicker">
                       {dict.work.type[TYPE_DICT_KEY[project.type]]}
                     </span>
                     <span className="inline-flex items-center gap-1.5 text-xs font-medium text-lab-accent">
@@ -82,7 +79,7 @@ export function WorkShowcase() {
                     {content.tags.map((tag) => (
                       <span
                         key={tag}
-                        className="rounded-full border border-lab-line px-2.5 py-1 text-[11px] text-lab-muted"
+                        className="lab-token"
                       >
                         {tag}
                       </span>

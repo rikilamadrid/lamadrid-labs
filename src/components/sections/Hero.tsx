@@ -7,7 +7,7 @@ export function Hero() {
   const dict = useDictionary();
 
   return (
-    <section className="relative isolate overflow-hidden px-6 py-24 sm:py-32">
+    <section className="lab-section isolate overflow-hidden">
       <div className="lab-grid-overlay" aria-hidden="true" />
       <div
         aria-hidden="true"
@@ -22,16 +22,13 @@ export function Hero() {
         className="absolute -right-16 top-40 h-64 w-64 rounded-full bg-lab-accent-secondary/10 blur-3xl"
       />
 
-      <MotionReveal className="relative mx-auto flex max-w-3xl flex-col items-center gap-6 text-center">
-        <span className="inline-flex max-w-full items-center gap-2 rounded-full border border-lab-line bg-lab-surface px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-lab-muted sm:text-xs">
-          <span
-            aria-hidden="true"
-            className="h-1.5 w-1.5 flex-none rounded-full bg-lab-accent shadow-lab-glow"
-          />
+      <MotionReveal className="relative mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center">
+        <span className="lab-eyebrow">
+          <span aria-hidden="true" className="lab-eyebrow-dot" />
           <span className="min-w-0 text-center">{dict.hero.eyebrow}</span>
         </span>
 
-        <h1 className="max-w-2xl">
+        <h1 className="max-w-full sm:max-w-2xl">
           {dict.hero.titleFirst}
           <br />
           {dict.hero.titleBefore}
@@ -39,7 +36,7 @@ export function Hero() {
           {dict.hero.titleAfter}
         </h1>
 
-        <p className="max-w-md">{dict.hero.lead}</p>
+        <p className="w-full max-w-md">{dict.hero.lead}</p>
 
         <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
           <a
@@ -50,7 +47,7 @@ export function Hero() {
           </a>
           <a
             href="#services"
-            className="lab-glass inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-lab-ink outline-none transition-colors hover:text-lab-accent focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+            className="lab-card-surface inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-lab-ink outline-none transition-colors hover:text-lab-accent focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
           >
             {dict.hero.ctaSecondary}
           </a>

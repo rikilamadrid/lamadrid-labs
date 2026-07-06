@@ -26,11 +26,13 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 - Reworked the visual direction from a light "laboratory white" theme to a dark "lab at night" theme (deep navy background, glass panels, teal + violet signal colors, grid overlay), inspired by the `LLprototype3` prototype.
 - Restyled `Nav` into a floating glass pill; restyled `Footer` onto the new dark tokens.
+- Refined homepage visual detail with shared section/header/eyebrow/card surface utilities, lighter card blur/shadow treatment, normalized letter spacing, and tighter section rhythm.
 
 ### Fixed
 
 - Scoped TypeScript and ESLint checks to the app source so reference files under `context/prototypes/` no longer break `npm run build` and `npm run lint`.
 - Improved light-theme contrast for accent-filled controls by using a dedicated accent text token.
+- Hardened homepage mobile wrapping for long headings, project summaries, service copy, and tag chips so the 390px layout avoids horizontal overflow.
 
 ### Removed
 

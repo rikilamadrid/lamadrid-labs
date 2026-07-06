@@ -87,7 +87,7 @@ export function Nav() {
             />
             <span
               aria-hidden="true"
-              className="hidden text-sm font-semibold tracking-[0.1em] text-lab-ink sm:inline"
+              className="hidden text-sm font-semibold text-lab-ink sm:inline"
             >
               Lamadrid Labs
             </span>

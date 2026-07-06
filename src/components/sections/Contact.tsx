@@ -8,13 +8,10 @@ export function Contact() {
   const dict = useDictionary();
 
   return (
-    <section id="contact" className="relative px-6 py-24 sm:py-32">
-      <MotionReveal className="mx-auto flex max-w-2xl flex-col items-center gap-4 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-lab-line bg-lab-surface px-4 py-1.5 text-[11px] font-semibold uppercase tracking-[0.14em] text-lab-muted sm:text-xs">
-          <span
-            aria-hidden="true"
-            className="h-1.5 w-1.5 rounded-full bg-lab-accent shadow-lab-glow"
-          />
+    <section id="contact" className="lab-section">
+      <MotionReveal className="lab-section-header">
+        <span className="lab-eyebrow">
+          <span aria-hidden="true" className="lab-eyebrow-dot" />
           {dict.contact.eyebrow}
         </span>
 
