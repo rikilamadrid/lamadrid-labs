@@ -121,6 +121,12 @@ export const es: Dictionary = {
       "El hilo conductor es el cuidado. Cada proyecto recibe la misma atención al detalle, ya sea una herramienta personal o el producto de un cliente — código limpio, diseño cuidado y software que se siente pensado, no ensamblado.",
     ],
   },
+  contact: {
+    eyebrow: "Contacto",
+    title: "¿Tienes un proyecto en mente?",
+    lead: "Escríbeme directamente — sin formularios, sin idas y vueltas.",
+    cta: "Enviar un correo a hello@lamadridlabs.com",
+  },
   footer: {
     rights: "Todos los derechos reservados.",
   },

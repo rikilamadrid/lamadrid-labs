@@ -121,6 +121,12 @@ export const en = {
       "The throughline is care. Every project gets the same attention to craft, whether it's a personal tool or a client's product — clean code, thoughtful design, and software that feels considered rather than assembled.",
     ],
   },
+  contact: {
+    eyebrow: "Contact",
+    title: "Have a project in mind?",
+    lead: "Reach out directly — no forms, no back-and-forth.",
+    cta: "Email hello@lamadridlabs.com",
+  },
   footer: {
     rights: "All rights reserved.",
   },

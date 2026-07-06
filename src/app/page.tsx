@@ -1,4 +1,5 @@
 import { About } from "@/components/sections/About";
+import { Contact } from "@/components/sections/Contact";
 import { Hero } from "@/components/sections/Hero";
 import { Services } from "@/components/sections/Services";
 import { WorkShowcase } from "@/components/sections/WorkShowcase";
@@ -10,6 +11,7 @@ export default function Home() {
       <WorkShowcase />
       <Services />
       <About />
+      <Contact />
     </main>
   );
 }

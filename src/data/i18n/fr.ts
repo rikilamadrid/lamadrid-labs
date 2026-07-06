@@ -121,6 +121,12 @@ export const fr: Dictionary = {
       "Le fil conducteur, c'est le soin apporté. Chaque projet reçoit la même attention, qu'il s'agisse d'un outil personnel ou du produit d'un client — un code propre, un design réfléchi et un logiciel qui semble pensé plutôt qu'assemblé.",
     ],
   },
+  contact: {
+    eyebrow: "Contact",
+    title: "Un projet en tête ?",
+    lead: "Écrivez-moi directement — pas de formulaire, pas d'allers-retours.",
+    cta: "Envoyer un e-mail à hello@lamadridlabs.com",
+  },
   footer: {
     rights: "Tous droits réservés.",
   },
