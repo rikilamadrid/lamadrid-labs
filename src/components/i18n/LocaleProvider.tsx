@@ -23,7 +23,9 @@ function withFallback<T>(base: T, override: T): T {
     typeof base !== "object" ||
     base === null ||
     typeof override !== "object" ||
-    override === null
+    override === null ||
+    Array.isArray(base) ||
+    Array.isArray(override)
   ) {
     return override ?? base;
   }

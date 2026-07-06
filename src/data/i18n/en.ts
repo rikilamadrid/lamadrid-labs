@@ -24,6 +24,38 @@ export const en = {
     ctaPrimary: "See the work",
     ctaSecondary: "What we build",
   },
+  work: {
+    eyebrow: "Selected work",
+    title: "From the lab",
+    lead: "A working sample of what's shipped — real projects, real users.",
+    viewProject: "View project",
+    status: {
+      live: "Live",
+      active: "In progress",
+      comingSoon: "Coming soon",
+      archived: "Archived",
+    },
+    type: {
+      product: "Product",
+      website: "Website",
+      experiment: "Experiment",
+      caseStudy: "Case study",
+    },
+    projects: {
+      "ricardo-os": {
+        title: "RicardoOS",
+        summary:
+          "Ricardo's personal website reimagined as an operating-system-inspired portfolio experience.",
+        tags: ["Next.js", "React", "Interaction Design", "Personal"],
+      },
+      "marina-cuesta": {
+        title: "Marina Cuesta",
+        summary:
+          "A polished, custom website built for Marina Cuesta — an example of clean design and careful implementation.",
+        tags: ["Web Design", "Next.js", "Client Work"],
+      },
+    },
+  },
   footer: {
     rights: "All rights reserved.",
   },
