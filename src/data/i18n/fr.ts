@@ -56,6 +56,62 @@ export const fr: Dictionary = {
       },
     },
   },
+  services: {
+    eyebrow: "Comment nous collaborons",
+    title: "Services",
+    lead: "Des façons ciblées de travailler avec le laboratoire, d'une seule fonctionnalité à un accompagnement continu.",
+    items: {
+      "product-engineering": {
+        title: "Ingénierie produit",
+        summary: "Transformer des idées en produits web clairs et utilisables.",
+        outcomes: [
+          "Livrer un produit fonctionnel, pas seulement un prototype",
+          "Un périmètre clair et un chemin rapide vers le lancement",
+          "Un code maintenable sur lequel construire",
+        ],
+      },
+      "design-engineering": {
+        title: "Ingénierie de design",
+        summary:
+          "Interfaces soignées, détails d'interaction et UI prête pour la production.",
+        outcomes: [
+          "Des interfaces soignées et accessibles",
+          "Une animation et une interaction bien pensées",
+          "Un système de design cohérent, pas des écrans isolés",
+        ],
+      },
+      "ai-workflow-engineering": {
+        title: "Ingénierie de flux avec l'IA",
+        summary:
+          "Automatisations concrètes, flux LLM, prototypes agentiques et intégrations d'API.",
+        outcomes: [
+          "Des automatisations qui suppriment de vraies tâches répétitives",
+          "Des flux LLM et agents connectés à vos outils",
+          "Des fonctionnalités d'IA pragmatiques, pas des démos à la mode",
+        ],
+      },
+      "frontend-architecture": {
+        title: "Architecture frontend",
+        summary:
+          "Systèmes React/Next.js évolutifs, systèmes de design, performance, accessibilité et maintenabilité.",
+        outcomes: [
+          "Une architecture qui évolue avec l'équipe",
+          "De solides bases de performance et d'accessibilité",
+          "Un code qui reste propre en grandissant",
+        ],
+      },
+      "freelance-technical-partner": {
+        title: "Partenaire technique freelance",
+        summary:
+          "Un accompagnement d'ingénierie senior pour fondateurs, créateurs et petites équipes.",
+        outcomes: [
+          "Un partenaire senior qui livre avec vous",
+          "Du jugement produit en plus du code",
+          "Un accompagnement flexible sans les coûts d'une agence",
+        ],
+      },
+    },
+  },
   footer: {
     rights: "Tous droits réservés.",
   },

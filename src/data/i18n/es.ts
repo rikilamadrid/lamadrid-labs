@@ -56,6 +56,62 @@ export const es: Dictionary = {
       },
     },
   },
+  services: {
+    eyebrow: "Cómo trabajamos juntos",
+    title: "Servicios",
+    lead: "Formas concretas de trabajar con el laboratorio, desde una sola funcionalidad hasta soporte continuo.",
+    items: {
+      "product-engineering": {
+        title: "Ingeniería de producto",
+        summary: "Convertir ideas en productos web claros y usables.",
+        outcomes: [
+          "Un producto en funcionamiento, no solo un prototipo",
+          "Alcance claro y un camino rápido hacia el lanzamiento",
+          "Código mantenible sobre el que puedes seguir construyendo",
+        ],
+      },
+      "design-engineering": {
+        title: "Ingeniería de diseño",
+        summary:
+          "Interfaces pulidas, detalles de interacción y UI lista para producción.",
+        outcomes: [
+          "Interfaces cuidadas al detalle y accesibles",
+          "Movimiento e interacción bien pensados",
+          "Un sistema de diseño coherente, no pantallas sueltas",
+        ],
+      },
+      "ai-workflow-engineering": {
+        title: "Ingeniería de flujos con IA",
+        summary:
+          "Automatizaciones prácticas, flujos con LLM, prototipos agénticos e integraciones de API.",
+        outcomes: [
+          "Automatizaciones que eliminan trabajo repetitivo real",
+          "Flujos con LLM y agentes conectados a tus herramientas",
+          "Funciones de IA prácticas, no demos de moda",
+        ],
+      },
+      "frontend-architecture": {
+        title: "Arquitectura frontend",
+        summary:
+          "Sistemas escalables en React/Next.js, sistemas de diseño, rendimiento, accesibilidad y mantenibilidad.",
+        outcomes: [
+          "Arquitectura que escala junto con el equipo",
+          "Buenas bases de rendimiento y accesibilidad",
+          "Código que se mantiene limpio al crecer",
+        ],
+      },
+      "freelance-technical-partner": {
+        title: "Socio técnico freelance",
+        summary:
+          "Soporte de ingeniería senior para fundadores, creadores y equipos pequeños.",
+        outcomes: [
+          "Un socio senior que construye contigo",
+          "Criterio de producto junto con el código",
+          "Soporte flexible sin la carga de una agencia",
+        ],
+      },
+    },
+  },
   footer: {
     rights: "Todos los derechos reservados.",
   },
