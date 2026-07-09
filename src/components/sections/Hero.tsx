@@ -1,7 +1,6 @@
 "use client";
 
 import { useDictionary } from "@/components/i18n/LocaleProvider";
-import { MotionReveal } from "@/components/ui/MotionPrimitives";
 
 export function Hero() {
   const dict = useDictionary();
@@ -22,7 +21,7 @@ export function Hero() {
         className="absolute -right-16 top-40 h-64 w-64 rounded-full bg-lab-accent-secondary/10 blur-3xl"
       />
 
-      <MotionReveal className="relative mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center">
+      <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center">
         <span className="lab-eyebrow">
           <span aria-hidden="true" className="lab-eyebrow-dot" />
           <span className="min-w-0 text-center">{dict.hero.eyebrow}</span>
@@ -52,7 +51,7 @@ export function Hero() {
             {dict.hero.ctaSecondary}
           </a>
         </div>
-      </MotionReveal>
+      </div>
     </section>
   );
 }
