@@ -29,6 +29,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 - Refined homepage visual detail with shared section/header/eyebrow/card surface utilities, lighter card blur/shadow treatment, normalized letter spacing, and tighter section rhythm.
 - Documented the Feature 17 decision to skip a dedicated `/work` route while the site only has two projects that fit comfortably on the homepage.
 - Documented the Feature 18 decision to skip project case-study/detail pages until real long-form project content exists.
+- Replaced the placeholder `public/og-image.png` with a branded 1200×630 social preview matching the shipped dark theme (icon-pack badge, wordmark, tagline).
 
 ### Fixed
 
