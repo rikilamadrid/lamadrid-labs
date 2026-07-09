@@ -28,6 +28,9 @@ export const metadata: Metadata = {
   metadataBase: new URL("https://lamadridlabs.com"),
   title: TITLE,
   description: DESCRIPTION,
+  alternates: {
+    canonical: "/",
+  },
   manifest: "/site.webmanifest",
   icons: {
     icon: [
