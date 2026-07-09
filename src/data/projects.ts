@@ -14,7 +14,6 @@ export interface LabProject {
 }
 
 // Translated title/summary/tags live in src/data/i18n/*.ts under work.projects[id].
-// Placeholder URLs — swap for final links when available.
 export const projects: LabProject[] = [
   {
     id: "ricardo-os",
