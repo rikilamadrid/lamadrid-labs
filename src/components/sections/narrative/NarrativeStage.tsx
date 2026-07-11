@@ -32,6 +32,11 @@ export interface NarrativeStageProps {
    * animate per-frame without forcing React re-renders.
    */
   visual: (progress: RefObject<number>) => ReactNode;
+  /**
+   * Swaps copy/visual columns from `lg` up for an alternating layout across
+   * a sequence of stages. Mobile stacking (copy above visual) is unaffected.
+   */
+  reverse?: boolean;
 }
 
 // The reusable template for every narrative stage: a copy column plus a
@@ -42,6 +47,7 @@ export function NarrativeStage({
   content,
   serviceLabels,
   visual,
+  reverse = false,
 }: NarrativeStageProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef(0);
@@ -72,7 +78,9 @@ export function NarrativeStage({
       className="grid grid-cols-1 items-center gap-10 py-12 first:pt-0 last:pb-0 lg:grid-cols-2 lg:gap-16"
       style={{ "--stage-signal": signalColor } as CSSProperties}
     >
-      <MotionReveal className="flex min-w-0 flex-col gap-4">
+      <MotionReveal
+        className={`order-1 flex min-w-0 flex-col gap-4 ${reverse ? "lg:order-2" : "lg:order-1"}`}
+      >
         <span
           className="lab-card-kicker"
           style={{ color: "var(--stage-signal)" }}
@@ -94,7 +102,9 @@ export function NarrativeStage({
         )}
       </MotionReveal>
 
-      <div className="aspect-square w-full">
+      <div
+        className={`order-2 aspect-square w-full ${reverse ? "lg:order-1" : "lg:order-2"}`}
+      >
         <View className="lab-card-surface h-full w-full rounded-lab-lg">
           {visual(progressRef)}
         </View>
