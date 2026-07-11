@@ -54,6 +54,18 @@ export const fr: Dictionary = {
           "Un site web soigné et sur mesure conçu pour Marina Cuesta — un exemple de design épuré et d'exécution soignée.",
         tags: ["Design web", "Next.js", "Projet client"],
       },
+      subrooms: {
+        title: "SubRooms",
+        summary:
+          "Un organisateur d'abonnements YouTube qui transforme un flux bruyant en salles de visionnage ciblées comme Code, Cuisine et Musique.",
+        tags: ["React", "TypeScript", "Design System", "Vercel"],
+      },
+      "writer-companion": {
+        title: "Writer Companion",
+        summary:
+          "Une application de coaching à l'écriture qui transforme une idée d'histoire en élan d'écriture quotidien, avec tâches guidées et retours.",
+        tags: ["Next.js", "TypeScript", "IA", "Vercel"],
+      },
     },
   },
   services: {
