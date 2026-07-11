@@ -54,6 +54,18 @@ export const en = {
           "A polished, custom website built for Marina Cuesta — an example of clean design and careful implementation.",
         tags: ["Web Design", "Next.js", "Client Work"],
       },
+      subrooms: {
+        title: "SubRooms",
+        summary:
+          "A YouTube subscription organizer that turns a noisy feed into focused viewing rooms like Coding, Cooking, and Music.",
+        tags: ["React", "TypeScript", "Design System", "Vercel"],
+      },
+      "writer-companion": {
+        title: "Writer Companion",
+        summary:
+          "A focused writing-coach app that turns a story idea into daily writing momentum with guided tasks and feedback.",
+        tags: ["Next.js", "TypeScript", "AI", "Vercel"],
+      },
     },
   },
   services: {

@@ -1,4 +1,8 @@
-export type ProjectId = "ricardo-os" | "marina-cuesta";
+export type ProjectId =
+  | "ricardo-os"
+  | "marina-cuesta"
+  | "subrooms"
+  | "writer-companion";
 
 export type ProjectStatus = "live" | "active" | "coming-soon" | "archived";
 
@@ -28,5 +32,17 @@ export const projects: LabProject[] = [
     status: "live",
     url: "https://marinacuesta.com",
     featured: true,
+  },
+  {
+    id: "subrooms",
+    type: "product",
+    status: "live",
+    url: "https://youtube-rooms.vercel.app/",
+  },
+  {
+    id: "writer-companion",
+    type: "product",
+    status: "live",
+    url: "https://story-momentum.vercel.app/",
   },
 ];
