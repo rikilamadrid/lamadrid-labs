@@ -24,6 +24,49 @@ export const es: Dictionary = {
     ctaPrimary: "Ver el trabajo",
     ctaSecondary: "Lo que creamos",
   },
+  narrative: {
+    eyebrow: "Cómo avanza un proyecto en el laboratorio",
+    title: "Cinco etapas, un solo espécimen",
+    lead: "Cada proyecto pasa por el mismo proceso, de principio a fin.",
+    stages: {
+      intake: {
+        kicker: "01 — Recepción",
+        title: "Llega la idea",
+        description:
+          "Llega una idea sin pulir, un problema de negocio o una pregunta ambiciosa. Le dedico el tiempo necesario para entender qué se pide realmente — no solo lo que se dice.",
+        detail: "Descubrimiento, definición de alcance y un brief claro sobre el que construir.",
+      },
+      architecture: {
+        kicker: "02 — Arquitectura",
+        title: "Bajo el microscopio",
+        description:
+          "Antes de construir nada, se diseña. Modelos de datos, límites del sistema y las decisiones que hacen que el software sea fácil de cambiar después, no difícil.",
+        detail:
+          "Diseño de sistema, planificación técnica y un plano que no se derrumba con el uso real.",
+      },
+      build: {
+        kicker: "03 — Construcción",
+        title: "El laboratorio se pone ruidoso",
+        description:
+          "Aquí es donde ocurre el código — componentes reales, lógica real, casos límite reales. Avance constante y deliberado, no una carrera hacia algo que apenas compila.",
+        detail: "Implementación, iteración y un producto realmente usable en cada paso.",
+      },
+      test: {
+        kicker: "04 — Prueba",
+        title: "Poner a prueba el espécimen",
+        description:
+          "Un software que no se ha probado es solo una hipótesis. Esta etapa lo pone a prueba — accesibilidad, rendimiento, casos límite — hasta que resiste condiciones reales.",
+        detail: "QA, revisiones de accesibilidad y pruebas de rendimiento antes de lanzar nada.",
+      },
+      ship: {
+        kicker: "05 — Lanzamiento",
+        title: "Sale al mundo",
+        description:
+          "El espécimen deja el laboratorio. Desplegado, documentado y entregado — listo para hacer su trabajo sin que nadie lo esté vigilando.",
+        detail: "Despliegue, entrega y la tranquilidad de que seguirá funcionando.",
+      },
+    },
+  },
   work: {
     eyebrow: "Trabajo seleccionado",
     title: "Desde el laboratorio",

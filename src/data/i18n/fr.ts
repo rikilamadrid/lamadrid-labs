@@ -24,6 +24,49 @@ export const fr: Dictionary = {
     ctaPrimary: "Voir les projets",
     ctaSecondary: "Ce que nous créons",
   },
+  narrative: {
+    eyebrow: "Comment un projet avance dans le laboratoire",
+    title: "Cinq étapes, un seul spécimen",
+    lead: "Chaque projet suit le même processus, du début à la fin.",
+    stages: {
+      intake: {
+        kicker: "01 — Accueil",
+        title: "L'idée arrive",
+        description:
+          "Une idée brute, un problème métier ou une question ambitieuse arrive. Je prends le temps de comprendre ce qui est vraiment demandé — pas seulement ce qui est dit.",
+        detail: "Découverte, cadrage et un brief clair sur lequel construire.",
+      },
+      architecture: {
+        kicker: "02 — Architecture",
+        title: "Sous le microscope",
+        description:
+          "Avant d'être construit, tout est conçu. Modèles de données, limites du système et les arbitrages qui rendent le logiciel facile à faire évoluer plus tard, pas difficile.",
+        detail:
+          "Conception du système, planification technique et un plan qui ne s'effondre pas à l'usage réel.",
+      },
+      build: {
+        kicker: "03 — Construction",
+        title: "Le laboratoire s'anime",
+        description:
+          "C'est là que le code prend forme — vrais composants, vraie logique, vrais cas limites. Une progression régulière et réfléchie, pas une course vers quelque chose qui compile à peine.",
+        detail: "Implémentation, itération et un produit réellement utilisable à chaque étape.",
+      },
+      test: {
+        kicker: "04 — Test",
+        title: "Éprouver le spécimen",
+        description:
+          "Un logiciel non testé n'est qu'une hypothèse. Cette étape le met à l'épreuve — accessibilité, performance, cas limites — jusqu'à ce qu'il tienne dans des conditions réelles.",
+        detail: "QA, vérifications d'accessibilité et tests de performance avant tout lancement.",
+      },
+      ship: {
+        kicker: "05 — Livraison",
+        title: "Relâché dans la nature",
+        description:
+          "Le spécimen quitte le laboratoire. Déployé, documenté et livré — prêt à faire son travail sans que personne ne le surveille.",
+        detail: "Déploiement, passation et la tranquillité de savoir que ça continuera de fonctionner.",
+      },
+    },
+  },
   work: {
     eyebrow: "Travaux sélectionnés",
     title: "Depuis le laboratoire",

@@ -24,6 +24,50 @@ export const en = {
     ctaPrimary: "See the work",
     ctaSecondary: "What we build",
   },
+  narrative: {
+    eyebrow: "How a project moves through the lab",
+    title: "Five stages, one specimen",
+    lead: "Every project passes through the same process, start to finish.",
+    stages: {
+      intake: {
+        kicker: "01 — Intake",
+        title: "The idea arrives",
+        description:
+          "A rough idea, a business problem, or an ambitious question comes in. I sit with it long enough to understand what's actually being asked for — not just what's asked.",
+        detail: "Discovery, scoping, and a clear brief worth building against.",
+      },
+      architecture: {
+        kicker: "02 — Architecture",
+        title: "Under the microscope",
+        description:
+          "Before anything gets built, it gets designed. Data models, system boundaries, and the tradeoffs that make software easy to change later instead of hard.",
+        detail:
+          "System design, technical planning, and a blueprint that won't collapse under real use.",
+      },
+      build: {
+        kicker: "03 — Build",
+        title: "The lab gets loud",
+        description:
+          "This is where the code happens — real components, real logic, real edge cases. Steady, deliberate progress instead of a mad dash to something that merely compiles.",
+        detail:
+          "Implementation, iteration, and a product that's actually usable at each step.",
+      },
+      test: {
+        kicker: "04 — Test",
+        title: "Stress the specimen",
+        description:
+          "Software that hasn't been tested is just a hypothesis. This stage pokes at it — accessibility, performance, edge cases — until it holds up under real conditions.",
+        detail: "QA, accessibility passes, and performance checks before anything ships.",
+      },
+      ship: {
+        kicker: "05 — Ship",
+        title: "Release into the wild",
+        description:
+          "The specimen leaves the lab. Deployed, documented, and handed off — ready to do its job without anyone standing over it.",
+        detail: "Deployment, handoff, and the quiet confidence that it'll keep working.",
+      },
+    },
+  },
   work: {
     eyebrow: "Selected work",
     title: "From the lab",
