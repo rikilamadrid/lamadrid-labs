@@ -10,24 +10,20 @@ import { BuildSpecimen } from "./narrative/BuildSpecimen";
 import { IntakeSpecimen } from "./narrative/IntakeSpecimen";
 import { NarrativeCanvas } from "./narrative/NarrativeCanvas";
 import { NarrativeStage } from "./narrative/NarrativeStage";
+import { ShipSpecimen } from "./narrative/ShipSpecimen";
+import { TestSpecimen } from "./narrative/TestSpecimen";
 
-// Intake, Architecture, and Build stages ship in Features 26/27. Feature 28
-// adds Test/Ship by extending this list with their own specimen visuals,
-// reusing NarrativeStage as-is.
-const specimensById: Record<
-  NarrativeStageId,
-  (typeof IntakeSpecimen) | undefined
-> = {
+// All 5 stages (Intake through Ship) now have specimen visuals; the finale
+// section (29) picks up where Ship's outward-departing motion leaves off.
+const specimensById: Record<NarrativeStageId, typeof IntakeSpecimen> = {
   intake: IntakeSpecimen,
   architecture: ArchitectureSpecimen,
   build: BuildSpecimen,
-  test: undefined,
-  ship: undefined,
+  test: TestSpecimen,
+  ship: ShipSpecimen,
 };
 
-const activeStages = narrativeStages.filter(
-  (stage) => specimensById[stage.id] !== undefined,
-);
+const finalStage = narrativeStages[narrativeStages.length - 1];
 
 export function Narrative() {
   const dict = useDictionary();
@@ -46,8 +42,8 @@ export function Narrative() {
         </MotionReveal>
 
         <div className="mt-16">
-          {activeStages.map((stage, index) => {
-            const Specimen = specimensById[stage.id]!;
+          {narrativeStages.map((stage, index) => {
+            const Specimen = specimensById[stage.id];
             const content = dict.narrative.stages[stage.id];
             const serviceLabels = stage.serviceIds.map(
               (id) => dict.services.items[id].title,
@@ -70,6 +66,16 @@ export function Narrative() {
             );
           })}
         </div>
+
+        {/* Ship is the last stage before the finale (29) — this fade signals
+            the sequence continues rather than just stopping. */}
+        <div
+          aria-hidden="true"
+          className="mx-auto mt-4 h-24 w-px"
+          style={{
+            background: `linear-gradient(180deg, ${narrativeSignalColors[finalStage.signal]}, transparent)`,
+          }}
+        />
       </div>
 
       <NarrativeCanvas />
