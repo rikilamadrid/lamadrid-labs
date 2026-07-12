@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Canvas } from "@react-three/fiber";
+import { PerspectiveCamera } from "@react-three/drei";
 import { processStages } from "@/data/process";
 import { Orb } from "@/components/sections/process/Orb";
 
@@ -40,6 +41,13 @@ export function OrbDevHarness() {
 
         <div className="mt-8 h-96 w-full overflow-hidden rounded-xl border border-white/10 bg-white/[0.03]">
           <Canvas dpr={[1, 2]} gl={{ alpha: true, antialias: true }}>
+            {/* Orb (35) no longer bakes in its own camera/lights now that
+                feature 38 mounts it in a shared scene — this standalone
+                preview supplies them itself. */}
+            <PerspectiveCamera makeDefault position={[0, 0, 4.5]} fov={40} />
+            <ambientLight intensity={0.6} />
+            <pointLight position={[2, 2, 3]} intensity={35} color="#ffffff" />
+            <pointLight position={[-2, -1, -2]} intensity={12} color="#ffffff" />
             <Orb progress={progress} />
           </Canvas>
         </div>
