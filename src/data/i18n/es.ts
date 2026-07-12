@@ -111,6 +111,19 @@ export const es: Dictionary = {
       },
     },
   },
+  finale: {
+    eyebrow: "El resultado",
+    title: "La prueba de que funciona",
+    lead: "El proceso de arriba no es teoría. RicardoOS pasó por cada etapa — de la recepción al lanzamiento — y está en vivo.",
+    featuredLabel: "En producción",
+    featuredCta: "Abrir RicardoOS",
+    restTitle: "El resto de los especímenes",
+    restCta: "Visitar",
+    contactTitle: "¿Tienes algo que valga la pena construir?",
+    contactLead:
+      "Trae la idea. Yo la llevo de la recepción al lanzamiento — sin formularios, solo una conversación.",
+    contactCta: "Escribe a hello@lamadridlabs.com",
+  },
   services: {
     eyebrow: "Cómo trabajamos juntos",
     title: "Servicios",

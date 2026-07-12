@@ -112,6 +112,19 @@ export const en = {
       },
     },
   },
+  finale: {
+    eyebrow: "The payoff",
+    title: "Proof it works",
+    lead: "The process above isn't theory. RicardoOS ran through every stage — intake to ship — and it's live.",
+    featuredLabel: "In production",
+    featuredCta: "Open RicardoOS",
+    restTitle: "The rest of the specimens",
+    restCta: "Visit",
+    contactTitle: "Have something worth building?",
+    contactLead:
+      "Bring the idea. I'll take it from intake to ship — no forms, just a conversation.",
+    contactCta: "Email hello@lamadridlabs.com",
+  },
   services: {
     eyebrow: "How we work together",
     title: "Services",

@@ -12,7 +12,7 @@ export interface NavLink {
 }
 
 export const navLinks: NavLink[] = [
-  { key: "work", href: "#work" },
+  { key: "work", href: "#finale" },
   { key: "services", href: "#services" },
   { key: "about", href: "#about" },
   { key: "contact", href: "#contact" },

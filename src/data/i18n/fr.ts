@@ -111,6 +111,19 @@ export const fr: Dictionary = {
       },
     },
   },
+  finale: {
+    eyebrow: "Le résultat",
+    title: "La preuve que ça marche",
+    lead: "Le processus ci-dessus n'est pas une théorie. RicardoOS est passé par chaque étape — de l'accueil à la livraison — et il est en ligne.",
+    featuredLabel: "En production",
+    featuredCta: "Ouvrir RicardoOS",
+    restTitle: "Les autres spécimens",
+    restCta: "Visiter",
+    contactTitle: "Un projet qui mérite d'être construit ?",
+    contactLead:
+      "Apportez l'idée. Je m'en occupe de l'accueil à la livraison — sans formulaires, juste une conversation.",
+    contactCta: "Écrire à hello@lamadridlabs.com",
+  },
   services: {
     eyebrow: "Comment nous collaborons",
     title: "Services",
