@@ -67,6 +67,39 @@ export const es: Dictionary = {
       },
     },
   },
+  process: {
+    eyebrow: "Cómo avanza un proyecto en el laboratorio",
+    title: "Un espécimen, cinco etapas",
+    lead: "Cada proyecto sigue la misma reacción, de principio a fin.",
+    stages: {
+      "reagent-selection": {
+        title: "Selección de reactivos",
+        stageLine: "La idea llega, reducida a lo que vale la pena construir.",
+        serviceLine: "Descubrimiento y alcance.",
+      },
+      measurement: {
+        title: "Medición",
+        stageLine: "Cada requisito se pesa y el sistema se traza.",
+        serviceLine: "Diseño de sistema y planificación técnica.",
+      },
+      synthesis: {
+        title: "Síntesis",
+        stageLine:
+          "Código real, componentes reales, reaccionando hacia un producto funcional.",
+        serviceLine: "Implementación e iteración.",
+      },
+      purification: {
+        title: "Purificación",
+        stageLine: "Sin asperezas — probado, refinado, accesible.",
+        serviceLine: "QA, accesibilidad y rendimiento.",
+      },
+      crystallization: {
+        title: "Cristalización",
+        stageLine: "La forma final: desplegada, documentada y hecha para durar.",
+        serviceLine: "Despliegue y entrega.",
+      },
+    },
+  },
   work: {
     eyebrow: "Trabajo seleccionado",
     title: "Desde el laboratorio",

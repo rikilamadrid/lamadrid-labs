@@ -68,6 +68,38 @@ export const en = {
       },
     },
   },
+  process: {
+    eyebrow: "How a project moves through the lab",
+    title: "One specimen, five stages",
+    lead: "Every project runs the same reaction, start to finish.",
+    stages: {
+      "reagent-selection": {
+        title: "Reagent Selection",
+        stageLine: "The idea arrives, sorted down to what's worth building.",
+        serviceLine: "Discovery and scoping.",
+      },
+      measurement: {
+        title: "Measurement",
+        stageLine: "Every requirement weighed and the system mapped out.",
+        serviceLine: "System design and technical planning.",
+      },
+      synthesis: {
+        title: "Synthesis",
+        stageLine: "Real code, real components, reacting into a working product.",
+        serviceLine: "Implementation and iteration.",
+      },
+      purification: {
+        title: "Purification",
+        stageLine: "Stripped of rough edges — tested, refined, accessible.",
+        serviceLine: "QA, accessibility, and performance passes.",
+      },
+      crystallization: {
+        title: "Crystallization",
+        stageLine: "The final form: deployed, documented, and built to last.",
+        serviceLine: "Deployment and handoff.",
+      },
+    },
+  },
   work: {
     eyebrow: "Selected work",
     title: "From the lab",
