@@ -20,7 +20,7 @@ function getReducedMotionServerSnapshot() {
   return true;
 }
 
-function usePrefersReducedMotion() {
+export function usePrefersReducedMotion() {
   return useSyncExternalStore(
     subscribeToReducedMotion,
     getReducedMotionSnapshot,
