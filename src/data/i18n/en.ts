@@ -104,6 +104,8 @@ export const en = {
     eyebrow: "Selected work",
     title: "From the lab",
     lead: "A working sample of what's shipped — real projects, real users.",
+    featuredLabel: "Featured",
+    restTitle: "More from the lab",
     viewProject: "View project",
     status: {
       live: "Live",
