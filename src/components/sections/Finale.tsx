@@ -6,7 +6,6 @@ import {
   MotionReveal,
 } from "@/components/ui/MotionPrimitives";
 import { projects } from "@/data/projects";
-import { contactLink } from "@/data/social";
 
 // RicardoOS is the payoff of the Intake→Ship narrative — presented as the
 // specimen currently in production. Project data (title/summary/tags/url) stays
@@ -108,23 +107,6 @@ export function Finale() {
               );
             })}
           </ul>
-        </div>
-
-        {/* Contact close — reuses the mailto pattern; carries the #contact
-            anchor now that the standalone Contact section is gone. */}
-        <div id="contact" className="scroll-mt-24">
-          <MotionReveal className="mt-16 flex flex-col items-start gap-4 rounded-lab-lg border border-lab-line p-8 sm:p-10">
-            <h3 className="text-xl text-lab-ink sm:text-2xl">
-              {dict.finale.contactTitle}
-            </h3>
-            <p className="max-w-md">{dict.finale.contactLead}</p>
-            <a
-              href={contactLink.href}
-              className="mt-1 inline-flex items-center justify-center rounded-full bg-lab-accent px-6 py-3 text-sm font-semibold text-lab-accent-ink outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
-            >
-              {dict.finale.contactCta}
-            </a>
-          </MotionReveal>
         </div>
       </div>
     </section>

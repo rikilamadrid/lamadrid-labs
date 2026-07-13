@@ -154,10 +154,6 @@ export const es: Dictionary = {
     featuredCta: "Abrir RicardoOS",
     restTitle: "El resto de los especímenes",
     restCta: "Visitar",
-    contactTitle: "¿Tienes algo que valga la pena construir?",
-    contactLead:
-      "Trae la idea. Yo la llevo de la recepción al lanzamiento — sin formularios, solo una conversación.",
-    contactCta: "Escribe a hello@lamadridlabs.com",
   },
   services: {
     eyebrow: "Cómo trabajamos juntos",
