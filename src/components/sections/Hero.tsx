@@ -39,13 +39,13 @@ export function Hero() {
 
         <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
           <a
-            href="#finale"
+            href="#work"
             className="inline-flex items-center justify-center rounded-full bg-lab-accent px-6 py-3 text-sm font-semibold text-lab-accent-ink outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
           >
             {dict.hero.ctaPrimary}
           </a>
           <a
-            href="#services"
+            href="#process"
             className="lab-card-surface inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-lab-ink outline-none transition-colors hover:text-lab-accent focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
           >
             {dict.hero.ctaSecondary}

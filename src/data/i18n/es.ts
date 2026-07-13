@@ -6,8 +6,8 @@ export const es: Dictionary = {
     description: "Lamadrid Labs — un estudio de software independiente.",
   },
   nav: {
+    process: "Proceso",
     work: "Trabajo",
-    services: "Servicios",
     about: "Acerca de",
     contact: "Contacto",
     skipToContent: "Ir al contenido",
@@ -23,49 +23,6 @@ export const es: Dictionary = {
     lead: "Lamadrid Labs es el hogar claro y enfocado de los productos, experimentos y proyectos de cliente creados por Ricardo Lamadrid.",
     ctaPrimary: "Ver el trabajo",
     ctaSecondary: "Lo que creamos",
-  },
-  narrative: {
-    eyebrow: "Cómo avanza un proyecto en el laboratorio",
-    title: "Cinco etapas, un solo espécimen",
-    lead: "Cada proyecto pasa por el mismo proceso, de principio a fin.",
-    stages: {
-      intake: {
-        kicker: "01 — Recepción",
-        title: "Llega la idea",
-        description:
-          "Llega una idea sin pulir, un problema de negocio o una pregunta ambiciosa. Le dedico el tiempo necesario para entender qué se pide realmente — no solo lo que se dice.",
-        detail: "Descubrimiento, definición de alcance y un brief claro sobre el que construir.",
-      },
-      architecture: {
-        kicker: "02 — Arquitectura",
-        title: "Bajo el microscopio",
-        description:
-          "Antes de construir nada, se diseña. Modelos de datos, límites del sistema y las decisiones que hacen que el software sea fácil de cambiar después, no difícil.",
-        detail:
-          "Diseño de sistema, planificación técnica y un plano que no se derrumba con el uso real.",
-      },
-      build: {
-        kicker: "03 — Construcción",
-        title: "El laboratorio se pone ruidoso",
-        description:
-          "Aquí es donde ocurre el código — componentes reales, lógica real, casos límite reales. Avance constante y deliberado, no una carrera hacia algo que apenas compila.",
-        detail: "Implementación, iteración y un producto realmente usable en cada paso.",
-      },
-      test: {
-        kicker: "04 — Prueba",
-        title: "Poner a prueba el espécimen",
-        description:
-          "Un software que no se ha probado es solo una hipótesis. Esta etapa lo pone a prueba — accesibilidad, rendimiento, casos límite — hasta que resiste condiciones reales.",
-        detail: "QA, revisiones de accesibilidad y pruebas de rendimiento antes de lanzar nada.",
-      },
-      ship: {
-        kicker: "05 — Lanzamiento",
-        title: "Sale al mundo",
-        description:
-          "El espécimen deja el laboratorio. Desplegado, documentado y entregado — listo para hacer su trabajo sin que nadie lo esté vigilando.",
-        detail: "Despliegue, entrega y la tranquilidad de que seguirá funcionando.",
-      },
-    },
   },
   process: {
     eyebrow: "Cómo avanza un proyecto en el laboratorio",
@@ -143,71 +100,6 @@ export const es: Dictionary = {
         summary:
           "Una app de coaching de escritura que convierte una idea de historia en impulso de escritura diario, con tareas guiadas y retroalimentación.",
         tags: ["Next.js", "TypeScript", "IA", "Vercel"],
-      },
-    },
-  },
-  finale: {
-    eyebrow: "El resultado",
-    title: "La prueba de que funciona",
-    lead: "El proceso de arriba no es teoría. RicardoOS pasó por cada etapa — de la recepción al lanzamiento — y está en vivo.",
-    featuredLabel: "En producción",
-    featuredCta: "Abrir RicardoOS",
-    restTitle: "El resto de los especímenes",
-    restCta: "Visitar",
-  },
-  services: {
-    eyebrow: "Cómo trabajamos juntos",
-    title: "Servicios",
-    lead: "Formas concretas de trabajar con el laboratorio, desde una sola funcionalidad hasta soporte continuo.",
-    items: {
-      "product-engineering": {
-        title: "Ingeniería de producto",
-        summary: "Convertir ideas en productos web claros y usables.",
-        outcomes: [
-          "Un producto en funcionamiento, no solo un prototipo",
-          "Alcance claro y un camino rápido hacia el lanzamiento",
-          "Código mantenible sobre el que puedes seguir construyendo",
-        ],
-      },
-      "design-engineering": {
-        title: "Ingeniería de diseño",
-        summary:
-          "Interfaces pulidas, detalles de interacción y UI lista para producción.",
-        outcomes: [
-          "Interfaces cuidadas al detalle y accesibles",
-          "Movimiento e interacción bien pensados",
-          "Un sistema de diseño coherente, no pantallas sueltas",
-        ],
-      },
-      "ai-workflow-engineering": {
-        title: "Ingeniería de flujos con IA",
-        summary:
-          "Automatizaciones prácticas, flujos con LLM, prototipos agénticos e integraciones de API.",
-        outcomes: [
-          "Automatizaciones que eliminan trabajo repetitivo real",
-          "Flujos con LLM y agentes conectados a tus herramientas",
-          "Funciones de IA prácticas, no demos de moda",
-        ],
-      },
-      "frontend-architecture": {
-        title: "Arquitectura frontend",
-        summary:
-          "Sistemas escalables en React/Next.js, sistemas de diseño, rendimiento, accesibilidad y mantenibilidad.",
-        outcomes: [
-          "Arquitectura que escala junto con el equipo",
-          "Buenas bases de rendimiento y accesibilidad",
-          "Código que se mantiene limpio al crecer",
-        ],
-      },
-      "freelance-technical-partner": {
-        title: "Socio técnico freelance",
-        summary:
-          "Soporte de ingeniería senior para fundadores, creadores y equipos pequeños.",
-        outcomes: [
-          "Un socio senior que construye contigo",
-          "Criterio de producto junto con el código",
-          "Soporte flexible sin la carga de una agencia",
-        ],
       },
     },
   },
