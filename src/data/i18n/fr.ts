@@ -105,6 +105,8 @@ export const fr: Dictionary = {
     eyebrow: "Travaux sélectionnés",
     title: "Depuis le laboratoire",
     lead: "Un échantillon de ce qui est déjà livré — projets réels, utilisateurs réels.",
+    featuredLabel: "En vedette",
+    restTitle: "Plus du laboratoire",
     viewProject: "Voir le projet",
     status: {
       live: "En ligne",
