@@ -155,10 +155,6 @@ export const fr: Dictionary = {
     featuredCta: "Ouvrir RicardoOS",
     restTitle: "Les autres spécimens",
     restCta: "Visiter",
-    contactTitle: "Un projet qui mérite d'être construit ?",
-    contactLead:
-      "Apportez l'idée. Je m'en occupe de l'accueil à la livraison — sans formulaires, juste une conversation.",
-    contactCta: "Écrire à hello@lamadridlabs.com",
   },
   services: {
     eyebrow: "Comment nous collaborons",
