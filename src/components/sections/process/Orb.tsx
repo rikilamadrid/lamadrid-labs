@@ -2,7 +2,6 @@
 
 import { useEffect, useMemo, useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { PerspectiveCamera } from "@react-three/drei";
 import { Color, DoubleSide } from "three";
 import type { Group, Mesh, MeshStandardMaterial } from "three";
 import { processStages } from "@/data/process";
@@ -58,6 +57,11 @@ function deriveOrbFrame(progress: number): DerivedOrbFrame {
 // advances, ringed by two orbit bands echoing the brand mark's atom motif.
 // Reads `progress` (0-1) and derives its own stage blend — no scroll wiring
 // here, that's feature 38's job.
+//
+// Renders no camera or lights of its own — feature 38 mounts this inside a
+// shared scene (table + rigs) with one camera, and a second baked-in camera
+// here would silently fight for `makeDefault`. Standalone previews (see
+// orb-dev) must supply their own camera/lighting.
 export function Orb({ progress }: OrbProps) {
   const groupRef = useRef<Group>(null);
   const smoothCoreRef = useRef<Mesh>(null);
@@ -138,11 +142,6 @@ export function Orb({ progress }: OrbProps) {
 
   return (
     <>
-      <PerspectiveCamera makeDefault position={[0, 0, 4.5]} fov={40} />
-      <ambientLight intensity={0.6} />
-      <pointLight position={[2, 2, 3]} intensity={35} color="#ffffff" />
-      <pointLight position={[-2, -1, -2]} intensity={12} color="#ffffff" />
-
       <group ref={groupRef}>
         <mesh ref={shellRef}>
           <sphereGeometry args={[0.85, 48, 48]} />
