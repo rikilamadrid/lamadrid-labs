@@ -4,9 +4,11 @@ import { PerspectiveCamera } from "@react-three/drei";
 import type { ProcessStage } from "@/data/process";
 import { processStages } from "@/data/process";
 import { lerp } from "@/lib/math";
+import { useProcessQualityTier } from "@/lib/useProcessQualityTier";
 import { CrystallizationRig } from "./CrystallizationRig";
 import { MeasurementRig } from "./MeasurementRig";
 import { Orb } from "./Orb";
+import { ProcessBench, ProcessEnvironment } from "./processMaterials";
 import { PurificationRig } from "./PurificationRig";
 import { ReagentRig } from "./ReagentRig";
 import { SynthesisRig } from "./SynthesisRig";
@@ -38,16 +40,27 @@ interface MobileProcessSceneProps {
 // under a lighter scene and a different (non-pinned) trigger.
 export function MobileProcessScene({ stage, progress }: MobileProcessSceneProps) {
   const RigComponent = RIG_COMPONENTS[stage.index];
+  const tier = useProcessQualityTier();
   const orbX = lerp(-GATE_X, GATE_X, progress);
   // Blends this stage's orbState into the next stage's as the scrub
   // advances, same neighbor-blend Orb already does for the desktop track.
   const orbProgress = (stage.index + progress) / (STAGE_COUNT - 1);
 
+  // Mobile-first (feature 45): the same premium foundation as desktop, scaled
+  // down by the shared quality tier — a low-res generated environment for
+  // glass/metal reflections and a low-res reflective bench. The one desktop
+  // primitive that can't run here is the EffectComposer: MobileProcessCanvas
+  // composites every stage through a drei <View> scissor, which a full-frame
+  // composer can't wrap, so mobile glow stays emissive-driven (ProcessEffects
+  // returns null for the mobile tier). Materials still visibly upgrade.
   return (
     <>
       <PerspectiveCamera makeDefault position={[0, 0.4, 5.5]} fov={40} />
-      <ambientLight intensity={0.6} />
-      <pointLight position={[0, 3, 3]} intensity={30} color="#ffffff" />
+      <ProcessEnvironment tier={tier} />
+      <ambientLight intensity={0.4} />
+      <pointLight position={[0, 3, 3]} intensity={22} color="#ffffff" />
+
+      <ProcessBench tier={tier} />
 
       <RigComponent />
       <group position={[orbX, ORB_Y, 0.6]}>
