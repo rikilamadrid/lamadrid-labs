@@ -38,6 +38,9 @@ interface GlassMaterialProps {
   thickness?: number;
   transparent?: boolean;
   opacity?: number;
+  /** Surface roughness. Lower is more mirror-like; the orb (46) raises it a
+   *  little so its env highlights don't bloom into hard white balls. */
+  roughness?: number;
 }
 
 // Premium glass. Desktop refracts for real via MeshTransmissionMaterial; the
@@ -50,6 +53,7 @@ export function GlassMaterial({
   thickness = 0.6,
   transparent = true,
   opacity = 0.4,
+  roughness = 0.08,
 }: GlassMaterialProps) {
   if (!tier.transmission) {
     return (
@@ -57,7 +61,7 @@ export function GlassMaterial({
         color={color}
         transparent={transparent}
         opacity={opacity}
-        roughness={0.08}
+        roughness={roughness}
         metalness={0}
         clearcoat={1}
         clearcoatRoughness={0.12}
@@ -74,7 +78,7 @@ export function GlassMaterial({
       resolution={tier.transmission.resolution}
       transmission={1}
       thickness={thickness}
-      roughness={0.08}
+      roughness={roughness}
       ior={1.4}
       chromaticAberration={0.03}
       anisotropicBlur={0.1}
