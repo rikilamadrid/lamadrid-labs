@@ -21,12 +21,23 @@ export interface OrbState {
   motionIntensity: number; // 0 = still, 1 = most reactive/dynamic
 }
 
+// Non-translated, structural HUD data for the holographic readout panel (47).
+// Translated labels/values live in the dict under process.stages[id].hud —
+// this only carries the illustrative sparkline waveform, deliberately a fixed
+// per-stage shape (calm at intake/crystallization, spiky at synthesis), never
+// real or live data.
+export interface StageHud {
+  // Illustrative sparkline samples in [0, 1], rendered as a small SVG readout.
+  sparkline: number[];
+}
+
 export interface ProcessStage {
   id: ProcessStageId;
   index: number;
   signal: ProcessSignal;
   serviceIds: ServiceId[];
   orbState: OrbState;
+  hud: StageHud;
 }
 
 // Translated title/stageLine/serviceLine live in src/data/i18n/*.ts under process.stages[id].
@@ -37,6 +48,7 @@ export const processStages: ProcessStage[] = [
     signal: "cyan",
     serviceIds: ["freelance-technical-partner", "product-engineering"],
     orbState: { scale: 1, glow: 0.3, geometryMorph: 0, motionIntensity: 0.15 },
+    hud: { sparkline: [0.4, 0.5, 0.45, 0.55, 0.5, 0.52, 0.48, 0.5] },
   },
   {
     id: "measurement",
@@ -44,6 +56,7 @@ export const processStages: ProcessStage[] = [
     signal: "violet",
     serviceIds: ["frontend-architecture", "product-engineering"],
     orbState: { scale: 1.3, glow: 0.5, geometryMorph: 0.25, motionIntensity: 0.35 },
+    hud: { sparkline: [0.3, 0.4, 0.35, 0.5, 0.45, 0.6, 0.55, 0.65] },
   },
   {
     id: "synthesis",
@@ -55,6 +68,7 @@ export const processStages: ProcessStage[] = [
       "ai-workflow-engineering",
     ],
     orbState: { scale: 1.7, glow: 0.75, geometryMorph: 0.5, motionIntensity: 1 },
+    hud: { sparkline: [0.3, 0.7, 0.4, 0.85, 0.5, 0.9, 0.45, 0.8] },
   },
   {
     id: "purification",
@@ -62,6 +76,7 @@ export const processStages: ProcessStage[] = [
     signal: "rose",
     serviceIds: ["frontend-architecture", "design-engineering"],
     orbState: { scale: 1.9, glow: 0.65, geometryMorph: 0.75, motionIntensity: 0.4 },
+    hud: { sparkline: [0.7, 0.55, 0.6, 0.45, 0.5, 0.4, 0.42, 0.38] },
   },
   {
     id: "crystallization",
@@ -69,5 +84,6 @@ export const processStages: ProcessStage[] = [
     signal: "teal",
     serviceIds: ["product-engineering", "freelance-technical-partner"],
     orbState: { scale: 2.4, glow: 0.9, geometryMorph: 1, motionIntensity: 0.1 },
+    hud: { sparkline: [0.5, 0.52, 0.5, 0.51, 0.5, 0.5, 0.51, 0.5] },
   },
 ];

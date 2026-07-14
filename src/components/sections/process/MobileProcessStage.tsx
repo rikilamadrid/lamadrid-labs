@@ -1,15 +1,14 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import { View } from "@react-three/drei";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import { MotionReveal } from "@/components/ui/MotionPrimitives";
 import type { Dictionary } from "@/data/i18n";
 import type { ProcessStage } from "@/data/process";
-import { narrativeSignalColors } from "@/lib/narrativeSignals";
 import { MobileProcessScene } from "./MobileProcessScene";
+import { ProcessHudPanel } from "./ProcessHudPanel";
 
 if (typeof window !== "undefined") {
   gsap.registerPlugin(ScrollTrigger);
@@ -18,6 +17,7 @@ if (typeof window !== "undefined") {
 interface MobileProcessStageProps {
   stage: ProcessStage;
   content: Dictionary["process"]["stages"][ProcessStage["id"]];
+  labels: Dictionary["process"]["hud"];
 }
 
 // The mobile fallback's per-stage unit: a self-scrubbed vertical stack item
@@ -25,7 +25,11 @@ interface MobileProcessStageProps {
 // 38's shared horizontal-pin scrub. Each instance owns its own
 // ScrollTrigger scoped to its own bounds, so stages don't compete for one
 // pinned viewport.
-export function MobileProcessStage({ stage, content }: MobileProcessStageProps) {
+export function MobileProcessStage({
+  stage,
+  content,
+  labels,
+}: MobileProcessStageProps) {
   const stageRef = useRef<HTMLDivElement>(null);
   const [progress, setProgress] = useState(0);
 
@@ -44,20 +48,10 @@ export function MobileProcessStage({ stage, content }: MobileProcessStageProps) 
     return () => trigger.kill();
   }, []);
 
-  const signalColor = narrativeSignalColors[stage.signal];
-
   return (
-    <div
-      ref={stageRef}
-      className="flex flex-col gap-6 py-10 first:pt-0 last:pb-0"
-      style={{ "--stage-signal": signalColor } as CSSProperties}
-    >
-      <MotionReveal className="flex min-w-0 flex-col gap-3">
-        <span className="lab-card-kicker" style={{ color: "var(--stage-signal)" }}>
-          {String(stage.index + 1).padStart(2, "0")} — {content.title}
-        </span>
-        <p>{content.stageLine}</p>
-        <p className="text-sm text-lab-muted">{content.serviceLine}</p>
+    <div ref={stageRef} className="flex flex-col gap-6 py-10 first:pt-0 last:pb-0">
+      <MotionReveal className="min-w-0">
+        <ProcessHudPanel stage={stage} content={content} labels={labels} />
       </MotionReveal>
 
       <div className="aspect-square w-full">

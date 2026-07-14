@@ -25,7 +25,12 @@ export function MobileProcessStack({ dict }: MobileProcessStackProps) {
 
       <div className="mx-auto mt-12 max-w-md">
         {processStages.map((stage) => (
-          <MobileProcessStage key={stage.id} stage={stage} content={dict.stages[stage.id]} />
+          <MobileProcessStage
+            key={stage.id}
+            stage={stage}
+            content={dict.stages[stage.id]}
+            labels={dict.hud}
+          />
         ))}
       </div>
 

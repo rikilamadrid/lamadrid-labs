@@ -1,14 +1,13 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import type { CSSProperties } from "react";
 import { Canvas } from "@react-three/fiber";
 import { AnimatePresence, motion } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Dictionary } from "@/data/i18n";
 import { processStages } from "@/data/process";
-import { narrativeSignalColors } from "@/lib/narrativeSignals";
+import { ProcessHudPanel } from "./ProcessHudPanel";
 import { ProcessScene } from "./ProcessScene";
 
 if (typeof window !== "undefined") {
@@ -55,7 +54,6 @@ export function ProcessScrollRig({ dict }: ProcessScrollRigProps) {
   const activeIndex = Math.min(Math.round(segment), STAGE_COUNT - 1);
   const activeStage = processStages[activeIndex];
   const activeContent = dict.stages[activeStage.id];
-  const accentColor = narrativeSignalColors[activeStage.signal];
 
   return (
     <div ref={wrapperRef} style={{ height: `${SCROLL_HEIGHT_VH}vh` }} className="relative">
@@ -78,10 +76,7 @@ export function ProcessScrollRig({ dict }: ProcessScrollRigProps) {
           <p className="mt-2 max-w-xs text-sm">{dict.lead}</p>
         </div>
 
-        <div
-          className="pointer-events-none absolute bottom-0 left-0 z-10 w-full p-6 sm:p-10"
-          style={{ "--stage-signal": accentColor } as CSSProperties}
-        >
+        <div className="pointer-events-none absolute bottom-0 left-0 z-10 w-full p-6 sm:p-10">
           <AnimatePresence mode="wait">
             <motion.div
               key={activeStage.id}
@@ -89,13 +84,13 @@ export function ProcessScrollRig({ dict }: ProcessScrollRigProps) {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
               transition={{ duration: 0.3 }}
-              className="lab-card-surface max-w-sm rounded-lab-lg p-5"
+              className="max-w-sm"
             >
-              <span className="lab-card-kicker" style={{ color: "var(--stage-signal)" }}>
-                {String(activeStage.index + 1).padStart(2, "0")} — {activeContent.title}
-              </span>
-              <p className="mt-2 text-sm">{activeContent.stageLine}</p>
-              <p className="mt-1 text-xs text-lab-muted">{activeContent.serviceLine}</p>
+              <ProcessHudPanel
+                stage={activeStage}
+                content={activeContent}
+                labels={dict.hud}
+              />
             </motion.div>
           </AnimatePresence>
         </div>

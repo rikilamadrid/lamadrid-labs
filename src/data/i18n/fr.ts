@@ -28,33 +28,72 @@ export const fr: Dictionary = {
     eyebrow: "Comment un projet avance dans le laboratoire",
     title: "Un spécimen, cinq étapes",
     lead: "Chaque projet suit la même réaction, du début à la fin.",
+    hud: {
+      step: "Étape",
+      readout: "Relevé",
+    },
     stages: {
       "reagent-selection": {
         title: "Sélection des réactifs",
         stageLine:
           "L'idée arrive, réduite à l'essentiel qui mérite d'être construit.",
         serviceLine: "Découverte et cadrage.",
+        hud: {
+          status: "Stable",
+          metrics: [
+            { label: "État", value: "Trié" },
+            { label: "Verrou", value: "Activé" },
+          ],
+        },
       },
       measurement: {
         title: "Mesure",
         stageLine: "Chaque besoin est pesé et le système est cartographié.",
         serviceLine: "Conception du système et planification technique.",
+        hud: {
+          status: "Calibré",
+          metrics: [
+            { label: "Portée", value: "Cartographiée" },
+            { label: "Charge", value: "Pesée" },
+          ],
+        },
       },
       synthesis: {
         title: "Synthèse",
         stageLine:
           "Du vrai code, de vrais composants, en réaction vers un produit fonctionnel.",
         serviceLine: "Implémentation et itération.",
+        hud: {
+          status: "En réaction",
+          metrics: [
+            { label: "Build", value: "Actif" },
+            { label: "Flux", value: "Maximal" },
+          ],
+        },
       },
       purification: {
         title: "Purification",
         stageLine: "Sans aspérités — testé, affiné, accessible.",
         serviceLine: "QA, accessibilité et performance.",
+        hud: {
+          status: "Affiné",
+          metrics: [
+            { label: "Aspérités", value: "Retirées" },
+            { label: "Tests", value: "Réussis" },
+          ],
+        },
       },
       crystallization: {
         title: "Cristallisation",
         stageLine: "La forme finale : déployée, documentée et faite pour durer.",
         serviceLine: "Déploiement et passation.",
+        hud: {
+          status: "Fixé",
+          metrics: [
+            { label: "Forme", value: "Finale" },
+            { label: "Livraison", value: "Prête" },
+          ],
+        },
       },
     },
   },
