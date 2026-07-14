@@ -8,6 +8,8 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Added
 
+- Premium 3D rendering foundation for the Process section (feature 45): a shared material toolkit (`src/components/sections/process/processMaterials.tsx`) exporting transmission `GlassMaterial`, `BrushedMetalMaterial`, and `EmissiveCoreMaterial`, plus a fetch-free generated studio `ProcessEnvironment` (static-export safe — no HDRI URL), a `ProcessBench` (`MeshReflectorMaterial`), and a restrained bloom+vignette `ProcessEffects` composer. Added `@react-three/postprocessing`.
+- Shared quality-tier system (`src/lib/useProcessQualityTier.ts`): a mobile-first `matchMedia` hook (mirroring `useIsDesktopViewport`) whose knobs (bloom, transmission samples/resolution, reflector/environment resolution, dpr) drive both the desktop `ProcessScene` and `MobileProcessScene` from the same primitives — mobile scales down (cheap glass approximation, low-res env/reflector, no composer) rather than waiting for a later catch-up pass.
 - Initial Lamadrid Labs project context.
 - Initial website direction for a simple, clean digital laboratory experience.
 - Initial showcase scope for RicardoOS and Marina Cuesta.
@@ -24,6 +26,7 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ### Changed
 
+- Reconciled the Process 3D palette (`src/lib/narrativeSignals.ts`) from 5 saturated signal hues (cyan/violet/amber/rose/teal) down to a disciplined monochrome cyan/teal + white family — per-stage `signal` tokens now read as subtle accent shifts within that family rather than competing colors, matching the approved reference renders. Applied the new foundation to the desktop and mobile Process scenes: themed scene background (so the desktop composer can't force opaque black), env reflections on existing metal, a premium glass Synthesis flask, and a reflective bench.
 - Reworked the visual direction from a light "laboratory white" theme to a dark "lab at night" theme (deep navy background, glass panels, teal + violet signal colors, grid overlay), inspired by the `LLprototype3` prototype.
 - Restyled `Nav` into a floating glass pill; restyled `Footer` onto the new dark tokens.
 - Refined homepage visual detail with shared section/header/eyebrow/card surface utilities, lighter card blur/shadow treatment, normalized letter spacing, and tighter section rhythm.

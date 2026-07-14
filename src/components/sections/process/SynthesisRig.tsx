@@ -2,11 +2,12 @@
 
 import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
-import { DoubleSide } from "three";
 import type { Group, Mesh, MeshStandardMaterial } from "three";
-import { narrativeSignalColors } from "@/lib/narrativeSignals";
+import { PROCESS_GLASS_TINT, narrativeSignalColors } from "@/lib/narrativeSignals";
+import { useProcessQualityTier } from "@/lib/useProcessQualityTier";
 import { usePrefersReducedMotion } from "@/components/ui/MotionPrimitives";
-import { RIG_FRAME_COLOR, RIG_PLATFORM_TOP_Y, RigGate, RigPlatform } from "./rigPrimitives";
+import { BrushedMetalMaterial, GlassMaterial } from "./processMaterials";
+import { RIG_PLATFORM_TOP_Y, RigGate, RigPlatform } from "./rigPrimitives";
 
 interface SynthesisRigProps {
   position?: [number, number, number];
@@ -24,6 +25,7 @@ export function SynthesisRig({ position = [0, 0, 0] }: SynthesisRigProps) {
   const flaskGlowRef = useRef<Mesh>(null);
   const tubeSwirlRef = useRef<Group>(null);
   const prefersReducedMotion = usePrefersReducedMotion();
+  const tier = useProcessQualityTier();
   const idle = useRef(0);
 
   useFrame((_, delta) => {
@@ -50,10 +52,10 @@ export function SynthesisRig({ position = [0, 0, 0] }: SynthesisRigProps) {
       <RigGate x={-1.7} accentColor={ACCENT} />
       <RigGate x={1.7} accentColor={ACCENT} />
 
-      {/* Stirrer base */}
+      {/* Stirrer base — brushed metal, reflecting the generated environment */}
       <mesh position={[0, RIG_PLATFORM_TOP_Y + 0.06, 0]}>
         <cylinderGeometry args={[0.46, 0.5, 0.12, 20]} />
-        <meshStandardMaterial color={RIG_FRAME_COLOR} metalness={0.65} roughness={0.3} />
+        <BrushedMetalMaterial />
       </mesh>
       <mesh ref={stirBarRef} position={[0, RIG_PLATFORM_TOP_Y + 0.13, 0]}>
         <boxGeometry args={[0.32, 0.02, 0.06]} />
@@ -65,18 +67,13 @@ export function SynthesisRig({ position = [0, 0, 0] }: SynthesisRigProps) {
         />
       </mesh>
 
-      {/* Reaction flask: the processing chamber the orb passes through */}
+      {/* Reaction flask: the processing chamber the orb passes through — now
+          premium glass (feature 45's toolkit), refracting the glowing vortex
+          core behind it, matching the reference render. */}
       <group position={[0, RIG_PLATFORM_TOP_Y + 0.15, 0]}>
         <mesh position={[0, 0.35, 0]}>
-          <coneGeometry args={[0.42, 0.6, 16, 1, true]} />
-          <meshStandardMaterial
-            color={ACCENT}
-            transparent
-            opacity={0.35}
-            metalness={0.1}
-            roughness={0.1}
-            side={DoubleSide}
-          />
+          <coneGeometry args={[0.42, 0.6, 24, 1, true]} />
+          <GlassMaterial tier={tier} color={PROCESS_GLASS_TINT} thickness={0.4} />
         </mesh>
         <mesh ref={flaskGlowRef} position={[0, 0.18, 0]}>
           <sphereGeometry args={[0.24, 16, 16]} />
@@ -91,14 +88,7 @@ export function SynthesisRig({ position = [0, 0, 0] }: SynthesisRigProps) {
         </mesh>
         <mesh position={[0, 0.68, 0]}>
           <cylinderGeometry args={[0.06, 0.06, 0.2, 12, 1, true]} />
-          <meshStandardMaterial
-            color={ACCENT}
-            transparent
-            opacity={0.35}
-            metalness={0.1}
-            roughness={0.1}
-            side={DoubleSide}
-          />
+          <GlassMaterial tier={tier} color={PROCESS_GLASS_TINT} thickness={0.2} />
         </mesh>
       </group>
 
