@@ -4,6 +4,7 @@ import { useRef } from "react";
 import { useFrame } from "@react-three/fiber";
 import type { Mesh, MeshStandardMaterial } from "three";
 import { usePrefersReducedMotion } from "@/components/ui/MotionPrimitives";
+import { BrushedMetalMaterial } from "./processMaterials";
 import {
   RIG_FRAME_COLOR,
   RIG_PLATFORM_DEPTH,
@@ -75,7 +76,7 @@ export function ProcessTable({ stages, rigHalfWidth = 2.2 }: ProcessTableProps) 
             {/* Floor filler: same platform material/height as each rig's base */}
             <mesh position={[gapCenter, RIG_PLATFORM_TOP_Y - RIG_PLATFORM_HEIGHT / 2, 0]}>
               <boxGeometry args={[gapWidth, RIG_PLATFORM_HEIGHT, RIG_PLATFORM_DEPTH]} />
-              <meshStandardMaterial color={RIG_FRAME_COLOR} metalness={0.6} roughness={0.35} />
+              <BrushedMetalMaterial color={RIG_FRAME_COLOR} roughness={0.38} />
             </mesh>
 
             {/* Glowing conduit rail, blended left-stage color to right-stage color */}
@@ -125,7 +126,7 @@ export function ProcessTable({ stages, rigHalfWidth = 2.2 }: ProcessTableProps) 
           position={[x, RIG_PLATFORM_TOP_Y - RIG_PLATFORM_HEIGHT - LEG_HEIGHT / 2, 0]}
         >
           <boxGeometry args={[0.08, LEG_HEIGHT, 0.08]} />
-          <meshStandardMaterial color={RIG_FRAME_COLOR} metalness={0.5} roughness={0.5} />
+          <BrushedMetalMaterial color={RIG_FRAME_COLOR} roughness={0.45} />
         </mesh>
       ))}
     </group>

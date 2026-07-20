@@ -13,6 +13,7 @@ import { useProcessQualityTier } from "@/lib/useProcessQualityTier";
 import { CrystallizationRig } from "./CrystallizationRig";
 import { MeasurementRig } from "./MeasurementRig";
 import { Orb } from "./Orb";
+import { ProcessBackdrop } from "./ProcessBackdrop";
 import {
   ProcessBench,
   ProcessEffects,
@@ -62,6 +63,10 @@ export function ProcessScene({ progress }: ProcessSceneProps) {
   return (
     <>
       <color attach="background" args={[bg]} />
+      {/* Near/far kept beyond the rig track's own depth so stages stay crisp;
+          only the bench's far reaches and the backdrop plane behind it fade
+          toward the page background, reading as depth rather than haze. */}
+      <fog attach="fog" args={[bg, 16, 32]} />
       <PerspectiveCamera makeDefault position={[0, 0.3, 9]} fov={38} rotation={[-0.03, 0, 0]} />
       <ProcessEnvironment tier={tier} />
 
@@ -70,6 +75,7 @@ export function ProcessScene({ progress }: ProcessSceneProps) {
       <pointLight position={[-9, 2, -2]} intensity={12} color="#ffffff" />
       <pointLight position={[9, 2, -2]} intensity={12} color="#ffffff" />
 
+      <ProcessBackdrop theme={theme} />
       <ProcessBench tier={tier} />
 
       <group position={[trackX, 0, 0]}>
