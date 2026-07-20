@@ -4,10 +4,12 @@ import { PerspectiveCamera } from "@react-three/drei";
 import type { ProcessStage } from "@/data/process";
 import { processStages } from "@/data/process";
 import { lerp } from "@/lib/math";
+import { useTheme } from "@/lib/theme";
 import { useProcessQualityTier } from "@/lib/useProcessQualityTier";
 import { CrystallizationRig } from "./CrystallizationRig";
 import { MeasurementRig } from "./MeasurementRig";
 import { Orb } from "./Orb";
+import { ProcessBackdrop } from "./ProcessBackdrop";
 import { ProcessBench, ProcessEnvironment } from "./processMaterials";
 import { PurificationRig } from "./PurificationRig";
 import { ReagentRig } from "./ReagentRig";
@@ -41,6 +43,7 @@ interface MobileProcessSceneProps {
 export function MobileProcessScene({ stage, progress }: MobileProcessSceneProps) {
   const RigComponent = RIG_COMPONENTS[stage.index];
   const tier = useProcessQualityTier();
+  const { theme } = useTheme();
   const orbX = lerp(-GATE_X, GATE_X, progress);
   // Blends this stage's orbState into the next stage's as the scrub
   // advances, same neighbor-blend Orb already does for the desktop track.
@@ -60,6 +63,7 @@ export function MobileProcessScene({ stage, progress }: MobileProcessSceneProps)
       <ambientLight intensity={0.4} />
       <pointLight position={[0, 3, 3]} intensity={22} color="#ffffff" />
 
+      <ProcessBackdrop theme={theme} z={-6} width={14} repeat={2} />
       <ProcessBench tier={tier} />
 
       <RigComponent />

@@ -22,7 +22,12 @@ export function RigPlatform({ accentColor }: RigPlatformProps) {
     <group>
       <mesh position={[0, RIG_PLATFORM_TOP_Y - RIG_PLATFORM_HEIGHT / 2, 0]}>
         <boxGeometry args={[RIG_PLATFORM_WIDTH, RIG_PLATFORM_HEIGHT, RIG_PLATFORM_DEPTH]} />
-        <meshStandardMaterial color={RIG_FRAME_COLOR} metalness={0.6} roughness={0.35} />
+        <meshStandardMaterial
+          color={RIG_FRAME_COLOR}
+          metalness={1}
+          roughness={0.38}
+          envMapIntensity={1.1}
+        />
       </mesh>
       <mesh
         position={[
