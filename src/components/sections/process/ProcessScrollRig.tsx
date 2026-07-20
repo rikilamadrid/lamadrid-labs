@@ -7,6 +7,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import type { Dictionary } from "@/data/i18n";
 import { processStages } from "@/data/process";
+import { deriveStageBlend } from "@/lib/processLayout";
 import { ProcessHudPanel } from "./ProcessHudPanel";
 import { ProcessScene } from "./ProcessScene";
 
@@ -50,8 +51,12 @@ export function ProcessScrollRig({ dict }: ProcessScrollRigProps) {
     return () => trigger.kill();
   }, []);
 
-  const segment = progress * (STAGE_COUNT - 1);
-  const activeIndex = Math.min(Math.round(segment), STAGE_COUNT - 1);
+  // Shares the exact dwell-eased stage blend the 3D track/orb use (see
+  // processLayout) so the HUD/copy crossfade switches at the same instant
+  // the scene settles into the next stage — no more independent rounding
+  // that could pop out of sync with what's actually on screen (54).
+  const { fromIndex, toIndex, t } = deriveStageBlend(progress, STAGE_COUNT);
+  const activeIndex = t < 0.5 ? fromIndex : toIndex;
   const activeStage = processStages[activeIndex];
   const activeContent = dict.stages[activeStage.id];
 
@@ -83,7 +88,7 @@ export function ProcessScrollRig({ dict }: ProcessScrollRigProps) {
               initial={{ opacity: 0, y: 8 }}
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -8 }}
-              transition={{ duration: 0.3 }}
+              transition={{ duration: 0.4, ease: "easeInOut" }}
               className="max-w-sm"
             >
               <ProcessHudPanel

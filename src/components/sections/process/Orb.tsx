@@ -5,6 +5,7 @@ import { useFrame } from "@react-three/fiber";
 import {
   BufferGeometry,
   Color,
+  ConeGeometry,
   Float32BufferAttribute,
   IcosahedronGeometry,
   Vector3,
@@ -18,6 +19,11 @@ import {
   narrativeSignalColors,
 } from "@/lib/narrativeSignals";
 import { clamp01, lerp } from "@/lib/math";
+import {
+  deriveMotionEnergy,
+  deriveStageBlend,
+  deriveTransitPhase,
+} from "@/lib/processLayout";
 import { useProcessQualityTier } from "@/lib/useProcessQualityTier";
 import { usePrefersReducedMotion } from "@/components/ui/MotionPrimitives";
 import { EmissiveCoreMaterial, GlassMaterial } from "./processMaterials";
@@ -29,9 +35,11 @@ interface OrbProps {
 
 interface DerivedOrbFrame extends OrbState {
   color: Color;
+  /** 0-1, peaks mid-transit between stages, 0 while settled — drives the trail. */
+  motionEnergy: number;
+  /** -1 (just departed) → 0 (mid-transit) → +1 (about to settle) — drives trail bias. */
+  transitPhase: number;
 }
-
-const STAGE_COUNT = processStages.length;
 
 // Content model's orbState.scale (34) is a unitless 1-2.4 range meant for
 // this component to translate into a real Three.js value — applied literally
@@ -164,14 +172,15 @@ function buildShellGeometry(): BufferGeometry {
 // ─── Per-stage blend ─────────────────────────────────────────────────────
 // Blends orbState + signal color between the two stages `progress` sits
 // between, so the orb reads as one object evolving rather than 5 swapped
-// models. Pure/allocation-light — mutates `out`, runs every frame.
+// models. Shares processLayout's dwell-eased stage blend with the track
+// transform and the HUD/copy crossfade (54) so all three settle into and
+// leave a stage in lockstep. Pure/allocation-light — mutates `out`, runs
+// every frame.
 function deriveOrbFrame(progress: number, out: DerivedOrbFrame): void {
-  const segment = clamp01(progress) * (STAGE_COUNT - 1);
-  const fromIndex = Math.min(Math.floor(segment), STAGE_COUNT - 2);
-  const t = segment - fromIndex;
+  const { fromIndex, toIndex, t, rawT } = deriveStageBlend(progress, processStages.length);
 
   const from = processStages[fromIndex];
-  const to = processStages[fromIndex + 1];
+  const to = processStages[toIndex];
 
   const rawScale = lerp(from.orbState.scale, to.orbState.scale, t);
   out.scale = 1 + (rawScale - 1) * SCALE_DAMPING;
@@ -181,6 +190,18 @@ function deriveOrbFrame(progress: number, out: DerivedOrbFrame): void {
   out.color
     .set(narrativeSignalColors[from.signal])
     .lerp(TMP_COLOR.set(narrativeSignalColors[to.signal]), t);
+  out.motionEnergy = deriveMotionEnergy(rawT);
+  out.transitPhase = deriveTransitPhase(rawT);
+}
+
+// ─── Light-trail geometry ────────────────────────────────────────────────
+// Baking the cone's rotation into the geometry itself (rather than a mesh
+// `rotation` prop) keeps each frame's scale/position updates in plain
+// world-aligned X units instead of fighting a per-mesh rotation.
+function buildTrailGeometry(radius: number, apexSign: 1 | -1): BufferGeometry {
+  const geo = new ConeGeometry(radius, 1, 12, 1, true);
+  geo.rotateZ(apexSign > 0 ? -Math.PI / 2 : Math.PI / 2);
+  return geo;
 }
 
 // Gaussian weight for per-stage accents (bands/rings/dots peak at one stage).
@@ -213,13 +234,19 @@ export function Orb({ progress }: OrbProps) {
   const bandBRef = useRef<Mesh>(null);
   const ringARef = useRef<Mesh>(null);
   const ringBRef = useRef<Mesh>(null);
+  const trailBackRef = useRef<Mesh>(null);
+  const trailFrontRef = useRef<Mesh>(null);
 
   const shellGeometry = useMemo(() => buildShellGeometry(), []);
+  const trailBackGeometry = useMemo(() => buildTrailGeometry(0.14, -1), []);
+  const trailFrontGeometry = useMemo(() => buildTrailGeometry(0.09, 1), []);
   useEffect(() => {
     return () => {
       shellGeometry.dispose();
+      trailBackGeometry.dispose();
+      trailFrontGeometry.dispose();
     };
-  }, [shellGeometry]);
+  }, [shellGeometry, trailBackGeometry, trailFrontGeometry]);
 
   const progressRef = useRef(progress);
   useEffect(() => {
@@ -227,7 +254,15 @@ export function Orb({ progress }: OrbProps) {
   }, [progress]);
 
   const frame = useMemo<DerivedOrbFrame>(
-    () => ({ scale: 1, glow: 0, geometryMorph: 0, motionIntensity: 0, color: new Color() }),
+    () => ({
+      scale: 1,
+      glow: 0,
+      geometryMorph: 0,
+      motionIntensity: 0,
+      color: new Color(),
+      motionEnergy: 0,
+      transitPhase: 0,
+    }),
     [],
   );
   const idle = useRef({ time: 0 });
@@ -327,6 +362,40 @@ export function Orb({ progress }: OrbProps) {
         ref.current.rotation.z += delta * dir * (0.08 + frame.motionIntensity * 0.2);
       }
     });
+
+    // ── Shared light-trail (54) — the same primitive on every stage
+    // transition. Trailing streak (behind, -X) reads strongest right after
+    // leaving a stage's dwell and tapers as the next stage nears; a smaller
+    // leading glow (+X) reads strongest right before arriving — together an
+    // arcing streak of light into/out of each chamber, invisible while the
+    // orb sits settled inside one (energy is 0 during dwell).
+    const energy = frame.motionEnergy;
+    const departing = clamp01(-frame.transitPhase);
+    const arriving = clamp01(frame.transitPhase);
+
+    if (trailBackRef.current) {
+      const mat = trailBackRef.current.material as MeshStandardMaterial;
+      mat.color.copy(color);
+      mat.emissive.copy(color);
+      const strength = energy * (0.5 + 0.5 * departing);
+      mat.opacity = strength * 0.8;
+      mat.emissiveIntensity = 1.2 + strength * 1.2;
+      const length = 0.4 + strength * 1.6;
+      trailBackRef.current.scale.set(1, length, 1);
+      trailBackRef.current.position.x = -(0.55 + length / 2);
+    }
+
+    if (trailFrontRef.current) {
+      const mat = trailFrontRef.current.material as MeshStandardMaterial;
+      mat.color.copy(color);
+      mat.emissive.copy(color);
+      const strength = energy * (0.3 + 0.5 * arriving);
+      mat.opacity = strength * 0.5;
+      mat.emissiveIntensity = 1 + strength;
+      const length = 0.25 + strength * 0.7;
+      trailFrontRef.current.scale.set(1, length, 1);
+      trailFrontRef.current.position.x = 0.5 + length / 2;
+    }
   });
 
   return (
@@ -385,6 +454,14 @@ export function Orb({ progress }: OrbProps) {
       <mesh ref={ringBRef} rotation={[Math.PI / 1.6, Math.PI / 5, 0]}>
         <torusGeometry args={[0.7, 0.006, 8, 80]} />
         <EmissiveCoreMaterial intensity={0.4} transparent opacity={0} />
+      </mesh>
+
+      {/* Shared light-trail — trailing streak (departure) + leading glow (arrival) */}
+      <mesh ref={trailBackRef} geometry={trailBackGeometry}>
+        <EmissiveCoreMaterial intensity={1.2} transparent opacity={0} />
+      </mesh>
+      <mesh ref={trailFrontRef} geometry={trailFrontGeometry}>
+        <EmissiveCoreMaterial intensity={1} transparent opacity={0} />
       </mesh>
     </group>
   );
