@@ -2,8 +2,8 @@
 
 import { motion } from "motion/react";
 import { useSyncExternalStore, type ReactNode } from "react";
+import { transition } from "@/lib/motion";
 
-const EASE_OUT = [0.22, 1, 0.36, 1] as const;
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
 function subscribeToReducedMotion(callback: () => void) {
@@ -52,7 +52,7 @@ export function MotionReveal({
       initial={{ opacity: 0, y: distance }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true, margin: "-80px" }}
-      transition={{ duration: 0.55, ease: EASE_OUT, delay }}
+      transition={{ ...transition("slow"), delay }}
       {...props}
     >
       {children}
@@ -79,7 +79,7 @@ export function MotionCard({ children, delay = 0, ...props }: MotionCardProps) {
       whileInView={{ opacity: 1, y: 0 }}
       whileHover={{ y: -6 }}
       viewport={{ once: true, margin: "-70px" }}
-      transition={{ duration: 0.45, ease: EASE_OUT, delay }}
+      transition={{ ...transition("slow"), delay }}
       {...props}
     >
       {children}
@@ -113,7 +113,7 @@ export function MotionLinkCard({
       whileInView={{ opacity: 1, y: 0 }}
       whileHover={{ y: -6 }}
       viewport={{ once: true, margin: "-70px" }}
-      transition={{ duration: 0.45, ease: EASE_OUT, delay }}
+      transition={{ ...transition("slow"), delay }}
       {...props}
     >
       {children}

@@ -37,20 +37,20 @@ export function Work() {
           href={featured.url ?? "#"}
           target="_blank"
           rel="noreferrer"
-          className="lab-card-surface group mt-12 flex min-w-0 flex-col gap-5 rounded-lab-lg p-8 outline-none focus-visible:ring-2 focus-visible:ring-lab-accent-strong sm:p-10"
+          className="lab-card-surface group mt-12 flex min-w-0 flex-col gap-5 rounded-lab-lg p-8 outline-none focus-visible:ring-2 focus-visible:ring-lab-signal-strong sm:p-10"
         >
           <div className="flex min-w-0 items-center justify-between gap-3">
             <span className="lab-card-kicker">{dict.work.featuredLabel}</span>
-            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-lab-accent">
+            <span className="inline-flex items-center gap-1.5 text-xs font-medium text-lab-signal">
               <span
                 aria-hidden="true"
-                className="h-1.5 w-1.5 rounded-full bg-lab-accent"
+                className="h-1.5 w-1.5 rounded-full bg-lab-signal"
               />
               {dict.work.status[toStatusKey(featured.status)]}
             </span>
           </div>
 
-          <h3 className="text-2xl text-lab-ink transition-colors group-hover:text-lab-accent sm:text-3xl">
+          <h3 className="text-2xl text-lab-ink transition-colors group-hover:text-lab-signal sm:text-3xl">
             {featuredContent.title}
           </h3>
 
@@ -64,7 +64,7 @@ export function Work() {
             ))}
           </div>
 
-          <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-lab-accent">
+          <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-lab-signal">
             {dict.work.viewProject}
             <span aria-hidden="true">&rarr;</span>
           </span>
@@ -88,13 +88,13 @@ export function Work() {
                     target="_blank"
                     rel="noreferrer"
                     delay={index * 0.08}
-                    className="lab-card-surface group flex h-full min-w-0 flex-col gap-3 rounded-lab-lg p-6 outline-none focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+                    className="lab-card-surface group flex h-full min-w-0 flex-col gap-3 rounded-lab-lg p-6 outline-none focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
                   >
-                    <h4 className="text-lab-ink transition-colors group-hover:text-lab-accent">
+                    <h4 className="text-lab-ink transition-colors group-hover:text-lab-signal">
                       {content.title}
                     </h4>
                     <p className="flex-1 text-sm">{content.summary}</p>
-                    <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-lab-accent">
+                    <span className="mt-1 inline-flex items-center gap-1.5 text-sm font-semibold text-lab-signal">
                       {dict.work.viewProject}
                       <span aria-hidden="true">&rarr;</span>
                     </span>

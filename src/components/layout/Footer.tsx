@@ -15,7 +15,7 @@ export function Footer() {
         </p>
         <a
           href={contactLink.href}
-          className="outline-none transition-colors hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+          className="outline-none transition-colors hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
         >
           {contactLink.label}
         </a>
