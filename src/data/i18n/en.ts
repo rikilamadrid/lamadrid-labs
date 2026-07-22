@@ -6,7 +6,6 @@ export const en = {
     description: "Lamadrid Labs — an independent software studio.",
   },
   nav: {
-    process: "Process",
     work: "Work",
     about: "About",
     contact: "Contact",
@@ -22,78 +21,6 @@ export const en = {
     titleBefore: "",
     lead: "Lamadrid Labs is the clean, focused home for the products, experiments, and client work built by Ricardo Lamadrid.",
     ctaPrimary: "See the work",
-    ctaSecondary: "What we build",
-  },
-  process: {
-    eyebrow: "How a project moves through the lab",
-    title: "One specimen, five stages",
-    lead: "Every project runs the same reaction, start to finish.",
-    hud: {
-      step: "Step",
-      readout: "Readout",
-    },
-    stages: {
-      "reagent-selection": {
-        title: "Reagent Selection",
-        stageLine: "The idea arrives, sorted down to what's worth building.",
-        serviceLine: "Discovery and scoping.",
-        hud: {
-          status: "Stable",
-          metrics: [
-            { label: "State", value: "Sorted" },
-            { label: "Lock", value: "Engaged" },
-          ],
-        },
-      },
-      measurement: {
-        title: "Measurement",
-        stageLine: "Every requirement weighed and the system mapped out.",
-        serviceLine: "System design and technical planning.",
-        hud: {
-          status: "Calibrated",
-          metrics: [
-            { label: "Scope", value: "Mapped" },
-            { label: "Load", value: "Weighed" },
-          ],
-        },
-      },
-      synthesis: {
-        title: "Synthesis",
-        stageLine: "Real code, real components, reacting into a working product.",
-        serviceLine: "Implementation and iteration.",
-        hud: {
-          status: "Reacting",
-          metrics: [
-            { label: "Build", value: "Active" },
-            { label: "Flow", value: "Peak" },
-          ],
-        },
-      },
-      purification: {
-        title: "Purification",
-        stageLine: "Stripped of rough edges — tested, refined, accessible.",
-        serviceLine: "QA, accessibility, and performance passes.",
-        hud: {
-          status: "Refined",
-          metrics: [
-            { label: "Edges", value: "Removed" },
-            { label: "Tests", value: "Passing" },
-          ],
-        },
-      },
-      crystallization: {
-        title: "Crystallization",
-        stageLine: "The final form: deployed, documented, and built to last.",
-        serviceLine: "Deployment and handoff.",
-        hud: {
-          status: "Set",
-          metrics: [
-            { label: "Form", value: "Final" },
-            { label: "Ship", value: "Ready" },
-          ],
-        },
-      },
-    },
   },
   work: {
     eyebrow: "Selected work",

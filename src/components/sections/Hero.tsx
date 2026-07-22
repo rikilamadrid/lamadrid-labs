@@ -44,12 +44,6 @@ export function Hero() {
           >
             {dict.hero.ctaPrimary}
           </a>
-          <a
-            href="#process"
-            className="lab-card-surface inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-semibold text-lab-ink outline-none transition-colors hover:text-lab-accent focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
-          >
-            {dict.hero.ctaSecondary}
-          </a>
         </div>
       </div>
     </section>

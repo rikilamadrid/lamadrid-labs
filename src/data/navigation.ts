@@ -3,7 +3,7 @@ import type { Dictionary } from "@/data/i18n";
 /** Keys into `dict.nav` so labels stay translatable while hrefs live here. */
 export type NavKey = keyof Pick<
   Dictionary["nav"],
-  "process" | "work" | "about" | "contact"
+  "work" | "about" | "contact"
 >;
 
 export interface NavLink {
@@ -12,7 +12,6 @@ export interface NavLink {
 }
 
 export const navLinks: NavLink[] = [
-  { key: "process", href: "#process" },
   { key: "work", href: "#work" },
   { key: "about", href: "#about" },
   { key: "contact", href: "#contact" },
