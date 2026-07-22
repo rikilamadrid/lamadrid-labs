@@ -1,6 +1,5 @@
 import type { Dictionary } from "@/data/i18n";
 import { processStages } from "@/data/process";
-import { MobileProcessCanvas } from "./MobileProcessCanvas";
 import { MobileProcessStage } from "./MobileProcessStage";
 
 interface MobileProcessStackProps {
@@ -11,6 +10,9 @@ interface MobileProcessStackProps {
 // scrubs its own orb/rig into view independently instead of sharing 38's
 // pinned horizontal track. Mounted only when the viewport is below the
 // desktop breakpoint, so the pin's ScrollTrigger never gets created here.
+// The shared canvas (MobileProcessCanvas) is hoisted to page level via
+// MobileSpecimenLayer so Hero's HeroMobileSpecimen view can share it too —
+// not mounted here anymore.
 export function MobileProcessStack({ dict }: MobileProcessStackProps) {
   return (
     <div className="lab-section">
@@ -33,8 +35,6 @@ export function MobileProcessStack({ dict }: MobileProcessStackProps) {
           />
         ))}
       </div>
-
-      <MobileProcessCanvas />
     </div>
   );
 }

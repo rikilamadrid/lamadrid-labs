@@ -8,11 +8,11 @@ import { useTheme } from "@/lib/theme";
 import { useProcessQualityTier } from "@/lib/useProcessQualityTier";
 import { CrystallizationRig } from "./CrystallizationRig";
 import { MeasurementRig } from "./MeasurementRig";
-import { Orb } from "./Orb";
 import { ProcessBackdrop } from "./ProcessBackdrop";
 import { ProcessBench, ProcessEnvironment } from "./processMaterials";
 import { PurificationRig } from "./PurificationRig";
 import { ReagentRig } from "./ReagentRig";
+import { Specimen } from "./Specimen";
 import { SynthesisRig } from "./SynthesisRig";
 
 const RIG_COMPONENTS = [
@@ -38,15 +38,15 @@ interface MobileProcessSceneProps {
 // Simplified per-stage scene for the mobile fallback (39): one rig, one
 // orb, two lights — never more than a single rig mounted/lit at a time,
 // unlike desktop's persistent table + all 5 rigs. Reuses the exact rig
-// components from 36/37 (same visual identity) and the exact Orb (35), just
+// components from 36/37 (same visual identity) and the same Specimen, just
 // under a lighter scene and a different (non-pinned) trigger.
 export function MobileProcessScene({ stage, progress }: MobileProcessSceneProps) {
   const RigComponent = RIG_COMPONENTS[stage.index];
   const tier = useProcessQualityTier();
   const { theme } = useTheme();
   const orbX = lerp(-GATE_X, GATE_X, progress);
-  // Blends this stage's orbState into the next stage's as the scrub
-  // advances, same neighbor-blend Orb already does for the desktop track.
+  // Blends this stage's state into the next stage's as the scrub advances,
+  // same neighbor-blend Specimen already does for the desktop track.
   const orbProgress = (stage.index + progress) / (STAGE_COUNT - 1);
 
   // Mobile-first (feature 45): the same premium foundation as desktop, scaled
@@ -64,11 +64,11 @@ export function MobileProcessScene({ stage, progress }: MobileProcessSceneProps)
       <pointLight position={[0, 3, 3]} intensity={22} color="#ffffff" />
 
       <ProcessBackdrop theme={theme} z={-6} width={14} repeat={2} />
-      <ProcessBench tier={tier} />
+      <ProcessBench tier={tier} theme={theme} />
 
       <RigComponent />
       <group position={[orbX, ORB_Y, 0.6]}>
-        <Orb progress={orbProgress} />
+        <Specimen progress={orbProgress} />
       </group>
     </>
   );

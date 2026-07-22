@@ -16,6 +16,7 @@ import {
   PROCESS_GLASS_TINT,
   PROCESS_METAL_COLOR,
 } from "@/lib/narrativeSignals";
+import type { Theme } from "@/lib/theme";
 import type { ProcessQualityTier } from "@/lib/useProcessQualityTier";
 import { RIG_PLATFORM_TOP_Y } from "./rigPrimitives";
 
@@ -177,14 +178,27 @@ export function ProcessEnvironment({ tier }: ProcessEnvironmentProps) {
   );
 }
 
+// A pale slate bench for light theme — the near-black `PROCESS_BENCH_COLOR`
+// reads fine against dark theme's own near-black background, but against
+// light theme's pale page it turned the whole lower half of the canvas into
+// a stark black bar. This keeps the same "reflective lab bench" material,
+// just re-tinted so it recedes into the light background instead of
+// fighting it. Darker/more saturated than the page background on purpose —
+// at near-bg luminance (the original #c3cdd6) the mirror had nothing to
+// anchor against, so the env lightformers' reflection bloomed into a flat
+// white-cyan flood instead of reading as a surface.
+const PROCESS_BENCH_COLOR_LIGHT = "#7c8fa0";
+
 interface ProcessBenchProps {
   tier: ProcessQualityTier;
+  theme: Theme;
 }
 
-// The dark reflective tabletop under the rig track — the reference bench that
+// The reflective tabletop under the rig track — the reference bench that
 // pools the rigs' glow beneath them for depth. Static in world space (the
 // track slides above it); wide enough to cover the full horizontal travel.
-export function ProcessBench({ tier }: ProcessBenchProps) {
+export function ProcessBench({ tier, theme }: ProcessBenchProps) {
+  const light = theme === "light";
   return (
     <mesh
       rotation={[-Math.PI / 2, 0, 0]}
@@ -194,15 +208,24 @@ export function ProcessBench({ tier }: ProcessBenchProps) {
       <MeshReflectorMaterial
         resolution={tier.reflectorResolution}
         mixBlur={1}
-        mixStrength={2.2}
-        blur={[300, 100]}
-        mirror={0.55}
-        roughness={0.85}
+        // Light theme's blur was inherited from dark theme's [300, 100] —
+        // against a near-black background that heavy a blur still reads as
+        // a moody, unified reflection, but against light theme's very pale
+        // background it blends every reflection toward that pale colour,
+        // which is what actually produced the "wall of white glare" (the
+        // mixStrength/mirror numbers alone weren't the culprit: even at
+        // mirror≈0, a heavily-blurred mix still washes toward whatever's
+        // being blurred in). A much tighter blur keeps the effect localised
+        // under the equipment instead of smearing it into a bright fog bank.
+        blur={light ? [70, 30] : [300, 100]}
+        mixStrength={light ? 0.16 : 2.2}
+        mirror={light ? 0.03 : 0.55}
+        roughness={light ? 1 : 0.85}
         depthScale={1}
         minDepthThreshold={0.4}
         maxDepthThreshold={1.4}
-        color={PROCESS_BENCH_COLOR}
-        metalness={0.6}
+        color={light ? PROCESS_BENCH_COLOR_LIGHT : PROCESS_BENCH_COLOR}
+        metalness={light ? 0.05 : 0.6}
       />
     </mesh>
   );
@@ -210,25 +233,33 @@ export function ProcessBench({ tier }: ProcessBenchProps) {
 
 interface ProcessEffectsProps {
   tier: ProcessQualityTier;
+  theme: Theme;
 }
 
 // Restrained bloom + subtle vignette, one shared EffectComposer. Returns null
 // on the mobile tier: MobileProcessCanvas composites 5 stages through drei
 // <View> scissoring, which a full-frame composer can't wrap — mobile glow
 // comes from the emissive materials above instead.
-export function ProcessEffects({ tier }: ProcessEffectsProps) {
+//
+// The vignette's dark corners were tuned against dark theme's own near-black
+// background, where they're invisible; against light theme's pale background
+// they crushed the edges of the canvas into a visible black frame. Backed
+// off (not removed — some depth cue still helps) for light theme, along with
+// a touch less bloom so the equipment doesn't blow out against a bright page.
+export function ProcessEffects({ tier, theme }: ProcessEffectsProps) {
   if (!tier.bloom) return null;
+  const light = theme === "light";
 
   return (
     <EffectComposer multisampling={0}>
       <Bloom
-        intensity={tier.bloom.intensity}
+        intensity={light ? tier.bloom.intensity * 0.6 : tier.bloom.intensity}
         luminanceThreshold={tier.bloom.luminanceThreshold}
         luminanceSmoothing={tier.bloom.luminanceSmoothing}
         mipmapBlur={tier.bloom.mipmapBlur}
         resolutionScale={tier.bloom.resolutionScale}
       />
-      <Vignette offset={0.28} darkness={0.65} eskil={false} />
+      <Vignette offset={0.28} darkness={light ? 0.18 : 0.65} eskil={false} />
     </EffectComposer>
   );
 }

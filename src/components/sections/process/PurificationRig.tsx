@@ -10,6 +10,7 @@ import {
   PROCESS_METAL_COLOR,
   narrativeSignalColors,
 } from "@/lib/narrativeSignals";
+import { RIG_GATE_X } from "@/lib/processLayout";
 import { useProcessQualityTier } from "@/lib/useProcessQualityTier";
 import { usePrefersReducedMotion } from "@/components/ui/MotionPrimitives";
 import { EmissiveCoreMaterial, GlassMaterial } from "./processMaterials";
@@ -268,8 +269,8 @@ export function PurificationRig({ position = [0, 0, 0] }: PurificationRigProps) 
   return (
     <group position={position}>
       <RigPlatform accentColor={ACCENT} />
-      <RigGate x={-1.7} accentColor={ACCENT} />
-      <RigGate x={1.7} accentColor={ACCENT} />
+      <RigGate x={-RIG_GATE_X} accentColor={ACCENT} />
+      <RigGate x={RIG_GATE_X} accentColor={ACCENT} />
 
       {/* Branded machine pedestal (shared primitive) */}
       <RigMachineBase accentColor={ACCENT} />

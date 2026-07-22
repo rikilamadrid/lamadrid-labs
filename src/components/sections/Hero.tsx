@@ -1,12 +1,18 @@
 "use client";
 
 import { useDictionary } from "@/components/i18n/LocaleProvider";
+import { HeroMobileSpecimen } from "@/components/sections/process/HeroMobileSpecimen";
+import { useIsDesktopViewport } from "@/lib/useIsDesktopViewport";
 
 export function Hero() {
   const dict = useDictionary();
+  // Desktop's specimen lives in the fixed SpecimenCanvas behind this section
+  // instead — only mobile needs its own in-flow view here (see
+  // HeroMobileSpecimen for why it shares mobile's canvas via drei View).
+  const isDesktop = useIsDesktopViewport();
 
   return (
-    <section className="lab-section isolate overflow-hidden">
+    <section id="hero" className="lab-section isolate overflow-hidden">
       <div className="lab-grid-overlay" aria-hidden="true" />
       <div
         aria-hidden="true"
@@ -51,6 +57,8 @@ export function Hero() {
             {dict.hero.ctaSecondary}
           </a>
         </div>
+
+        {!isDesktop && <HeroMobileSpecimen />}
       </div>
     </section>
   );
