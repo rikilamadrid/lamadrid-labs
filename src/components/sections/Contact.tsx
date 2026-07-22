@@ -23,7 +23,7 @@ export function Contact() {
         <MotionReveal className="mt-12 flex flex-col items-start gap-4 rounded-lab-lg border border-lab-line p-8 sm:p-10">
           <a
             href={contactLink.href}
-            className="inline-flex items-center justify-center rounded-full bg-lab-accent px-6 py-3 text-sm font-semibold text-lab-accent-ink outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+            className="inline-flex items-center justify-center rounded-full bg-lab-signal px-6 py-3 text-sm font-semibold text-lab-signal-ink outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
           >
             {dict.contact.cta}
           </a>

@@ -1,41 +1,131 @@
 @import "tailwindcss";
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Signal / Noise design foundation
+   ───────────────────────────────────────────────────────────────────────────
+   Noise becomes structure. The palette carries that idea directly:
+
+     · the base is near-neutral, so nothing competes for attention
+     · the NOISE ramp (1 → 4) renders unresolved states, faint to nearly-formed
+     · one SIGNAL accent marks resolved states — alignment, focus, active, CTA
+
+   The signal color is scarce on purpose. More than two or three signal-colored
+   elements on a screen and the idea stops reading.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
 :root {
   color-scheme: dark;
-  --lab-bg: #060b14;
-  --lab-surface: rgba(13, 21, 32, 0.72);
-  --lab-surface-strong: #111c2e;
-  --lab-ink: #e8f4f8;
-  --lab-muted: #7d9aab;
-  --lab-line: rgba(125, 179, 204, 0.14);
-  --lab-line-strong: rgba(125, 179, 204, 0.28);
-  --lab-accent: #3dd6b5;
-  --lab-accent-strong: #23c39f;
-  --lab-accent-secondary: #7b5ffc;
-  --lab-accent-ink: #060b14;
+
+  /* Base */
+  --lab-bg: #0a0b0d;
+  --lab-surface: rgba(18, 20, 23, 0.72);
+  --lab-surface-strong: #16191d;
+  --lab-ink: #f2f3f5;
+  --lab-muted: #8a8f98;
+  --lab-line: rgba(242, 243, 245, 0.1);
+  --lab-line-strong: rgba(242, 243, 245, 0.2);
+
+  /* Noise ramp — unresolved fragments, faintest to nearly resolved */
+  --lab-noise-1: #2a2e34;
+  --lab-noise-2: #3d434b;
+  --lab-noise-3: #565d67;
+  --lab-noise-4: #767e8a;
+
+  /* Signal — resolved states only */
+  --lab-signal: #4d7cff;
+  --lab-signal-strong: #7098ff;
+  --lab-signal-ink: #060810;
+
   --lab-radius-sm: 12px;
   --lab-radius-md: 20px;
   --lab-radius-lg: 28px;
-  --lab-shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.45);
-  --lab-shadow-glow: 0 0 40px rgba(61, 214, 181, 0.14);
+  --lab-shadow-soft: 0 24px 80px rgba(0, 0, 0, 0.5);
+  --lab-shadow-glow: 0 0 40px rgba(77, 124, 255, 0.16);
 }
 
-/* ─── Light theme: a clean daytime lab, retuned rather than inverted ─── */
+/* ─── Light theme: retuned, not inverted. The noise ramp runs the other
+       direction so "faint" still means "closest to the background". ─── */
 :root[data-theme="light"] {
   color-scheme: light;
-  --lab-bg: #eef2f7;
+
+  --lab-bg: #f5f6f7;
   --lab-surface: rgba(255, 255, 255, 0.72);
   --lab-surface-strong: #ffffff;
-  --lab-ink: #0d1b2a;
-  --lab-muted: #40596a;
-  --lab-line: rgba(13, 27, 42, 0.1);
-  --lab-line-strong: rgba(13, 27, 42, 0.2);
-  --lab-accent: #0e9e84;
-  --lab-accent-strong: #0b8670;
-  --lab-accent-secondary: #6244e6;
-  --lab-accent-ink: #060b14;
-  --lab-shadow-soft: 0 24px 60px rgba(13, 27, 42, 0.12);
-  --lab-shadow-glow: 0 0 36px rgba(14, 158, 132, 0.16);
+  --lab-ink: #121417;
+  --lab-muted: #5c626b;
+  --lab-line: rgba(18, 20, 23, 0.1);
+  --lab-line-strong: rgba(18, 20, 23, 0.2);
+
+  --lab-noise-1: #d9dce0;
+  --lab-noise-2: #bcc1c8;
+  --lab-noise-3: #9aa1aa;
+  --lab-noise-4: #767e8a;
+
+  --lab-signal: #2f5fe0;
+  --lab-signal-strong: #2449b3;
+  --lab-signal-ink: #ffffff;
+
+  --lab-shadow-soft: 0 24px 60px rgba(18, 20, 23, 0.12);
+  --lab-shadow-glow: 0 0 36px rgba(47, 95, 224, 0.16);
+}
+
+/* ═══ Type scale ════════════════════════════════════════════════════════════
+   Three faces, three jobs, no overlap:
+
+     Instrument Serif → display, h1, h2   (display sizes only — its stroke
+                                           contrast hurts at reading sizes)
+     Geist Sans       → h3, prose, UI
+     Geist Mono       → labels, counters, metadata, raw/unresolved text
+
+   Every step owns its size, leading, and tracking so sections never re-derive.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --lab-text-display: clamp(3rem, 6vw + 1rem, 5.5rem);
+  --lab-leading-display: 1;
+  --lab-tracking-display: -0.03em;
+
+  --lab-text-h1: clamp(2.25rem, 4vw + 1rem, 4rem);
+  --lab-leading-h1: 1.05;
+  --lab-tracking-h1: -0.02em;
+
+  --lab-text-h2: clamp(1.75rem, 2vw + 1rem, 2.5rem);
+  --lab-leading-h2: 1.15;
+  --lab-tracking-h2: -0.015em;
+
+  --lab-text-h3: 1.25rem;
+  --lab-leading-h3: 1.3;
+  --lab-tracking-h3: -0.005em;
+
+  --lab-text-body: 1rem;
+  --lab-leading-body: 1.6;
+  --lab-tracking-body: 0;
+
+  --lab-text-small: 0.875rem;
+  --lab-leading-small: 1.5;
+
+  --lab-text-label: 0.6875rem;
+  --lab-leading-label: 1.25;
+  --lab-tracking-label: 0.08em;
+}
+
+/* ═══ Motion ════════════════════════════════════════════════════════════════
+   One vocabulary, shared by CSS and by the `motion` library via
+   `src/lib/motion.ts` — change a value here and change it there.
+
+   The signature curve is `resolve`: quick to leave, long to settle. Things
+   arrive at order and come to rest. Nothing bounces, nothing snaps.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+:root {
+  --lab-duration-fast: 120ms;   /* immediate feedback — hover, press */
+  --lab-duration-base: 240ms;   /* UI state — toggles, menus, nav */
+  --lab-duration-slow: 480ms;   /* section reveals */
+  --lab-duration-field: 900ms;  /* the pointer field settling into order */
+
+  --lab-ease-resolve: cubic-bezier(0.2, 0.9, 0.2, 1);
+  --lab-ease-standard: cubic-bezier(0.4, 0, 0.2, 1);
+  --lab-ease-exit: cubic-bezier(0.4, 0, 1, 1);
 }
 
 @theme inline {
@@ -46,17 +136,35 @@
   --color-lab-muted: var(--lab-muted);
   --color-lab-line: var(--lab-line);
   --color-lab-line-strong: var(--lab-line-strong);
-  --color-lab-accent: var(--lab-accent);
-  --color-lab-accent-strong: var(--lab-accent-strong);
-  --color-lab-accent-secondary: var(--lab-accent-secondary);
-  --color-lab-accent-ink: var(--lab-accent-ink);
+  --color-lab-noise-1: var(--lab-noise-1);
+  --color-lab-noise-2: var(--lab-noise-2);
+  --color-lab-noise-3: var(--lab-noise-3);
+  --color-lab-noise-4: var(--lab-noise-4);
+  --color-lab-signal: var(--lab-signal);
+  --color-lab-signal-strong: var(--lab-signal-strong);
+  --color-lab-signal-ink: var(--lab-signal-ink);
+
   --radius-lab-sm: var(--lab-radius-sm);
   --radius-lab-md: var(--lab-radius-md);
   --radius-lab-lg: var(--lab-radius-lg);
   --shadow-lab-soft: var(--lab-shadow-soft);
   --shadow-lab-glow: var(--lab-shadow-glow);
+
+  --text-lab-display: var(--lab-text-display);
+  --text-lab-h1: var(--lab-text-h1);
+  --text-lab-h2: var(--lab-text-h2);
+  --text-lab-h3: var(--lab-text-h3);
+  --text-lab-body: var(--lab-text-body);
+  --text-lab-small: var(--lab-text-small);
+  --text-lab-label: var(--lab-text-label);
+
+  --ease-lab-resolve: var(--lab-ease-resolve);
+  --ease-lab-standard: var(--lab-ease-standard);
+  --ease-lab-exit: var(--lab-ease-exit);
+
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
+  --font-display: var(--font-instrument-serif);
 }
 
 html {
@@ -68,6 +176,8 @@ body {
   background: var(--lab-bg);
   color: var(--lab-ink);
   font-family: var(--font-sans), ui-sans-serif, system-ui, sans-serif;
+  font-size: var(--lab-text-body);
+  line-height: var(--lab-leading-body);
   overflow-x: hidden;
 }
 
@@ -78,8 +188,8 @@ body {
 
   body {
     transition:
-      background-color 0.4s ease,
-      color 0.4s ease;
+      background-color var(--lab-duration-slow) var(--lab-ease-standard),
+      color var(--lab-duration-slow) var(--lab-ease-standard);
   }
 }
 
@@ -112,35 +222,68 @@ body {
   display: block;
 }
 
+/* ─── Headings ─── */
+
 h1,
 h2,
 h3 {
-  font-weight: 600;
-  letter-spacing: 0;
   color: var(--lab-ink);
   text-wrap: balance;
   overflow-wrap: anywhere;
 }
 
+h1,
+h2 {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-weight: 400;
+}
+
 h1 {
-  font-size: clamp(2.25rem, 4vw + 1rem, 4rem);
-  line-height: 1.05;
+  font-size: var(--lab-text-h1);
+  line-height: var(--lab-leading-h1);
+  letter-spacing: var(--lab-tracking-h1);
 }
 
 h2 {
-  font-size: clamp(1.75rem, 2vw + 1rem, 2.5rem);
-  line-height: 1.15;
+  font-size: var(--lab-text-h2);
+  line-height: var(--lab-leading-h2);
+  letter-spacing: var(--lab-tracking-h2);
 }
 
 h3 {
-  font-size: 1.25rem;
-  line-height: 1.3;
+  font-weight: 600;
+  font-size: var(--lab-text-h3);
+  line-height: var(--lab-leading-h3);
+  letter-spacing: var(--lab-tracking-h3);
 }
 
 p {
   color: var(--lab-muted);
-  line-height: 1.6;
+  line-height: var(--lab-leading-body);
   overflow-wrap: anywhere;
+}
+
+/* ─── Type utilities ─── */
+
+/* The largest step, above h1 — hero-scale only. */
+.lab-display {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-weight: 400;
+  font-size: var(--lab-text-display);
+  line-height: var(--lab-leading-display);
+  letter-spacing: var(--lab-tracking-display);
+  color: var(--lab-ink);
+  text-wrap: balance;
+}
+
+/* Mono metadata: eyebrows, counters, technical labels. */
+.lab-label {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--lab-text-label);
+  line-height: var(--lab-leading-label);
+  letter-spacing: var(--lab-tracking-label);
+  text-transform: uppercase;
+  color: var(--lab-muted);
 }
 
 /* ─── Lab surface treatments ─── */
@@ -169,19 +312,15 @@ p {
   gap: 0.5rem;
   border-radius: 999px;
   border: 1px solid var(--lab-line);
-  background: rgba(13, 21, 32, 0.5);
+  background: var(--lab-surface);
   padding: 0.375rem 1rem;
-  font-size: 0.6875rem;
-  font-weight: 650;
-  letter-spacing: 0;
-  line-height: 1.25;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--lab-text-label);
+  line-height: var(--lab-leading-label);
+  letter-spacing: var(--lab-tracking-label);
   color: var(--lab-muted);
   text-transform: uppercase;
   overflow-wrap: anywhere;
-}
-
-:root[data-theme="light"] .lab-eyebrow {
-  background: rgba(255, 255, 255, 0.62);
 }
 
 .lab-eyebrow-dot {
@@ -189,7 +328,7 @@ p {
   height: 0.375rem;
   flex: none;
   border-radius: 999px;
-  background: var(--lab-accent);
+  background: var(--lab-signal);
   box-shadow: var(--lab-shadow-glow);
 }
 
@@ -208,21 +347,21 @@ p {
     var(--lab-surface);
   backdrop-filter: blur(16px) saturate(120%);
   -webkit-backdrop-filter: blur(16px) saturate(120%);
-  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.28);
+  box-shadow: 0 18px 54px rgba(0, 0, 0, 0.32);
 }
 
 :root[data-theme="light"] .lab-card-surface {
   background:
     linear-gradient(180deg, rgba(255, 255, 255, 0.72), transparent 44%),
     var(--lab-surface);
-  box-shadow: 0 18px 44px rgba(13, 27, 42, 0.1);
+  box-shadow: 0 18px 44px rgba(18, 20, 23, 0.1);
 }
 
 .lab-card-kicker {
-  font-size: 0.75rem;
-  font-weight: 650;
-  letter-spacing: 0;
-  line-height: 1.35;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--lab-text-label);
+  line-height: var(--lab-leading-label);
+  letter-spacing: var(--lab-tracking-label);
   color: var(--lab-muted);
   text-transform: uppercase;
   overflow-wrap: anywhere;
@@ -233,7 +372,8 @@ p {
   border-radius: 999px;
   border: 1px solid var(--lab-line);
   padding: 0.25rem 0.625rem;
-  font-size: 0.6875rem;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: var(--lab-text-label);
   line-height: 1.35;
   color: var(--lab-muted);
   overflow-wrap: anywhere;
@@ -267,26 +407,18 @@ p {
   pointer-events: none;
 }
 
-.lab-gradient-text {
-  background: linear-gradient(135deg, var(--lab-accent), var(--lab-accent-secondary));
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  color: transparent;
-}
-
 .lab-nav-link.is-active {
   color: var(--lab-ink);
 }
 
 .lab-nav-link.is-active::selection {
-  color: var(--lab-bg);
-  background: var(--lab-accent);
+  color: var(--lab-signal-ink);
+  background: var(--lab-signal);
 }
 
 @media (prefers-reduced-motion: no-preference) {
   .lab-fade-up {
-    animation: lab-fade-up 0.7s ease both;
+    animation: lab-fade-up var(--lab-duration-slow) var(--lab-ease-resolve) both;
   }
 }
 
