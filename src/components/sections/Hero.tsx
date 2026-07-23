@@ -1,42 +1,51 @@
 "use client";
 
-import { useDictionary } from "@/components/i18n/LocaleProvider";
+import { useRef } from "react";
+import { HeroField } from "@/components/hero/HeroField";
+import {
+  useDictionary,
+  useLocaleContext,
+} from "@/components/i18n/LocaleProvider";
 
 export function Hero() {
   const dict = useDictionary();
+  const { locale } = useLocaleContext();
+  const headingRef = useRef<HTMLHeadingElement>(null);
 
   return (
-    <section className="lab-section isolate overflow-hidden">
-      <div className="lab-grid-overlay" aria-hidden="true" />
-      <div
-        aria-hidden="true"
-        className="absolute left-1/2 top-1/2 h-[42rem] w-[42rem] -translate-x-1/2 -translate-y-1/2 rounded-full bg-lab-signal/[0.07] blur-[120px]"
-      />
-      <div
-        aria-hidden="true"
-        className="absolute -left-24 top-10 h-72 w-72 rounded-full bg-lab-signal/10 blur-3xl"
+    <section className="lab-section isolate flex min-h-svh flex-col justify-center overflow-hidden">
+      {/* The field spans the section and sits above the muted headline (which
+          it resolves) but below the supporting copy (which stays crisp).
+          Decorative and non-interactive — the CTA underneath stays clickable. */}
+      <HeroField
+        headingRef={headingRef}
+        localeKey={locale}
+        className="pointer-events-none absolute inset-0 z-10 h-full w-full"
       />
 
-      <div className="relative mx-auto flex w-full max-w-3xl flex-col items-center gap-6 text-center">
-        <span className="lab-eyebrow">
-          <span aria-hidden="true" className="lab-eyebrow-dot" />
-          <span className="min-w-0 text-center">{dict.hero.eyebrow}</span>
-        </span>
+      <div className="relative mx-auto flex w-full max-w-4xl flex-col items-start gap-6 text-left">
+        <span className="lab-label relative z-20">{dict.hero.eyebrow}</span>
 
-        <h1 className="max-w-full sm:max-w-2xl">
-          {dict.hero.titleFirst}
-          <br />
-          {dict.hero.titleBefore}
-          <span className="text-lab-signal">{dict.hero.titleHighlight}</span>
-          {dict.hero.titleAfter}
+        {/* Resting register: legible but unresolved (noise ramp), never full
+            ink. The field brightens it toward the signal accent under the
+            pointer. Real DOM text — the accessible, indexable source. */}
+        <h1 ref={headingRef} className="relative z-0 max-w-3xl">
+          {dict.hero.titleLines.map((line, index) => (
+            // Colored on the span, not the h1: the unlayered `h1` base color
+            // rule outranks a layered utility, but a direct declaration on the
+            // span beats the inherited ink either way.
+            <span key={index} data-hero-line className="block text-lab-noise-4">
+              {line}
+            </span>
+          ))}
         </h1>
 
-        <p className="w-full max-w-md">{dict.hero.lead}</p>
+        <p className="relative z-20 w-full max-w-md">{dict.hero.lead}</p>
 
-        <div className="mt-2 flex flex-wrap items-center justify-center gap-3">
+        <div className="relative z-20 mt-2">
           <a
             href="#work"
-            className="inline-flex items-center justify-center rounded-full bg-lab-signal px-6 py-3 text-sm font-semibold text-lab-signal-ink outline-none transition-transform hover:-translate-y-0.5 focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
+            className="inline-flex items-center justify-center rounded-full border border-lab-line-strong px-6 py-3 text-sm font-medium text-lab-ink outline-none transition-colors hover:border-lab-signal hover:text-lab-signal focus-visible:ring-2 focus-visible:ring-lab-signal"
           >
             {dict.hero.ctaPrimary}
           </a>

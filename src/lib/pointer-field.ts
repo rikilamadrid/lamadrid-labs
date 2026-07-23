@@ -84,6 +84,28 @@ export type FieldTuning = {
    * rather than as a swirl.
    */
   alignment: number;
+
+  /* ── Glyph field (Feature 4) ──────────────────────────────────────────
+     A second, much finer set of fragments laid only over the headline's
+     letterforms. A 30px ambient lattice cannot describe a glyph; these
+     resolve *into the word* and are the only fragments that ever take the
+     signal accent, which is what keeps the resolved headline the single
+     accent-colored thing on screen. */
+
+  /** Target spacing between glyph fragments, in CSS pixels. Fine enough to
+   *  render a letterform, bounded by the headline box rather than the
+   *  viewport so the extra count stays small. */
+  glyphSpacing: number;
+  /** Glyph segment length at rest (noise), in CSS pixels. */
+  glyphLengthNoise: number;
+  /** Glyph segment length when fully resolved, in CSS pixels. Kept close to
+   *  `glyphSpacing` so resolved marks tile the stroke rather than overlap
+   *  into a smear. */
+  glyphLengthSignal: number;
+  /** Glyph line width at rest, in CSS pixels. */
+  glyphWidthNoise: number;
+  /** Glyph line width when fully resolved, in CSS pixels. */
+  glyphWidthSignal: number;
 };
 
 export const DEFAULT_TUNING: FieldTuning = {
@@ -101,6 +123,12 @@ export const DEFAULT_TUNING: FieldTuning = {
   opacityNoise: 0.8,
   opacitySignal: 1,
   alignment: 0,
+
+  glyphSpacing: 6,
+  glyphLengthNoise: 4,
+  glyphLengthSignal: 7,
+  glyphWidthNoise: 1,
+  glyphWidthSignal: 1.5,
 };
 
 /* ═══════════════════════════════════════════════════════════════════════════
@@ -116,6 +144,39 @@ export type FieldColors = {
   /** `--lab-signal` — the fully resolved end of the ramp. */
   signal: string;
 };
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Glyph mask (Feature 4)
+
+   The headline is rasterized to a coverage buffer — one alpha byte per mask
+   pixel — so the field can tell which fragments fall inside the letterforms.
+   The engine stays DOM-free: the *caller* rasterizes the text (it owns the
+   fonts and the layout) and hands the coverage buffer in. These functions are
+   pure and so testable without a canvas (Feature 18).
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export type GlyphMask = {
+  /** Coverage per mask pixel, 0–255, row-major, length `width * height`. */
+  alpha: Uint8ClampedArray;
+  /** Mask resolution in mask pixels. */
+  width: number;
+  height: number;
+  /** Field-space (CSS px) position of mask pixel (0, 0). */
+  originX: number;
+  originY: number;
+  /** CSS pixels per mask pixel. Below 1 when the mask is supersampled for a
+   *  cleaner stroke-direction gradient. */
+  scale: number;
+};
+
+/** Coverage at a field-space point, in `[0, 1]`. Nearest-sample — the mask is
+ *  finer than the glyph lattice, so bilinear buys nothing here. */
+function sampleCoverage(mask: GlyphMask, x: number, y: number): number {
+  const mx = Math.floor((x - mask.originX) / mask.scale);
+  const my = Math.floor((y - mask.originY) / mask.scale);
+  if (mx < 0 || my < 0 || mx >= mask.width || my >= mask.height) return 0;
+  return mask.alpha[my * mask.width + mx] / 255;
+}
 
 /* ═══════════════════════════════════════════════════════════════════════════
    Fragments
@@ -138,6 +199,12 @@ export type Fragment = {
   signalAngle: number;
   /** Current resolution in `[0, 1]`. 0 is noise, 1 is fully resolved. */
   resolve: number;
+  /**
+   * Whether this fragment lies inside a letterform. Glyph fragments resolve
+   * into the headline and are the only ones that take the signal accent;
+   * ambient fragments top out in the noise ramp.
+   */
+  inGlyph: boolean;
 };
 
 /**
@@ -170,20 +237,40 @@ function nearestEquivalentAngle(angle: number, target: number): number {
   return angle - halfTurn * Math.round((angle - target) / halfTurn);
 }
 
+/** Coverage above which a glyph-lattice cell is treated as inside the ink.
+ *  High enough to keep stray edge fragments out of the paper, low enough to
+ *  catch a serif's thin strokes. */
+const GLYPH_COVERAGE_THRESHOLD = 0.35;
+
 /**
  * Lay out a field of fragments over a `width` × `height` area in CSS pixels.
  *
- * Spacing is widened uniformly if the derived count would exceed
+ * Two populations, when a `mask` is supplied:
+ *
+ * - **Ambient** — the Feature 3 grid at `tuning.spacing`, everywhere. These
+ *   read as scatter and resolve only into grey local order; they never take
+ *   the signal accent.
+ * - **Glyph** — a much finer grid at `tuning.glyphSpacing`, laid over the
+ *   headline's ink only, tagged `inGlyph`. These resolve *into the word* and
+ *   are the only fragments that reach the signal color.
+ *
+ * Spacing is widened uniformly if the ambient count would exceed
  * `maxFragments`, so the ceiling thins the field evenly rather than clipping
- * it to a corner.
+ * it to a corner. Glyph count is bounded by the headline box, not the cap.
  */
 export function createFragments(
   width: number,
   height: number,
   tuning: FieldTuning,
   seed = 1,
+  mask?: GlyphMask,
 ): Fragment[] {
   if (width <= 0 || height <= 0) return [];
+
+  const random = createRandom(seed);
+  const fragments: Fragment[] = [];
+
+  /* ── Ambient grid ─────────────────────────────────────────────────── */
 
   const area = width * height;
   const wanted = Math.floor(area / (tuning.spacing * tuning.spacing));
@@ -194,8 +281,6 @@ export function createFragments(
 
   const columns = Math.max(1, Math.ceil(width / spacing));
   const rows = Math.max(1, Math.ceil(height / spacing));
-  const random = createRandom(seed);
-  const fragments: Fragment[] = [];
 
   for (let row = 0; row < rows; row += 1) {
     for (let column = 0; column < columns; column += 1) {
@@ -214,7 +299,50 @@ export function createFragments(
         ),
         signalAngle,
         resolve: 0,
+        inGlyph: false,
       });
+    }
+  }
+
+  /* ── Glyph grid ───────────────────────────────────────────────────── */
+
+  if (mask) {
+    const maskWidthCss = mask.width * mask.scale;
+    const maskHeightCss = mask.height * mask.scale;
+    const glyphCols = Math.max(1, Math.ceil(maskWidthCss / tuning.glyphSpacing));
+    const glyphRows = Math.max(1, Math.ceil(maskHeightCss / tuning.glyphSpacing));
+    // Jitter is smaller here (a quarter cell): the glyph lattice is dense and
+    // a bigger wobble smears the letterforms it is meant to describe.
+    const jitterRange = tuning.glyphSpacing * 0.25;
+
+    for (let row = 0; row < glyphRows; row += 1) {
+      for (let column = 0; column < glyphCols; column += 1) {
+        const x =
+          mask.originX +
+          (column + 0.5) * tuning.glyphSpacing +
+          (random() - 0.5) * jitterRange;
+        const y =
+          mask.originY +
+          (row + 0.5) * tuning.glyphSpacing +
+          (random() - 0.5) * jitterRange;
+
+        if (sampleCoverage(mask, x, y) < GLYPH_COVERAGE_THRESHOLD) continue;
+
+        // Glyph fragments resolve to the same shared alignment as the ambient
+        // field — "structure" reads as *order*, one direction, not as a woven
+        // trace of each pen stroke. (Per-fragment stroke-direction sampling was
+        // built and tried; it read as busy hatching. See the feature findings.)
+        const signalAngle = tuning.alignment + (random() - 0.5) * 0.21;
+
+        fragments.push({
+          x,
+          y,
+          noiseAngle: nearestEquivalentAngle(random() * Math.PI * 2, signalAngle),
+          signalAngle,
+          resolve: 0,
+          inGlyph: true,
+        });
+      }
     }
   }
 
@@ -308,6 +436,21 @@ export function resolveFieldInstantly(
   stepField(fragments, pointer, 1, { ...tuning, settle: 0, decay: 0 });
 }
 
+/**
+ * The static hero frame for coarse pointers and `prefers-reduced-motion`:
+ * the whole headline resolved, the ambient field left as scatter.
+ *
+ * A pointer-driven resolve only lights a radius-sized patch, so on a phone —
+ * where the pointer may never arrive — it would show a fraction of a word.
+ * This resolves every glyph fragment fully instead, so the finished headline
+ * is what a touch visitor sees, over a calm grey field.
+ */
+export function resolveWordStatically(fragments: Fragment[]): void {
+  for (const fragment of fragments) {
+    fragment.resolve = fragment.inGlyph ? 1 : 0;
+  }
+}
+
 /* ═══════════════════════════════════════════════════════════════════════════
    Drawing
    ═══════════════════════════════════════════════════════════════════════════ */
@@ -329,11 +472,19 @@ const SIGNAL_THRESHOLD = 0.62;
  * The noise ramp is walked as discrete steps rather than interpolated: the
  * tokens are authored as a four-step ramp of unresolved states, and stepping
  * through them keeps the field reading as *quantized* ambiguity resolving,
- * which suits the concept better than a smooth blend. The signal color is
- * reserved for the top of the range, which is what keeps it scarce.
+ * which suits the concept better than a smooth blend.
+ *
+ * The signal color is reserved for `inGlyph` fragments at the top of the
+ * range. Ambient fragments cap at the brightest noise step no matter how
+ * resolved — so the assembled headline is the only accent-colored thing on
+ * screen, which is the signal-scarcity rule made literal (Feature 4).
  */
-function colorFor(resolve: number, colors: FieldColors): string {
-  if (resolve >= SIGNAL_THRESHOLD) return colors.signal;
+function colorFor(
+  resolve: number,
+  inGlyph: boolean,
+  colors: FieldColors,
+): string {
+  if (inGlyph && resolve >= SIGNAL_THRESHOLD) return colors.signal;
   if (resolve >= 0.4) return colors.noise[3];
   if (resolve >= 0.22) return colors.noise[2];
   if (resolve >= 0.08) return colors.noise[1];
@@ -358,9 +509,19 @@ export function drawField(
   context.lineCap = "round";
 
   for (const fragment of fragments) {
-    const { resolve } = fragment;
+    const { resolve, inGlyph } = fragment;
     const angle = lerp(fragment.noiseAngle, fragment.signalAngle, resolve);
-    const half = lerp(tuning.lengthNoise, tuning.lengthSignal, resolve) / 2;
+
+    // Glyph fragments are short and fine so their marks tile a letterform
+    // rather than overrun it; ambient fragments keep the coarser field sizes.
+    const lengthNoise = inGlyph ? tuning.glyphLengthNoise : tuning.lengthNoise;
+    const lengthSignal = inGlyph
+      ? tuning.glyphLengthSignal
+      : tuning.lengthSignal;
+    const widthNoise = inGlyph ? tuning.glyphWidthNoise : tuning.widthNoise;
+    const widthSignal = inGlyph ? tuning.glyphWidthSignal : tuning.widthSignal;
+
+    const half = lerp(lengthNoise, lengthSignal, resolve) / 2;
     const dx = Math.cos(angle) * half;
     const dy = Math.sin(angle) * half;
 
@@ -369,8 +530,8 @@ export function drawField(
       tuning.opacitySignal,
       resolve,
     );
-    context.lineWidth = lerp(tuning.widthNoise, tuning.widthSignal, resolve);
-    context.strokeStyle = colorFor(resolve, colors);
+    context.lineWidth = lerp(widthNoise, widthSignal, resolve);
+    context.strokeStyle = colorFor(resolve, inGlyph, colors);
 
     context.beginPath();
     context.moveTo(fragment.x - dx, fragment.y - dy);
