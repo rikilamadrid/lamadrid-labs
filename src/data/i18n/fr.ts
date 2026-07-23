@@ -6,12 +6,18 @@ export const fr: Dictionary = {
     description: "Lamadrid Labs — un studio logiciel indépendant.",
   },
   nav: {
+    home: "Accueil",
     work: "Projets",
     about: "À propos",
     contact: "Contact",
     skipToContent: "Aller au contenu",
     openMenu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
+    menu: "Menu",
+    close: "Fermer",
+  },
+  shell: {
+    inDevelopment: "En développement",
   },
   hero: {
     eyebrow: "Studio de logiciel indépendant",

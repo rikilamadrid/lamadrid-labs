@@ -416,6 +416,50 @@ p {
   background: var(--lab-signal);
 }
 
+/* ─── Shell (no-scroll full-screen interface) ─── */
+
+/* Temporary neutral wordmark + corner controls. Written as component classes
+   rather than utilities because the shell's ink/muted colors must beat the
+   unlayered base rules, and Tailwind utilities live in a lower layer. */
+.shell-wordmark,
+.shell-control {
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  color: var(--lab-muted);
+  transition: color var(--lab-duration-base) var(--lab-ease-standard);
+}
+
+.shell-wordmark {
+  letter-spacing: 0.18em;
+}
+
+.shell-control {
+  letter-spacing: 0.14em;
+}
+
+.shell-wordmark:hover,
+.shell-control:hover {
+  color: var(--lab-ink);
+}
+
+/* Menu destinations. Rest in the noise register; hover and the active state
+   take the one signal accent — permitted because the menu overlay owns the
+   whole viewport, so scarcity holds per-view. */
+.shell-menu-link {
+  font-family: var(--font-display), ui-serif, Georgia, serif;
+  font-size: var(--lab-text-h1);
+  line-height: 1.05;
+  letter-spacing: var(--lab-tracking-h1);
+  color: var(--lab-noise-4);
+  transition: color var(--lab-duration-base) var(--lab-ease-resolve);
+}
+
+.shell-menu-link:hover,
+.shell-menu-link[aria-current="page"] {
+  color: var(--lab-signal);
+}
+
 @media (prefers-reduced-motion: no-preference) {
   .lab-fade-up {
     animation: lab-fade-up var(--lab-duration-slow) var(--lab-ease-resolve) both;

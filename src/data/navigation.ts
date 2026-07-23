@@ -1,18 +1,26 @@
 import type { Dictionary } from "@/data/i18n";
 
-/** Keys into `dict.nav` so labels stay translatable while hrefs live here. */
-export type NavKey = keyof Pick<
+/**
+ * The full-screen states the no-scroll shell can show. Labels live in
+ * `dict.nav` so they stay translatable; the state machine lives in
+ * `ShellProvider`.
+ */
+export type ViewKey = keyof Pick<
   Dictionary["nav"],
-  "work" | "about" | "contact"
+  "home" | "work" | "about" | "contact"
 >;
 
-export interface NavLink {
-  key: NavKey;
-  href: string;
+export interface NavItem {
+  key: ViewKey;
 }
 
-export const navLinks: NavLink[] = [
-  { key: "work", href: "#work" },
-  { key: "about", href: "#about" },
-  { key: "contact", href: "#contact" },
+/**
+ * Menu order. `home` returns to the landing state; `work` / `about` / `contact`
+ * are placeholder states until their full-screen states are built (Features 6+).
+ */
+export const navItems: NavItem[] = [
+  { key: "home" },
+  { key: "work" },
+  { key: "about" },
+  { key: "contact" },
 ];
