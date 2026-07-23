@@ -1,15 +1,9 @@
-import { About } from "@/components/sections/About";
-import { Contact } from "@/components/sections/Contact";
-import { Hero } from "@/components/sections/Hero";
-import { Work } from "@/components/sections/Work";
+import { ShellStage } from "@/components/shell/ShellStage";
 
+// The homepage is the no-scroll shell. `main` and the state machine live in the
+// layout / ShellProvider; this route just mounts the stage that renders the
+// active full-screen state. The parked Work / About / Contact sections return
+// as their own states in later features.
 export default function Home() {
-  return (
-    <main id="main-content" className="flex flex-1 flex-col">
-      <Hero />
-      <Work />
-      <About />
-      <Contact />
-    </main>
-  );
+  return <ShellStage />;
 }

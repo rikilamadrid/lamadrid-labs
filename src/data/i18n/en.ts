@@ -6,12 +6,20 @@ export const en = {
     description: "Lamadrid Labs — an independent software studio.",
   },
   nav: {
+    home: "Home",
     work: "Work",
     about: "About",
     contact: "Contact",
     skipToContent: "Skip to content",
     openMenu: "Open menu",
     closeMenu: "Close menu",
+    // Short visible labels for the corner menu toggle.
+    menu: "Menu",
+    close: "Close",
+  },
+  shell: {
+    // Shown on placeholder states whose full-screen state isn't built yet.
+    inDevelopment: "In development",
   },
   hero: {
     eyebrow: "Independent software studio",
