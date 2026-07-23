@@ -14,12 +14,9 @@ export const fr: Dictionary = {
     closeMenu: "Fermer le menu",
   },
   hero: {
-    eyebrow: "Laboratoire logiciel indépendant",
-    titleFirst: "Les idées entrent.",
-    titleHighlight: "logiciel",
-    titleAfter: " en sort.",
-    titleBefore: "Le ",
-    lead: "Lamadrid Labs est le port d'attache clair et concentré des produits, expériences et projets clients conçus par Ricardo Lamadrid.",
+    eyebrow: "Studio de logiciel indépendant",
+    titleLines: ["Le bruit devient", "structure."],
+    lead: "Lamadrid Labs transforme des exigences éparses et des idées à peine formées en systèmes clairs et en logiciels livrés.",
     ctaPrimary: "Voir les projets",
   },
   work: {

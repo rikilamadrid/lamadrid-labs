@@ -14,12 +14,11 @@ export const en = {
     closeMenu: "Close menu",
   },
   hero: {
-    eyebrow: "Independent software laboratory",
-    titleFirst: "Ideas enter.",
-    titleHighlight: "Software",
-    titleAfter: " leaves.",
-    titleBefore: "",
-    lead: "Lamadrid Labs is the clean, focused home for the products, experiments, and client work built by Ricardo Lamadrid.",
+    eyebrow: "Independent software studio",
+    // Rendered as emerging letterforms — the pointer field resolves these
+    // lines out of noise. One entry per display line.
+    titleLines: ["Noise becomes", "structure."],
+    lead: "Lamadrid Labs turns scattered requirements and half-formed ideas into clear systems and shipped software.",
     ctaPrimary: "See the work",
   },
   work: {

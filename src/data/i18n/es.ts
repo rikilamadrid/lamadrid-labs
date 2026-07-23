@@ -14,12 +14,9 @@ export const es: Dictionary = {
     closeMenu: "Cerrar menú",
   },
   hero: {
-    eyebrow: "Laboratorio de software independiente",
-    titleFirst: "Las ideas entran.",
-    titleHighlight: "software",
-    titleAfter: " sale.",
-    titleBefore: "El ",
-    lead: "Lamadrid Labs es el hogar claro y enfocado de los productos, experimentos y proyectos de cliente creados por Ricardo Lamadrid.",
+    eyebrow: "Estudio de software independiente",
+    titleLines: ["El ruido se vuelve", "estructura."],
+    lead: "Lamadrid Labs convierte requisitos dispersos e ideas a medio formar en sistemas claros y software terminado.",
     ctaPrimary: "Ver el trabajo",
   },
   work: {

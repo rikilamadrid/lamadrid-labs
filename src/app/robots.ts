@@ -9,8 +9,6 @@ export default function robots(): MetadataRoute.Robots {
     rules: {
       userAgent: "*",
       allow: "/",
-      // Throwaway prototype routes (Feature 3). Removed with them.
-      disallow: "/prototype/",
     },
     sitemap: `${SITE_URL}/sitemap.xml`,
   };
