@@ -4,6 +4,7 @@ import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { ShellNav } from "@/components/shell/ShellNav";
 import { ShellProvider } from "@/components/shell/ShellProvider";
 import { LOCALE_INIT_SCRIPT } from "@/lib/locale";
+import { SOUND_INIT_SCRIPT } from "@/lib/sound";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
@@ -86,6 +87,11 @@ export default function RootLayout({
           // Sets <html lang> before paint so the active locale is correct on
           // first render — no flash, no hydration mismatch.
           dangerouslySetInnerHTML={{ __html: LOCALE_INIT_SCRIPT }}
+        />
+        <script
+          // Sets data-sound before paint so the sound toggle's icon is correct
+          // on first render (off by default) — no flash.
+          dangerouslySetInnerHTML={{ __html: SOUND_INIT_SCRIPT }}
         />
       </head>
       {/* No-scroll full-screen shell: the body is exactly one viewport and never

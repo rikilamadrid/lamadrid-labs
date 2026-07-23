@@ -1,5 +1,6 @@
 "use client";
 
+import { playSound } from "@/lib/sound";
 import { useTheme } from "@/lib/theme";
 
 /**
@@ -15,7 +16,10 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      onClick={toggleTheme}
+      onClick={() => {
+        playSound("toggle");
+        toggleTheme();
+      }}
       aria-label={label}
       aria-pressed={theme === "light"}
       title={label}

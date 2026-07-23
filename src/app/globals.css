@@ -222,6 +222,19 @@ body {
   display: block;
 }
 
+/* ─── Sound toggle icon: driven by data-sound so it is correct at first paint ─── */
+.sound-icon-on {
+  display: none;
+}
+
+:root[data-sound="on"] .sound-icon-off {
+  display: none;
+}
+
+:root[data-sound="on"] .sound-icon-on {
+  display: block;
+}
+
 /* ─── Headings ─── */
 
 h1,

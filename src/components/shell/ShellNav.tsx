@@ -4,6 +4,7 @@ import { useDictionary } from "@/components/i18n/LocaleProvider";
 import { ShellMenu } from "@/components/shell/ShellMenu";
 import { useShell } from "@/components/shell/ShellProvider";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
+import { SoundToggle } from "@/components/ui/SoundToggle";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 /**
@@ -39,6 +40,7 @@ export function ShellNav() {
 
         <div className="pointer-events-auto flex items-center gap-2 sm:gap-3">
           <LanguageToggle />
+          <SoundToggle />
           <ThemeToggle />
 
           <button

@@ -93,6 +93,10 @@ export const en = {
   footer: {
     rights: "All rights reserved.",
   },
+  sound: {
+    enable: "Turn sound on",
+    disable: "Turn sound off",
+  },
   language: {
     label: "Language",
   },

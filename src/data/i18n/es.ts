@@ -89,6 +89,10 @@ export const es: Dictionary = {
   footer: {
     rights: "Todos los derechos reservados.",
   },
+  sound: {
+    enable: "Activar sonido",
+    disable: "Desactivar sonido",
+  },
   language: {
     label: "Idioma",
   },

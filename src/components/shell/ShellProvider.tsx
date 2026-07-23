@@ -9,6 +9,7 @@ import {
 } from "react";
 import type { ReactNode } from "react";
 import type { ViewKey } from "@/data/navigation";
+import { playSound } from "@/lib/sound";
 
 /**
  * The no-scroll shell's state machine: which full-screen state is showing and
@@ -31,16 +32,30 @@ export function ShellProvider({ children }: { children: ReactNode }) {
   const [view, setViewState] = useState<ViewKey>("home");
   const [menuOpen, setMenuOpen] = useState(false);
 
+  // The shell's semantic actions are exactly the interactions that should make
+  // sound, so the blips live here — every caller sounds consistently and none
+  // has to remember to play one. `playSound` is a no-op while sound is off.
+
   // Choosing a destination is also what closes the menu — the two always move
   // together, so callers never have to remember to close it.
   const setView = useCallback((next: ViewKey) => {
     setViewState(next);
     setMenuOpen(false);
+    playSound("navigate");
   }, []);
 
-  const openMenu = useCallback(() => setMenuOpen(true), []);
-  const closeMenu = useCallback(() => setMenuOpen(false), []);
-  const toggleMenu = useCallback(() => setMenuOpen((open) => !open), []);
+  const openMenu = useCallback(() => {
+    setMenuOpen(true);
+    playSound("menuOpen");
+  }, []);
+  const closeMenu = useCallback(() => {
+    setMenuOpen(false);
+    playSound("menuClose");
+  }, []);
+  const toggleMenu = useCallback(() => {
+    setMenuOpen(!menuOpen);
+    playSound(menuOpen ? "menuClose" : "menuOpen");
+  }, [menuOpen]);
 
   const value = useMemo(
     () => ({ view, setView, menuOpen, openMenu, closeMenu, toggleMenu }),
