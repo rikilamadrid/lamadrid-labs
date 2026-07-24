@@ -10,6 +10,7 @@ import { WorkField } from "@/components/shell/work/WorkField";
 import { projects } from "@/data/projects";
 import type { LabProject } from "@/data/projects";
 import { useTheme } from "@/lib/theme";
+import { setWorkBand } from "@/lib/work-signal";
 
 /**
  * Work mode — the home Signal / Noise field reorganizing into an interactive
@@ -42,6 +43,26 @@ export function WorkState() {
       rowRefs.current[selected]?.focus();
     }
   }, [activeProject, selected]);
+
+  // Publish the selected row's band target to the field (viewport CSS px): its
+  // vertical center, and a focus x at the row's end so the resolved band leans
+  // toward the preview. Re-measured on selection change and on resize; cleared
+  // when Work unmounts so the band releases. WorkField morphs the band toward
+  // whatever this last published (see `work-signal`).
+  useEffect(() => {
+    const publish = () => {
+      const row = rowRefs.current[selected];
+      if (!row) return;
+      const rect = row.getBoundingClientRect();
+      setWorkBand({ clientY: rect.top + rect.height / 2, clientX: rect.right });
+    };
+    publish();
+    window.addEventListener("resize", publish);
+    return () => {
+      window.removeEventListener("resize", publish);
+      setWorkBand(null);
+    };
+  }, [selected]);
 
   const selectedProject = projects[selected];
   const selectedContent = dict.work.projects[selectedProject.id];
