@@ -11,10 +11,7 @@ export const fr: Dictionary = {
     about: "À propos",
     contact: "Contact",
     skipToContent: "Aller au contenu",
-    openMenu: "Ouvrir le menu",
-    closeMenu: "Fermer le menu",
-    menu: "Menu",
-    close: "Fermer",
+    primary: "Principale",
   },
   shell: {
     inDevelopment: "En développement",
