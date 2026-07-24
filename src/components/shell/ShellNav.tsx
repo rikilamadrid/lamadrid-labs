@@ -26,19 +26,30 @@ export function ShellNav() {
         {dict.nav.skipToContent}
       </a>
 
-      <div className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between p-5 sm:p-6">
+      {/* Safe-area-aware gutter so no corner mark is ever clipped at the viewport
+          edge (notches, rounded display corners, the Menu control on narrow
+          screens). `max()` keeps the base 1.25/1.5rem inset and only grows it
+          where the device reports an inset. */}
+      <div
+        style={{
+          paddingTop: "max(1.25rem, env(safe-area-inset-top))",
+          paddingLeft: "max(1.25rem, env(safe-area-inset-left))",
+          paddingRight: "max(1.25rem, env(safe-area-inset-right))",
+        }}
+        className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between gap-3 sm:gap-4"
+      >
         {/* Temporary neutral wordmark — stands in until the Signal / Noise mark
             is designed. Returns to the Home state. */}
         <button
           type="button"
           onClick={() => setView("home")}
           aria-label="Lamadrid Labs"
-          className="shell-wordmark pointer-events-auto rounded-lab-sm outline-none focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
+          className="shell-wordmark pointer-events-auto min-w-0 shrink truncate rounded-lab-sm outline-none focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
         >
           Lamadrid Labs
         </button>
 
-        <div className="pointer-events-auto flex items-center gap-2 sm:gap-3">
+        <div className="pointer-events-auto flex shrink-0 items-center gap-2 sm:gap-3">
           <LanguageToggle />
           <SoundToggle />
           <ThemeToggle />
