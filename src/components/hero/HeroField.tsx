@@ -15,10 +15,14 @@ import {
 } from "@/lib/pointer-field";
 import {
   createPointerMotion,
+  createPulse,
   createTrail,
   drawCore,
+  drawPulse,
   drawTrail,
+  firePulse,
   stepPointerMotion,
+  stepPulse,
   stepTrail,
   type SignalColors,
 } from "@/lib/pointer-signal";
@@ -206,10 +210,12 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
     // on every live path (desktop and touch) but never on the static frame.
     const motion = createPointerMotion();
     const trail = createTrail();
+    const pulse = createPulse();
 
     const draw = () => {
       drawField(context, fragments, width, height, DEFAULT_TUNING, colors);
       drawTrail(context, trail, signalColors, true);
+      drawPulse(context, pulse, signalColors);
       drawCore(context, motion, signalColors, true);
     };
 
@@ -221,6 +227,7 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       const fieldMoving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
       const motionActive = stepPointerMotion(motion, pointerRef.current, delta);
       const trailActive = stepTrail(trail, motion, delta);
+      const pulseActive = stepPulse(pulse, delta);
       // On touch the headline stays resolved regardless of the finger — the
       // finger only sculpts the ambient field around it. (On desktop the word
       // resolves under the pointer instead, so this override is touch-only.)
@@ -230,7 +237,7 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
         }
       }
       draw();
-      if (fieldMoving || motionActive || trailActive) schedule();
+      if (fieldMoving || motionActive || trailActive || pulseActive) schedule();
     };
 
     const schedule = () => {
@@ -305,12 +312,28 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       wake();
     };
 
+    const handlePointerDown = (event: PointerEvent) => {
+      // Primary pointer only — a second finger or a right button must not stack
+      // pulses. `firePulse` overwrites any pulse in flight, so this stays cheap.
+      if (!event.isPrimary) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      pointerRef.current = { x, y };
+      // Fire at the press point (robust for a cold touch tap, where the detector
+      // has not yet moved there), carrying the detector's current energy so a
+      // click mid-flick throws a wider, brighter burst than a click from rest.
+      firePulse(pulse, x, y, motion.present ? motion.energy : 0);
+      wake();
+    };
+
     if (!staticOnly) {
       // `passive` and no `preventDefault`: a finger dragged across the hero
       // still scrolls any scrollable content underneath. On touch, `pointermove`
       // only fires while a finger is down, so a drag is what drives the field;
       // `pointerup` lets the ambient order decay back once the finger lifts.
       window.addEventListener("pointermove", handlePointerMove, { passive: true });
+      window.addEventListener("pointerdown", handlePointerDown, { passive: true });
       window.addEventListener("pointerleave", handlePointerLeave);
       window.addEventListener("pointercancel", handlePointerLeave);
       window.addEventListener("pointerup", handlePointerLeave);
@@ -337,6 +360,7 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       resizeObserver.disconnect();
       themeObserver.disconnect();
       window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("pointerleave", handlePointerLeave);
       window.removeEventListener("pointercancel", handlePointerLeave);
       window.removeEventListener("pointerup", handlePointerLeave);

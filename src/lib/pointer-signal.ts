@@ -392,6 +392,170 @@ export function drawTrail(
   context.globalAlpha = 1;
 }
 
+/* ═══════════════════════════════════════════════════════════════════════════
+   Signal pulse
+
+   The interaction burst. On pointer down the nearby signal first *compresses*
+   toward the core — a fast inward rush that momentarily silences the field —
+   then releases outward as a geometric transmission: an expanding, broken
+   Dynamic-Frame square, a cross-shaped scan, and a constellation that spreads
+   and thins. Deliberately not a ring: the brief bans circular ripples, and the
+   frame/cross/constellation vocabulary is what ties the pulse to the mark and
+   nav language. One reusable object; fires in ~700ms and recycles.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+/** Constellation node count. Odd, so the spread never resolves into an obvious
+ *  mirror-symmetric shape. */
+const PULSE_NODES = 7;
+/** Total pulse lifetime, seconds — the brief's ~700ms ceiling. */
+const PULSE_LIFE = 0.7;
+/** Fraction of the life spent compressing inward before the outward release.
+ *  Short: the silence-then-emit beat reads as a snap, not a wind-up. */
+const PULSE_COMPRESS = 0.22;
+
+export type Pulse = {
+  active: boolean;
+  x: number;
+  y: number;
+  age: number;
+  /** Energy at fire — a click mid-flick throws wider and brighter than a
+   *  click from rest. */
+  energy: number;
+  /** Per-node base angle, fixed at construction so the constellation is stable
+   *  across fires rather than reshuffling each click. */
+  angles: number[];
+  /** Outer radius the release reaches, set at fire from energy. */
+  radius: number;
+};
+
+export function createPulse(): Pulse {
+  const angles: number[] = [];
+  for (let i = 0; i < PULSE_NODES; i += 1) {
+    // Golden-ish irregular spacing so nodes never sit on a clean polygon.
+    angles.push((i / PULSE_NODES) * Math.PI * 2 + (i % 2) * 0.22);
+  }
+  return { active: false, x: 0, y: 0, age: 0, energy: 0, angles, radius: 0 };
+}
+
+/** Arm a pulse at a point. Overwrites any pulse in flight — a rapid double
+ *  click restarts rather than stacking, which keeps the layer bounded. */
+export function firePulse(pulse: Pulse, x: number, y: number, energy: number): void {
+  pulse.active = true;
+  pulse.x = x;
+  pulse.y = y;
+  pulse.age = 0;
+  pulse.energy = energy;
+  pulse.radius = lerp(72, 132, energy);
+}
+
+/** Advance the pulse. Returns `true` while it is still in flight. */
+export function stepPulse(pulse: Pulse, dt: number): boolean {
+  if (!pulse.active) return false;
+  pulse.age += dt;
+  if (pulse.age >= PULSE_LIFE) {
+    pulse.active = false;
+    return false;
+  }
+  return true;
+}
+
+export function drawPulse(
+  context: CanvasRenderingContext2D,
+  pulse: Pulse,
+  colors: SignalColors,
+): void {
+  if (!pulse.active) return;
+
+  const t = pulse.age / PULSE_LIFE;
+  const { x, y, radius, energy } = pulse;
+  context.lineCap = "round";
+
+  // Two beats: compress inward (nodes rush to the core, field held bright),
+  // then release outward (everything spreads and fades).
+  let nodeR: number;
+  let fade: number;
+  let release: number;
+  if (t < PULSE_COMPRESS) {
+    const c = t / PULSE_COMPRESS;
+    nodeR = lerp(radius * 0.55, 0, c * c); // ease-in rush to center
+    fade = 1;
+    release = 0;
+  } else {
+    release = (t - PULSE_COMPRESS) / (1 - PULSE_COMPRESS);
+    const eased = 1 - (1 - release) ** 3; // ease-out spread
+    nodeR = lerp(0, radius, eased);
+    fade = 1 - release;
+  }
+
+  const base = lerp(0.45, 0.85, energy);
+
+  // ── Constellation: nodes on their angles, connected as they spread ──
+  const px: number[] = [];
+  const py: number[] = [];
+  for (let i = 0; i < PULSE_NODES; i += 1) {
+    px.push(x + Math.cos(pulse.angles[i]) * nodeR);
+    py.push(y + Math.sin(pulse.angles[i]) * nodeR);
+  }
+
+  if (nodeR > 4) {
+    context.globalAlpha = fade * base * 0.4;
+    context.strokeStyle = colors.signal;
+    context.lineWidth = 1;
+    context.beginPath();
+    for (let i = 0; i < PULSE_NODES; i += 1) {
+      const j = (i + 1) % PULSE_NODES;
+      context.moveTo(px[i], py[i]);
+      context.lineTo(px[j], py[j]);
+    }
+    context.stroke();
+  }
+
+  context.globalAlpha = fade * base;
+  context.fillStyle = energy > HIGH_ENERGY ? colors.energy : colors.signalStrong;
+  const s = lerp(1.6, 2.4, energy);
+  for (let i = 0; i < PULSE_NODES; i += 1) {
+    context.fillRect(px[i] - s / 2, py[i] - s / 2, s, s);
+  }
+
+  // ── Release-only structure: an incomplete Dynamic-Frame square and a cross
+  //    scan expanding out of the core. Suppressed during compression so the
+  //    inward beat stays clean. ──
+  if (release > 0) {
+    const fs = release * radius * 0.8; // frame half-size
+    const arm = Math.min(fs * 0.5, 14); // bracket arm length
+    context.globalAlpha = fade * base * 0.7;
+    context.strokeStyle = colors.signal;
+    context.lineWidth = lerp(1, 1.6, energy);
+    context.beginPath();
+    // Four corner brackets — the open LL frame, never a closed square.
+    for (const sx of [-1, 1]) {
+      for (const sy of [-1, 1]) {
+        const cx = x + sx * fs;
+        const cy = y + sy * fs;
+        context.moveTo(cx - sx * arm, cy);
+        context.lineTo(cx, cy);
+        context.lineTo(cx, cy - sy * arm);
+      }
+    }
+    context.stroke();
+
+    // Cross scan: thin horizontal + vertical sweep, slightly ahead of the
+    // frame, fading fastest.
+    const crossR = release * radius * 1.05;
+    context.globalAlpha = (1 - release) * base * 0.5;
+    context.strokeStyle = colors.signalStrong;
+    context.lineWidth = 1;
+    context.beginPath();
+    context.moveTo(x - crossR, y);
+    context.lineTo(x + crossR, y);
+    context.moveTo(x, y - crossR);
+    context.lineTo(x, y + crossR);
+    context.stroke();
+  }
+
+  context.globalAlpha = 1;
+}
+
 /**
  * Draw the signal core — the crisp detector at the pointer.
  *
