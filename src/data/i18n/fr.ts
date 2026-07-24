@@ -6,96 +6,24 @@ export const fr: Dictionary = {
     description: "Lamadrid Labs — un studio logiciel indépendant.",
   },
   nav: {
-    process: "Processus",
+    home: "Accueil",
     work: "Projets",
     about: "À propos",
     contact: "Contact",
     skipToContent: "Aller au contenu",
     openMenu: "Ouvrir le menu",
     closeMenu: "Fermer le menu",
+    menu: "Menu",
+    close: "Fermer",
+  },
+  shell: {
+    inDevelopment: "En développement",
   },
   hero: {
-    eyebrow: "Laboratoire logiciel indépendant",
-    titleFirst: "Les idées entrent.",
-    titleHighlight: "logiciel",
-    titleAfter: " en sort.",
-    titleBefore: "Le ",
-    lead: "Lamadrid Labs est le port d'attache clair et concentré des produits, expériences et projets clients conçus par Ricardo Lamadrid.",
+    eyebrow: "Studio de logiciel indépendant",
+    titleLines: ["Le bruit devient", "structure."],
+    lead: "Lamadrid Labs transforme des exigences éparses et des idées à peine formées en systèmes clairs et en logiciels livrés.",
     ctaPrimary: "Voir les projets",
-    ctaSecondary: "Ce que nous créons",
-  },
-  process: {
-    eyebrow: "Comment un projet avance dans le laboratoire",
-    title: "Un spécimen, cinq étapes",
-    lead: "Chaque projet suit la même réaction, du début à la fin.",
-    hud: {
-      step: "Étape",
-      readout: "Relevé",
-    },
-    stages: {
-      "reagent-selection": {
-        title: "Sélection des réactifs",
-        stageLine:
-          "L'idée arrive, réduite à l'essentiel qui mérite d'être construit.",
-        serviceLine: "Découverte et cadrage.",
-        hud: {
-          status: "Stable",
-          metrics: [
-            { label: "État", value: "Trié" },
-            { label: "Verrou", value: "Activé" },
-          ],
-        },
-      },
-      measurement: {
-        title: "Mesure",
-        stageLine: "Chaque besoin est pesé et le système est cartographié.",
-        serviceLine: "Conception du système et planification technique.",
-        hud: {
-          status: "Calibré",
-          metrics: [
-            { label: "Portée", value: "Cartographiée" },
-            { label: "Charge", value: "Pesée" },
-          ],
-        },
-      },
-      synthesis: {
-        title: "Synthèse",
-        stageLine:
-          "Du vrai code, de vrais composants, en réaction vers un produit fonctionnel.",
-        serviceLine: "Implémentation et itération.",
-        hud: {
-          status: "En réaction",
-          metrics: [
-            { label: "Build", value: "Actif" },
-            { label: "Flux", value: "Maximal" },
-          ],
-        },
-      },
-      purification: {
-        title: "Purification",
-        stageLine: "Sans aspérités — testé, affiné, accessible.",
-        serviceLine: "QA, accessibilité et performance.",
-        hud: {
-          status: "Affiné",
-          metrics: [
-            { label: "Aspérités", value: "Retirées" },
-            { label: "Tests", value: "Réussis" },
-          ],
-        },
-      },
-      crystallization: {
-        title: "Cristallisation",
-        stageLine: "La forme finale : déployée, documentée et faite pour durer.",
-        serviceLine: "Déploiement et passation.",
-        hud: {
-          status: "Fixé",
-          metrics: [
-            { label: "Forme", value: "Finale" },
-            { label: "Livraison", value: "Prête" },
-          ],
-        },
-      },
-    },
   },
   work: {
     eyebrow: "Travaux sélectionnés",
@@ -160,6 +88,10 @@ export const fr: Dictionary = {
   },
   footer: {
     rights: "Tous droits réservés.",
+  },
+  sound: {
+    enable: "Activer le son",
+    disable: "Couper le son",
   },
   language: {
     label: "Langue",

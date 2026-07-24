@@ -6,95 +6,24 @@ export const es: Dictionary = {
     description: "Lamadrid Labs — un estudio de software independiente.",
   },
   nav: {
-    process: "Proceso",
+    home: "Inicio",
     work: "Trabajo",
     about: "Acerca de",
     contact: "Contacto",
     skipToContent: "Ir al contenido",
     openMenu: "Abrir menú",
     closeMenu: "Cerrar menú",
+    menu: "Menú",
+    close: "Cerrar",
+  },
+  shell: {
+    inDevelopment: "En desarrollo",
   },
   hero: {
-    eyebrow: "Laboratorio de software independiente",
-    titleFirst: "Las ideas entran.",
-    titleHighlight: "software",
-    titleAfter: " sale.",
-    titleBefore: "El ",
-    lead: "Lamadrid Labs es el hogar claro y enfocado de los productos, experimentos y proyectos de cliente creados por Ricardo Lamadrid.",
+    eyebrow: "Estudio de software independiente",
+    titleLines: ["El ruido se vuelve", "estructura."],
+    lead: "Lamadrid Labs convierte requisitos dispersos e ideas a medio formar en sistemas claros y software terminado.",
     ctaPrimary: "Ver el trabajo",
-    ctaSecondary: "Lo que creamos",
-  },
-  process: {
-    eyebrow: "Cómo avanza un proyecto en el laboratorio",
-    title: "Un espécimen, cinco etapas",
-    lead: "Cada proyecto sigue la misma reacción, de principio a fin.",
-    hud: {
-      step: "Etapa",
-      readout: "Lectura",
-    },
-    stages: {
-      "reagent-selection": {
-        title: "Selección de reactivos",
-        stageLine: "La idea llega, reducida a lo que vale la pena construir.",
-        serviceLine: "Descubrimiento y alcance.",
-        hud: {
-          status: "Estable",
-          metrics: [
-            { label: "Estado", value: "Filtrado" },
-            { label: "Bloqueo", value: "Activado" },
-          ],
-        },
-      },
-      measurement: {
-        title: "Medición",
-        stageLine: "Cada requisito se pesa y el sistema se traza.",
-        serviceLine: "Diseño de sistema y planificación técnica.",
-        hud: {
-          status: "Calibrado",
-          metrics: [
-            { label: "Alcance", value: "Trazado" },
-            { label: "Carga", value: "Pesada" },
-          ],
-        },
-      },
-      synthesis: {
-        title: "Síntesis",
-        stageLine:
-          "Código real, componentes reales, reaccionando hacia un producto funcional.",
-        serviceLine: "Implementación e iteración.",
-        hud: {
-          status: "Reaccionando",
-          metrics: [
-            { label: "Construcción", value: "Activa" },
-            { label: "Flujo", value: "Máximo" },
-          ],
-        },
-      },
-      purification: {
-        title: "Purificación",
-        stageLine: "Sin asperezas — probado, refinado, accesible.",
-        serviceLine: "QA, accesibilidad y rendimiento.",
-        hud: {
-          status: "Refinado",
-          metrics: [
-            { label: "Asperezas", value: "Eliminadas" },
-            { label: "Pruebas", value: "Superadas" },
-          ],
-        },
-      },
-      crystallization: {
-        title: "Cristalización",
-        stageLine: "La forma final: desplegada, documentada y hecha para durar.",
-        serviceLine: "Despliegue y entrega.",
-        hud: {
-          status: "Fijado",
-          metrics: [
-            { label: "Forma", value: "Final" },
-            { label: "Entrega", value: "Lista" },
-          ],
-        },
-      },
-    },
   },
   work: {
     eyebrow: "Trabajo seleccionado",
@@ -159,6 +88,10 @@ export const es: Dictionary = {
   },
   footer: {
     rights: "Todos los derechos reservados.",
+  },
+  sound: {
+    enable: "Activar sonido",
+    disable: "Desactivar sonido",
   },
   language: {
     label: "Idioma",

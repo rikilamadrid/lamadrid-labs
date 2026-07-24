@@ -6,94 +6,28 @@ export const en = {
     description: "Lamadrid Labs — an independent software studio.",
   },
   nav: {
-    process: "Process",
+    home: "Home",
     work: "Work",
     about: "About",
     contact: "Contact",
     skipToContent: "Skip to content",
     openMenu: "Open menu",
     closeMenu: "Close menu",
+    // Short visible labels for the corner menu toggle.
+    menu: "Menu",
+    close: "Close",
+  },
+  shell: {
+    // Shown on placeholder states whose full-screen state isn't built yet.
+    inDevelopment: "In development",
   },
   hero: {
-    eyebrow: "Independent software laboratory",
-    titleFirst: "Ideas enter.",
-    titleHighlight: "Software",
-    titleAfter: " leaves.",
-    titleBefore: "",
-    lead: "Lamadrid Labs is the clean, focused home for the products, experiments, and client work built by Ricardo Lamadrid.",
+    eyebrow: "Independent software studio",
+    // Rendered as emerging letterforms — the pointer field resolves these
+    // lines out of noise. One entry per display line.
+    titleLines: ["Noise becomes", "structure."],
+    lead: "Lamadrid Labs turns scattered requirements and half-formed ideas into clear systems and shipped software.",
     ctaPrimary: "See the work",
-    ctaSecondary: "What we build",
-  },
-  process: {
-    eyebrow: "How a project moves through the lab",
-    title: "One specimen, five stages",
-    lead: "Every project runs the same reaction, start to finish.",
-    hud: {
-      step: "Step",
-      readout: "Readout",
-    },
-    stages: {
-      "reagent-selection": {
-        title: "Reagent Selection",
-        stageLine: "The idea arrives, sorted down to what's worth building.",
-        serviceLine: "Discovery and scoping.",
-        hud: {
-          status: "Stable",
-          metrics: [
-            { label: "State", value: "Sorted" },
-            { label: "Lock", value: "Engaged" },
-          ],
-        },
-      },
-      measurement: {
-        title: "Measurement",
-        stageLine: "Every requirement weighed and the system mapped out.",
-        serviceLine: "System design and technical planning.",
-        hud: {
-          status: "Calibrated",
-          metrics: [
-            { label: "Scope", value: "Mapped" },
-            { label: "Load", value: "Weighed" },
-          ],
-        },
-      },
-      synthesis: {
-        title: "Synthesis",
-        stageLine: "Real code, real components, reacting into a working product.",
-        serviceLine: "Implementation and iteration.",
-        hud: {
-          status: "Reacting",
-          metrics: [
-            { label: "Build", value: "Active" },
-            { label: "Flow", value: "Peak" },
-          ],
-        },
-      },
-      purification: {
-        title: "Purification",
-        stageLine: "Stripped of rough edges — tested, refined, accessible.",
-        serviceLine: "QA, accessibility, and performance passes.",
-        hud: {
-          status: "Refined",
-          metrics: [
-            { label: "Edges", value: "Removed" },
-            { label: "Tests", value: "Passing" },
-          ],
-        },
-      },
-      crystallization: {
-        title: "Crystallization",
-        stageLine: "The final form: deployed, documented, and built to last.",
-        serviceLine: "Deployment and handoff.",
-        hud: {
-          status: "Set",
-          metrics: [
-            { label: "Form", value: "Final" },
-            { label: "Ship", value: "Ready" },
-          ],
-        },
-      },
-    },
   },
   work: {
     eyebrow: "Selected work",
@@ -158,6 +92,10 @@ export const en = {
   },
   footer: {
     rights: "All rights reserved.",
+  },
+  sound: {
+    enable: "Turn sound on",
+    disable: "Turn sound off",
   },
   language: {
     label: "Language",

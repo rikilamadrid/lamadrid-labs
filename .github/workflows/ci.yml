@@ -2,7 +2,12 @@ name: CI
 
 on:
   pull_request:
-    branches: [main]
+    # Stacked feature branches are included deliberately. The Signal / Noise
+    # rebuild bases each PR on the previous feature's branch rather than on
+    # `main`, so a `main`-only trigger left every PR in the chain except the
+    # first with no checks at all. Merging to `main` fires a production
+    # deploy, so the chain cannot be flattened early just to regain CI.
+    branches: [main, "feature/signal-noise-**"]
 
 jobs:
   lint-and-build:

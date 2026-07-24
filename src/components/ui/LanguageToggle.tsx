@@ -2,6 +2,7 @@
 
 import { useDictionary } from "@/components/i18n/LocaleProvider";
 import { useLocale, LOCALE_NAMES, LOCALES, type Locale } from "@/lib/locale";
+import { playSound } from "@/lib/sound";
 
 const SHORT_LABELS: Record<Locale, string> = {
   en: "EN",
@@ -31,13 +32,16 @@ export function LanguageToggle() {
             key={code}
             type="button"
             lang={code}
-            onClick={() => setLocale(code)}
+            onClick={() => {
+              if (!isActive) playSound("toggle");
+              setLocale(code);
+            }}
             aria-pressed={isActive}
             aria-label={LOCALE_NAMES[code]}
             title={LOCALE_NAMES[code]}
-            className={`rounded-full px-2 py-1 text-[11px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-lab-accent-strong ${
+            className={`rounded-full px-2 py-1 text-[11px] font-semibold outline-none transition-colors focus-visible:ring-2 focus-visible:ring-lab-signal-strong ${
               isActive
-                ? "bg-lab-accent text-lab-accent-ink"
+                ? "bg-lab-signal text-lab-signal-ink"
                 : "text-lab-muted hover:text-lab-ink"
             }`}
           >

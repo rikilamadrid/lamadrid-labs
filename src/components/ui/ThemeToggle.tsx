@@ -1,5 +1,6 @@
 "use client";
 
+import { playSound } from "@/lib/sound";
 import { useTheme } from "@/lib/theme";
 
 /**
@@ -15,11 +16,14 @@ export function ThemeToggle() {
   return (
     <button
       type="button"
-      onClick={toggleTheme}
+      onClick={() => {
+        playSound("toggle");
+        toggleTheme();
+      }}
       aria-label={label}
       aria-pressed={theme === "light"}
       title={label}
-      className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-full text-lab-muted outline-none transition-colors hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-accent-strong"
+      className="inline-flex h-9 w-9 flex-none items-center justify-center rounded-full text-lab-muted outline-none transition-colors hover:text-lab-ink focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
     >
       {/* Shown in dark theme */}
       <svg
