@@ -13,6 +13,15 @@ import {
   type GlyphMask,
   type Pointer,
 } from "@/lib/pointer-field";
+import {
+  createPointerMotion,
+  createTrail,
+  drawCore,
+  drawTrail,
+  stepPointerMotion,
+  stepTrail,
+  type SignalColors,
+} from "@/lib/pointer-signal";
 
 /**
  * The hero's pointer field — the Feature 3 engine, now carrying the headline.
@@ -58,6 +67,16 @@ function readColors(element: HTMLElement): FieldColors {
       read("--lab-noise-4"),
     ],
     signal: read("--lab-signal"),
+  };
+}
+
+function readSignalColors(element: HTMLElement): SignalColors {
+  const styles = getComputedStyle(element);
+  const read = (token: string) => styles.getPropertyValue(token).trim();
+  return {
+    signal: read("--lab-signal"),
+    signalStrong: read("--lab-signal-strong"),
+    energy: read("--lab-energy"),
   };
 }
 
@@ -175,20 +194,33 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
 
     let fragments: Fragment[] = [];
     let colors = readColors(canvas);
+    let signalColors = readSignalColors(canvas);
     let width = 0;
     let height = 0;
     let frame: number | null = null;
     let lastTime = 0;
     let disposed = false;
 
-    const draw = () => drawField(context, fragments, width, height, DEFAULT_TUNING, colors);
+    // The velocity-driven foreground: a signal core and directional wake. The
+    // channel split and acid accent are motion artifacts, so they ride along
+    // on every live path (desktop and touch) but never on the static frame.
+    const motion = createPointerMotion();
+    const trail = createTrail();
+
+    const draw = () => {
+      drawField(context, fragments, width, height, DEFAULT_TUNING, colors);
+      drawTrail(context, trail, signalColors, true);
+      drawCore(context, motion, signalColors, true);
+    };
 
     const tick = (time: number) => {
       frame = null;
       const delta = (time - lastTime) / 1000;
       lastTime = time;
 
-      const moving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
+      const fieldMoving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
+      const motionActive = stepPointerMotion(motion, pointerRef.current, delta);
+      const trailActive = stepTrail(trail, motion, delta);
       // On touch the headline stays resolved regardless of the finger — the
       // finger only sculpts the ambient field around it. (On desktop the word
       // resolves under the pointer instead, so this override is touch-only.)
@@ -198,7 +230,7 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
         }
       }
       draw();
-      if (moving) schedule();
+      if (fieldMoving || motionActive || trailActive) schedule();
     };
 
     const schedule = () => {
@@ -288,6 +320,7 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
     // in place; a live field's next tick already reads the new `colors`.
     const themeObserver = new MutationObserver(() => {
       colors = readColors(canvas);
+      signalColors = readSignalColors(canvas);
       draw();
     });
     themeObserver.observe(document.documentElement, {

@@ -23,7 +23,7 @@ export function Hero() {
         className="pointer-events-none absolute inset-0 z-10 h-full w-full"
       />
 
-      <div className="relative mx-auto flex w-full max-w-4xl flex-col items-start gap-6 text-left">
+      <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-6 text-center">
         <span className="lab-label relative z-20">{dict.hero.eyebrow}</span>
 
         {/* Resting register: legible but unresolved (noise ramp), never full

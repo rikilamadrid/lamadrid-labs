@@ -36,6 +36,10 @@
   --lab-signal-strong: #7098ff;
   --lab-signal-ink: #060810;
 
+  /* Energy — acid accent, reserved for rare high-velocity signal peaks in the
+     pointer layer only. Never a resting or structural color. */
+  --lab-energy: #e8ff4d;
+
   --lab-radius-sm: 12px;
   --lab-radius-md: 20px;
   --lab-radius-lg: 28px;
@@ -64,6 +68,9 @@
   --lab-signal: #2f5fe0;
   --lab-signal-strong: #2449b3;
   --lab-signal-ink: #ffffff;
+
+  /* Energy — darker acid on light so it still reads as a peak, not a blowout. */
+  --lab-energy: #b9c400;
 
   --lab-shadow-soft: 0 24px 60px rgba(18, 20, 23, 0.12);
   --lab-shadow-glow: 0 0 36px rgba(47, 95, 224, 0.16);
@@ -429,48 +436,234 @@ p {
   background: var(--lab-signal);
 }
 
-/* ─── Shell (no-scroll full-screen interface) ─── */
+/* ─── Shell corner navigation (no-scroll full-screen interface) ─────────────
+   Four persistent corner actions replace the old menu. Written as component
+   classes rather than utilities because the shell's ink/muted/signal colors
+   must beat the unlayered base rules, and Tailwind utilities live in a lower
+   layer. The signal accent is scarce here too: only the *active* corner (and a
+   momentary hover) resolves its central point to signal. */
 
-/* Temporary neutral wordmark + corner controls. Written as component classes
-   rather than utilities because the shell's ink/muted colors must beat the
-   unlayered base rules, and Tailwind utilities live in a lower layer. */
-.shell-wordmark,
-.shell-control {
-  font-family: var(--font-mono), ui-monospace, monospace;
-  font-size: 0.72rem;
-  text-transform: uppercase;
+.shell-nav {
+  /* Safe-area-aware corner offsets so no control is ever clipped (notches,
+     rounded display corners) and none sits flush against the edge. */
+  --shell-inset-top: max(16px, env(safe-area-inset-top));
+  --shell-inset-bottom: max(16px, env(safe-area-inset-bottom));
+  --shell-inset-left: max(16px, env(safe-area-inset-left));
+  --shell-inset-right: max(16px, env(safe-area-inset-right));
+}
+
+@media (min-width: 640px) {
+  .shell-nav {
+    --shell-inset-top: max(24px, env(safe-area-inset-top));
+    --shell-inset-bottom: max(24px, env(safe-area-inset-bottom));
+    --shell-inset-left: max(28px, env(safe-area-inset-left));
+    --shell-inset-right: max(28px, env(safe-area-inset-right));
+  }
+}
+
+/* The interactive corner: an editorial icon + label pair with a generous
+   invisible target (padding + 44px minimum). Anchored per corner below. */
+.shell-corner {
+  position: absolute;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0.5rem;
   color: var(--lab-muted);
-  transition: color var(--lab-duration-base) var(--lab-ease-standard);
+  border-radius: var(--lab-radius-sm);
+  outline: none;
+  touch-action: manipulation;
+  transition: color var(--lab-duration-base) var(--lab-ease-resolve);
 }
 
-.shell-wordmark {
-  letter-spacing: 0.18em;
+.shell-corner[data-corner="tl"] {
+  top: var(--shell-inset-top);
+  left: var(--shell-inset-left);
+}
+.shell-corner[data-corner="tr"] {
+  top: var(--shell-inset-top);
+  right: var(--shell-inset-right);
+  flex-direction: row-reverse;
+}
+.shell-corner[data-corner="bl"] {
+  bottom: var(--shell-inset-bottom);
+  left: var(--shell-inset-left);
+}
+.shell-corner[data-corner="br"] {
+  bottom: var(--shell-inset-bottom);
+  right: var(--shell-inset-right);
+  flex-direction: row-reverse;
 }
 
-.shell-control {
-  letter-spacing: 0.14em;
-}
-
-.shell-wordmark:hover,
-.shell-control:hover {
-  color: var(--lab-ink);
-}
-
-/* Menu destinations. Rest in the noise register; hover and the active state
-   take the one signal accent — permitted because the menu overlay owns the
-   whole viewport, so scarcity holds per-view. */
-.shell-menu-link {
-  font-family: var(--font-display), ui-serif, Georgia, serif;
-  font-size: var(--lab-text-h1);
-  line-height: 1.05;
-  letter-spacing: var(--lab-tracking-h1);
+.shell-corner__icon {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   color: var(--lab-noise-4);
   transition: color var(--lab-duration-base) var(--lab-ease-resolve);
 }
 
-.shell-menu-link:hover,
-.shell-menu-link[aria-current="page"] {
+.shell-corner__label {
+  position: relative;
+  font-family: var(--font-mono), ui-monospace, monospace;
+  font-size: 0.72rem;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  transition:
+    color var(--lab-duration-base) var(--lab-ease-resolve),
+    transform var(--lab-duration-fast) var(--lab-ease-resolve);
+}
+
+/* Active indicator is never color alone: a short accent line grows under the
+   label (or under the icon, for label-less Home). */
+.shell-corner__label::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  height: 1.5px;
+  width: 0;
+  background: var(--lab-signal);
+  transition: width var(--lab-duration-base) var(--lab-ease-resolve);
+}
+
+/* Icon fragments: the central point stays in the noise register at rest and
+   resolves to signal on hover / focus / active. */
+.shell-corner .sn-point {
+  color: var(--lab-noise-3);
+  transition: color var(--lab-duration-base) var(--lab-ease-resolve);
+}
+.shell-corner .sn-link,
+.shell-corner .sn-node,
+.shell-corner .sn-pulse-arc {
+  opacity: 0.72;
+  transition: opacity var(--lab-duration-base) var(--lab-ease-resolve);
+}
+.shell-corner .sn-pulse-arc {
+  opacity: 0;
+}
+
+/* Hover / keyboard focus: fragments align, the label sharpens and nudges a few
+   pixels toward center, the point briefly lights. */
+.shell-corner:hover,
+.shell-corner:focus-visible {
+  color: var(--lab-ink);
+}
+.shell-corner:hover .shell-corner__icon,
+.shell-corner:focus-visible .shell-corner__icon,
+.shell-corner:hover .shell-corner__label,
+.shell-corner:focus-visible .shell-corner__label {
+  color: var(--lab-ink);
+}
+.shell-corner:hover .sn-link,
+.shell-corner:focus-visible .sn-link,
+.shell-corner:hover .sn-node,
+.shell-corner:focus-visible .sn-node {
+  opacity: 1;
+}
+.shell-corner:hover .sn-pulse-arc,
+.shell-corner:focus-visible .sn-pulse-arc {
+  opacity: 0.8;
+}
+.shell-corner:hover .sn-point,
+.shell-corner:focus-visible .sn-point {
   color: var(--lab-signal);
+}
+/* Nudge the label toward the viewport center (outer edge depends on corner). */
+.shell-corner[data-corner="tl"]:hover .shell-corner__label,
+.shell-corner[data-corner="tl"]:focus-visible .shell-corner__label,
+.shell-corner[data-corner="bl"]:hover .shell-corner__label,
+.shell-corner[data-corner="bl"]:focus-visible .shell-corner__label {
+  transform: translateX(2px);
+}
+.shell-corner[data-corner="tr"]:hover .shell-corner__label,
+.shell-corner[data-corner="tr"]:focus-visible .shell-corner__label,
+.shell-corner[data-corner="br"]:hover .shell-corner__label,
+.shell-corner[data-corner="br"]:focus-visible .shell-corner__label {
+  transform: translateX(-2px);
+}
+
+/* Active state: stronger contrast, the point resolved to signal, and the
+   accent line drawn under the label. `aria-current` carries the semantics. */
+.shell-corner[data-active] {
+  color: var(--lab-ink);
+}
+.shell-corner[data-active] .shell-corner__icon,
+.shell-corner[data-active] .shell-corner__label {
+  color: var(--lab-ink);
+}
+.shell-corner[data-active] .sn-point {
+  color: var(--lab-signal);
+}
+.shell-corner[data-active] .sn-link,
+.shell-corner[data-active] .sn-node {
+  opacity: 1;
+}
+.shell-corner[data-active] .shell-corner__label::after {
+  width: 100%;
+}
+/* Right-anchored corners draw the accent from the right so it reads inward. */
+.shell-corner[data-corner="tr"] .shell-corner__label::after,
+.shell-corner[data-corner="br"] .shell-corner__label::after {
+  left: auto;
+  right: 0;
+}
+
+.shell-corner:focus-visible {
+  outline: 2px solid var(--lab-signal-strong);
+  outline-offset: 2px;
+}
+
+/* Activation pulse: a short controlled ring emitted from the icon toward the
+   central field, retriggered per click by remounting this element. Capped well
+   under 500ms; the global reduced-motion rule collapses it. */
+.shell-corner__pulse {
+  position: absolute;
+  inset: 0;
+  margin: auto;
+  width: 20px;
+  height: 20px;
+  border-radius: 999px;
+  border: 1.5px solid var(--lab-signal);
+  pointer-events: none;
+  animation: shell-corner-pulse 460ms var(--lab-ease-resolve) forwards;
+}
+
+@keyframes shell-corner-pulse {
+  from {
+    opacity: 0.6;
+    transform: scale(0.5);
+  }
+  to {
+    opacity: 0;
+    transform: scale(2.4);
+  }
+}
+
+/* Very narrow widths: icon-only at rest. The label stays in the accessibility
+   tree (visually hidden, not `display:none`) and re-appears inline on hover,
+   focus, or when active — so the meaning is never hover-gated for AT users. */
+@media (max-width: 400px) {
+  .shell-corner__label {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip-path: inset(50%);
+    white-space: nowrap;
+  }
+  .shell-corner:hover .shell-corner__label,
+  .shell-corner:focus-visible .shell-corner__label,
+  .shell-corner[data-active] .shell-corner__label {
+    position: static;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip-path: none;
+  }
 }
 
 @media (prefers-reduced-motion: no-preference) {
