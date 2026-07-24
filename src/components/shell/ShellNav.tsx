@@ -5,6 +5,7 @@ import { useDictionary } from "@/components/i18n/LocaleProvider";
 import { CORNER_ICONS } from "@/components/shell/nav/icons";
 import { useShell } from "@/components/shell/ShellProvider";
 import { cornerNavItems, type ViewKey } from "@/data/navigation";
+import { setHoveredCorner } from "@/lib/shell-signal";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
 import { SoundToggle } from "@/components/ui/SoundToggle";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -81,6 +82,16 @@ export function ShellNav() {
               key={item.key}
               type="button"
               onClick={() => activate(item.key)}
+              // Hover / focus leans the central field's static toward this
+              // corner (see `shell-signal`). Mouse only — a touch tap must not
+              // linger as a pull; keyboard focus counts, so the field answers
+              // tabbing too. Leaving or blurring releases it.
+              onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") setHoveredCorner(item.corner);
+              }}
+              onPointerLeave={() => setHoveredCorner(null)}
+              onFocus={() => setHoveredCorner(item.corner)}
+              onBlur={() => setHoveredCorner(null)}
               // Home is icon-only, so it names itself with the brand (which is
               // also the Home action). The rest are named by their visible label.
               aria-label={isHome ? "Lamadrid Labs" : undefined}

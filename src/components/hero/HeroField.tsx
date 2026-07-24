@@ -4,9 +4,11 @@ import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/components/ui/MotionPrimitives";
 import {
   DEFAULT_TUNING,
+  createCornerPull,
   createFragments,
   drawField,
   resolveWordStatically,
+  stepCornerPull,
   stepField,
   type FieldColors,
   type Fragment,
@@ -26,6 +28,11 @@ import {
   stepTrail,
   type SignalColors,
 } from "@/lib/pointer-signal";
+import {
+  cornerPoint,
+  getShellSignal,
+  subscribeShellSignal,
+} from "@/lib/shell-signal";
 
 /**
  * The hero's pointer field — the Feature 3 engine, now carrying the headline.
@@ -220,9 +227,12 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
     const motion = createPointerMotion();
     const trail = createTrail();
     const pulse = createPulse();
+    // The corner nav reaching into the field: a hovered corner leans the ambient
+    // static toward it. Read from the shared signal each tick (never React).
+    const cornerPull = createCornerPull();
 
     const draw = () => {
-      drawField(context, fragments, width, height, DEFAULT_TUNING, colors);
+      drawField(context, fragments, width, height, DEFAULT_TUNING, colors, cornerPull);
       drawTrail(context, trail, signalColors, true);
       drawPulse(context, pulse, signalColors);
       drawCore(context, motion, signalColors, true);
@@ -232,6 +242,10 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       frame = null;
       const delta = (time - lastTime) / 1000;
       lastTime = time;
+
+      const hovered = getShellSignal().hoveredCorner;
+      const cornerTarget = hovered ? cornerPoint(hovered, width, height) : null;
+      const pullActive = stepCornerPull(cornerPull, cornerTarget, delta);
 
       const fieldMoving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
       const motionActive = stepPointerMotion(motion, pointerRef.current, delta);
@@ -246,7 +260,8 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
         }
       }
       draw();
-      if (fieldMoving || motionActive || trailActive || pulseActive) schedule();
+      if (fieldMoving || motionActive || trailActive || pulseActive || pullActive)
+        schedule();
     };
 
     const schedule = () => {
@@ -336,6 +351,10 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       wake();
     };
 
+    // A nav hover reaches into the field even when the pointer is nowhere near
+    // the canvas, so the idle loop must be woken by the signal itself.
+    let unsubscribeShell: (() => void) | null = null;
+
     if (!staticOnly) {
       // `passive` and no `preventDefault`: a finger dragged across the hero
       // still scrolls any scrollable content underneath. On touch, `pointermove`
@@ -346,6 +365,7 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       window.addEventListener("pointerleave", handlePointerLeave);
       window.addEventListener("pointercancel", handlePointerLeave);
       window.addEventListener("pointerup", handlePointerLeave);
+      unsubscribeShell = subscribeShellSignal(wake);
     }
 
     // Re-read tokens when the theme flips, and repaint. A static frame repaints
@@ -373,6 +393,7 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       window.removeEventListener("pointerleave", handlePointerLeave);
       window.removeEventListener("pointercancel", handlePointerLeave);
       window.removeEventListener("pointerup", handlePointerLeave);
+      unsubscribeShell?.();
     };
     // `localeKey` is a dependency: a locale switch rewrites the headline in the
     // DOM, so the mask and fragments must be rebuilt against the new text.

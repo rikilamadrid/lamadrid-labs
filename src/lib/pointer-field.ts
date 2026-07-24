@@ -452,6 +452,76 @@ export function resolveWordStatically(fragments: Fragment[]): void {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   Corner pull (Feature: context-awareness)
+
+   The nav is not a bar; it is four corners, and each one reaches *into* the
+   field. When a corner is hovered, the ambient static leans toward it — the
+   fragments angle to point at the corner and brighten slightly, strongest near
+   the corner and fading across the field, so the corner reads as exerting a pull
+   on the noise. Positional only: this never touches `resolve` (the pointer owns
+   that), it is a draw-time bias layered over the ambient lattice. Glyph
+   fragments are exempt — they must keep spelling the headline.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export type CornerPull = {
+  /** A corner is currently engaged (hovered / focused). */
+  engaged: boolean;
+  /** The engaged corner's anchor point, in field CSS px. */
+  x: number;
+  y: number;
+  /** Eased engagement, `[0, 1]`. Leads `engaged` in, lags it out. */
+  strength: number;
+};
+
+export function createCornerPull(): CornerPull {
+  return { engaged: false, x: 0, y: 0, strength: 0 };
+}
+
+/** Engage-in time constant, seconds — quick, so the field answers the hover. */
+const CORNER_TAU_IN = 0.22;
+/** Release time constant, seconds — slower, matching the field's own settle/
+ *  decay asymmetry so the lean lingers as the pointer leaves the corner. */
+const CORNER_TAU_OUT = 0.55;
+
+/**
+ * Advance the corner pull toward `target` (its anchor point, or `null` to
+ * release). Returns `true` while the lean is still easing, so the caller keeps
+ * the loop alive until it has fully relaxed.
+ */
+export function stepCornerPull(
+  pull: CornerPull,
+  target: { x: number; y: number } | null,
+  delta: number,
+): boolean {
+  const step = Math.min(delta, MAX_STEP);
+  pull.engaged = target !== null;
+  if (target) {
+    pull.x = target.x;
+    pull.y = target.y;
+  }
+
+  const goal = pull.engaged ? 1 : 0;
+  const tau = pull.engaged ? CORNER_TAU_IN : CORNER_TAU_OUT;
+  const t = 1 - Math.exp(-step / tau);
+  pull.strength = lerp(pull.strength, goal, t);
+
+  if (!pull.engaged && pull.strength < SETTLED_EPSILON) {
+    pull.strength = 0;
+    return false;
+  }
+  return true;
+}
+
+/** How far an ambient fragment rotates toward the corner at full local pull, as
+ *  a fraction of the way from its own angle to the corner bearing. Below 1 so
+ *  even the nearest static only leans, never snaps into a hard radial fan. */
+const CORNER_MAX_LEAN = 0.7;
+/** Opacity added to a leaning fragment at full local pull — the brighten that
+ *  reads as the static being drawn out of noise. Kept small: the corner tints
+ *  the field, it does not resolve it to signal. */
+const CORNER_MAX_LIFT = 0.16;
+
+/* ═══════════════════════════════════════════════════════════════════════════
    Drawing
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -504,13 +574,39 @@ export function drawField(
   height: number,
   tuning: FieldTuning,
   colors: FieldColors,
+  pull?: CornerPull,
 ): void {
   context.clearRect(0, 0, width, height);
   context.lineCap = "round";
 
+  // Reach over which a corner's pull fades to nothing — the field diagonal, so
+  // the far corner barely leans while the near static leans hardest. Computed
+  // once per frame, not per fragment.
+  const pulling = pull !== undefined && pull.strength > 0;
+  const pullReach = Math.hypot(width, height) || 1;
+
   for (const fragment of fragments) {
     const { resolve, inGlyph } = fragment;
-    const angle = lerp(fragment.noiseAngle, fragment.signalAngle, resolve);
+    let angle = lerp(fragment.noiseAngle, fragment.signalAngle, resolve);
+    let lift = 0;
+
+    // Corner pull: lean ambient static toward the engaged corner and brighten
+    // it, weighted by proximity. Glyph fragments are exempt so the headline
+    // stays intact; the pointer-resolved core simply converges a touch more.
+    if (pulling && !inGlyph) {
+      const dx = pull.x - fragment.x;
+      const dy = pull.y - fragment.y;
+      const proximity = 1 - clamp01(Math.hypot(dx, dy) / pullReach);
+      const weight = pull.strength * proximity * proximity;
+      if (weight > 0.001) {
+        // Rotate toward the corner bearing along the shortest arc (a segment is
+        // symmetric, so its nearest equivalent angle never spins more than a
+        // quarter turn to get there).
+        const bearing = nearestEquivalentAngle(Math.atan2(dy, dx), angle);
+        angle = lerp(angle, bearing, weight * CORNER_MAX_LEAN);
+        lift = weight * CORNER_MAX_LIFT;
+      }
+    }
 
     // Glyph fragments are short and fine so their marks tile a letterform
     // rather than overrun it; ambient fragments keep the coarser field sizes.
@@ -525,10 +621,8 @@ export function drawField(
     const dx = Math.cos(angle) * half;
     const dy = Math.sin(angle) * half;
 
-    context.globalAlpha = lerp(
-      tuning.opacityNoise,
-      tuning.opacitySignal,
-      resolve,
+    context.globalAlpha = clamp01(
+      lerp(tuning.opacityNoise, tuning.opacitySignal, resolve) + lift,
     );
     context.lineWidth = lerp(widthNoise, widthSignal, resolve);
     context.strokeStyle = colorFor(resolve, inGlyph, colors);

@@ -4,14 +4,21 @@ import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/components/ui/MotionPrimitives";
 import {
   DEFAULT_TUNING,
+  createCornerPull,
   createFragments,
   drawField,
   resolveWordStatically,
+  stepCornerPull,
   stepField,
   type Fragment,
   type FieldColors,
   type Pointer,
 } from "@/lib/pointer-field";
+import {
+  cornerPoint,
+  getShellSignal,
+  subscribeShellSignal,
+} from "@/lib/shell-signal";
 
 /**
  * The Work stage's shared Signal / Noise environment.
@@ -58,16 +65,23 @@ export function WorkField({ className }: { className?: string }) {
     let lastTime = 0;
     let disposed = false;
 
+    // The corner nav reaching into the Work field, exactly as in the hero: a
+    // hovered corner leans the ambient static toward it.
+    const cornerPull = createCornerPull();
+
     const draw = () =>
-      drawField(context, fragments, width, height, DEFAULT_TUNING, colors);
+      drawField(context, fragments, width, height, DEFAULT_TUNING, colors, cornerPull);
 
     const tick = (time: number) => {
       frame = null;
       const delta = (time - lastTime) / 1000;
       lastTime = time;
+      const hovered = getShellSignal().hoveredCorner;
+      const cornerTarget = hovered ? cornerPoint(hovered, width, height) : null;
+      const pullActive = stepCornerPull(cornerPull, cornerTarget, delta);
       const moving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
       draw();
-      if (moving) schedule();
+      if (moving || pullActive) schedule();
     };
 
     const schedule = () => {
@@ -124,11 +138,16 @@ export function WorkField({ className }: { className?: string }) {
       wake();
     };
 
+    // A nav hover reaches into the field even when the pointer is elsewhere, so
+    // the idle loop must be woken by the signal itself.
+    let unsubscribeShell: (() => void) | null = null;
+
     if (!staticOnly) {
       window.addEventListener("pointermove", handlePointerMove, { passive: true });
       window.addEventListener("pointerleave", clearPointer);
       window.addEventListener("pointercancel", clearPointer);
       window.addEventListener("pointerup", clearPointer);
+      unsubscribeShell = subscribeShellSignal(wake);
     }
 
     // Stop burning frames while the tab is backgrounded; resume on return.
@@ -158,6 +177,7 @@ export function WorkField({ className }: { className?: string }) {
       window.removeEventListener("pointerleave", clearPointer);
       window.removeEventListener("pointercancel", clearPointer);
       window.removeEventListener("pointerup", clearPointer);
+      unsubscribeShell?.();
     };
   }, [reducedMotion]);
 
