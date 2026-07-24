@@ -426,6 +426,11 @@ export type Pulse = {
   angles: number[];
   /** Outer radius the release reaches, set at fire from energy. */
   radius: number;
+  /** A directed pulse (a nav activation) drifts its whole release toward a
+   *  target as it spreads, so it reads as the signal departing toward the
+   *  chosen corner rather than a symmetric burst. Zero vector = undirected. */
+  dirX: number;
+  dirY: number;
 };
 
 export function createPulse(): Pulse {
@@ -434,18 +439,45 @@ export function createPulse(): Pulse {
     // Golden-ish irregular spacing so nodes never sit on a clean polygon.
     angles.push((i / PULSE_NODES) * Math.PI * 2 + (i % 2) * 0.22);
   }
-  return { active: false, x: 0, y: 0, age: 0, energy: 0, angles, radius: 0 };
+  return { active: false, x: 0, y: 0, age: 0, energy: 0, angles, radius: 0, dirX: 0, dirY: 0 };
 }
 
-/** Arm a pulse at a point. Overwrites any pulse in flight — a rapid double
- *  click restarts rather than stacking, which keeps the layer bounded. */
-export function firePulse(pulse: Pulse, x: number, y: number, energy: number): void {
+/** How far a directed pulse's center travels toward its target over the
+ *  release, as a fraction of the pulse radius. Enough to read as a throw, not so
+ *  far the burst leaves its origin behind. */
+const PULSE_DRIFT = 0.55;
+
+/**
+ * Arm a pulse at a point. Overwrites any pulse in flight — a rapid double click
+ * restarts rather than stacking, which keeps the layer bounded.
+ *
+ * Pass `toward` to make it directional: the release drifts from `(x, y)` toward
+ * that point (a nav corner), throwing the transmission that way.
+ */
+export function firePulse(
+  pulse: Pulse,
+  x: number,
+  y: number,
+  energy: number,
+  toward?: { x: number; y: number },
+): void {
   pulse.active = true;
   pulse.x = x;
   pulse.y = y;
   pulse.age = 0;
   pulse.energy = energy;
   pulse.radius = lerp(72, 132, energy);
+
+  if (toward) {
+    const dx = toward.x - x;
+    const dy = toward.y - y;
+    const distance = Math.hypot(dx, dy) || 1;
+    pulse.dirX = dx / distance;
+    pulse.dirY = dy / distance;
+  } else {
+    pulse.dirX = 0;
+    pulse.dirY = 0;
+  }
 }
 
 /** Advance the pulse. Returns `true` while it is still in flight. */
@@ -467,7 +499,7 @@ export function drawPulse(
   if (!pulse.active) return;
 
   const t = pulse.age / PULSE_LIFE;
-  const { x, y, radius, energy } = pulse;
+  const { radius, energy } = pulse;
   context.lineCap = "round";
 
   // Two beats: compress inward (nodes rush to the core, field held bright),
@@ -486,6 +518,13 @@ export function drawPulse(
     nodeR = lerp(0, radius, eased);
     fade = 1 - release;
   }
+
+  // A directed pulse drifts its whole release toward the target as it spreads;
+  // an undirected one has a zero direction and stays at its origin. Drift is
+  // zero during compression (release 0), so the inward beat is always centered.
+  const drift = release * radius * PULSE_DRIFT;
+  const x = pulse.x + pulse.dirX * drift;
+  const y = pulse.y + pulse.dirY * drift;
 
   const base = lerp(0.45, 0.85, energy);
 

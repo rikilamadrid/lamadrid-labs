@@ -4,8 +4,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useDictionary } from "@/components/i18n/LocaleProvider";
 import { CORNER_ICONS } from "@/components/shell/nav/icons";
 import { useShell } from "@/components/shell/ShellProvider";
-import { cornerNavItems, type ViewKey } from "@/data/navigation";
-import { setHoveredCorner } from "@/lib/shell-signal";
+import { cornerNavItems, type Corner, type ViewKey } from "@/data/navigation";
+import { fireCornerActivation, setHoveredCorner } from "@/lib/shell-signal";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
 import { SoundToggle } from "@/components/ui/SoundToggle";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
@@ -36,8 +36,10 @@ export function ShellNav() {
   const [pulse, setPulse] = useState<{ key: ViewKey; n: number } | null>(null);
 
   const activate = useCallback(
-    (key: ViewKey) => {
+    (key: ViewKey, corner: Corner) => {
       setPulse((prev) => ({ key, n: (prev?.n ?? 0) + 1 }));
+      // Tell the field so it throws its pulse toward this corner, then switch.
+      fireCornerActivation(corner);
       setView(key);
     },
     [setView],
@@ -81,7 +83,7 @@ export function ShellNav() {
             <button
               key={item.key}
               type="button"
-              onClick={() => activate(item.key)}
+              onClick={() => activate(item.key, item.corner)}
               // Hover / focus leans the central field's static toward this
               // corner (see `shell-signal`). Mouse only — a touch tap must not
               // linger as a pull; keyboard focus counts, so the field answers

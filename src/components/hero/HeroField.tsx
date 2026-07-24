@@ -230,6 +230,9 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
     // The corner nav reaching into the field: a hovered corner leans the ambient
     // static toward it. Read from the shared signal each tick (never React).
     const cornerPull = createCornerPull();
+    // Activation nonce already seen — so a corner clicked before this field
+    // mounted does not throw a stale pulse on the first tick.
+    let seenActivation = getShellSignal().activationNonce;
 
     const draw = () => {
       drawField(context, fragments, width, height, DEFAULT_TUNING, colors, cornerPull);
@@ -243,9 +246,27 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       const delta = (time - lastTime) / 1000;
       lastTime = time;
 
-      const hovered = getShellSignal().hoveredCorner;
+      const signal = getShellSignal();
+      const hovered = signal.hoveredCorner;
       const cornerTarget = hovered ? cornerPoint(hovered, width, height) : null;
       const pullActive = stepCornerPull(cornerPull, cornerTarget, delta);
+
+      // A corner activation throws the pulse from the field center toward that
+      // corner — the signal departing for the chosen destination as the hero
+      // hands off. A deliberate click always reads confidently, so it fires at
+      // least a mid-energy burst even from rest.
+      if (signal.activationNonce !== seenActivation) {
+        seenActivation = signal.activationNonce;
+        if (signal.activationCorner) {
+          firePulse(
+            pulse,
+            width / 2,
+            height / 2,
+            Math.max(motion.energy, 0.5),
+            cornerPoint(signal.activationCorner, width, height),
+          );
+        }
+      }
 
       const fieldMoving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
       const motionActive = stepPointerMotion(motion, pointerRef.current, delta);
