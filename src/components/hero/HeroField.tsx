@@ -164,10 +164,14 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
     const context = canvas.getContext("2d");
     if (!context) return;
 
-    // Touch and pen: no hover, so the field cannot be driven. Render the whole
-    // word resolved once and never start a loop — same path as reduced motion.
+    // Only reduced motion is fully static. Touch devices get a live field too:
+    // the word rests resolved (a phone visitor who never touches still sees the
+    // finished headline) and a dragging finger drives the ambient field just as
+    // the mouse does on desktop — the same "structure follows the pointer"
+    // interaction, by touch.
     const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
-    const staticOnly = reducedMotion || coarsePointer;
+    const staticOnly = reducedMotion;
+    const touchMode = coarsePointer && !reducedMotion;
 
     let fragments: Fragment[] = [];
     let colors = readColors(canvas);
@@ -185,6 +189,14 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       lastTime = time;
 
       const moving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
+      // On touch the headline stays resolved regardless of the finger — the
+      // finger only sculpts the ambient field around it. (On desktop the word
+      // resolves under the pointer instead, so this override is touch-only.)
+      if (touchMode) {
+        for (const fragment of fragments) {
+          if (fragment.inGlyph) fragment.resolve = 1;
+        }
+      }
       draw();
       if (moving) schedule();
     };
@@ -223,6 +235,15 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
         return;
       }
 
+      // Touch rests with the word resolved and the ambient field calm; the loop
+      // stays parked until the first finger drag wakes it (see the pointer
+      // listeners), so idle phones pay nothing.
+      if (touchMode) {
+        resolveWordStatically(fragments);
+        draw();
+        return;
+      }
+
       draw();
       wake();
     };
@@ -254,10 +275,13 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
 
     if (!staticOnly) {
       // `passive` and no `preventDefault`: a finger dragged across the hero
-      // still scrolls the page.
+      // still scrolls any scrollable content underneath. On touch, `pointermove`
+      // only fires while a finger is down, so a drag is what drives the field;
+      // `pointerup` lets the ambient order decay back once the finger lifts.
       window.addEventListener("pointermove", handlePointerMove, { passive: true });
       window.addEventListener("pointerleave", handlePointerLeave);
       window.addEventListener("pointercancel", handlePointerLeave);
+      window.addEventListener("pointerup", handlePointerLeave);
     }
 
     // Re-read tokens when the theme flips, and repaint. A static frame repaints
@@ -282,6 +306,7 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("pointerleave", handlePointerLeave);
       window.removeEventListener("pointercancel", handlePointerLeave);
+      window.removeEventListener("pointerup", handlePointerLeave);
     };
     // `localeKey` is a dependency: a locale switch rewrites the headline in the
     // DOM, so the mask and fragments must be rebuilt against the new text.
