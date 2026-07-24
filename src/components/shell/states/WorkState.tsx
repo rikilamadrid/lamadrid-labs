@@ -66,12 +66,12 @@ export function WorkState() {
   };
 
   return (
-    <section className="relative h-full w-full overflow-y-auto overflow-x-hidden">
+    <section className="relative h-full w-full overflow-hidden">
       <WorkField className="pointer-events-none absolute inset-0 z-0 h-full w-full" />
 
-      <div className="relative z-10 mx-auto grid min-h-full w-full max-w-6xl grid-cols-1 items-stretch gap-10 px-6 pb-16 pt-24 sm:px-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:items-center lg:gap-12 lg:px-14 lg:pb-14 lg:pt-14">
+      <div className="relative z-10 mx-auto grid h-full w-full max-w-6xl grid-cols-1 content-center items-center gap-6 px-6 pb-8 pt-20 sm:px-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:content-center lg:gap-12 lg:px-14 lg:py-14">
         {/* ── Left: heading + editorial index ── */}
-        <div className="flex flex-col justify-between gap-10 lg:h-full lg:max-h-[560px]">
+        <div className="flex flex-col justify-center gap-6 lg:justify-between lg:gap-10 lg:h-full lg:max-h-[560px]">
           <header className="flex flex-col gap-3">
             <span className="lab-label">
               <span aria-hidden="true" className="lab-eyebrow-dot" />
@@ -102,15 +102,18 @@ export function WorkState() {
           </ul>
         </div>
 
-        {/* ── Right: living preview, tinted into the active project's accent ── */}
+        {/* ── Right: living preview, tinted into the active project's accent ──
+            Hidden on mobile: the shell is no-scroll there, so the screen belongs
+            to the index and its statement; the decorative preview returns at lg
+            where there is room beside the index. */}
         <div
           style={accentStyle}
-          className="flex items-center justify-center lg:h-full"
+          className="hidden items-center justify-center lg:flex lg:h-full"
         >
           <ProjectPreview projectId={selectedProject.id} />
         </div>
 
-        {/* Mobile: a plain readable statement under the preview so the active
+        {/* Mobile: a plain readable statement under the index so the active
             project always resolves to words on small screens. */}
         <p className="max-w-sm text-sm text-lab-muted lg:hidden" aria-live="polite">
           {selectedContent.world.statement}
@@ -157,7 +160,7 @@ const IndexRow = ({
         }}
         onKeyDown={onKeyDown}
         aria-current={active ? "true" : undefined}
-        className="group flex w-full items-baseline gap-4 border-b border-lab-line py-4 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lab-signal-strong"
+        className="group flex w-full items-baseline gap-4 border-b border-lab-line py-3.5 text-left outline-none transition-colors focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-lab-signal-strong sm:py-4"
       >
         <span
           className={`shrink-0 font-mono text-xs tabular-nums transition-colors ${
