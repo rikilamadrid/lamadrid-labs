@@ -140,6 +140,13 @@ function buildGlyphMask(
 
   for (const line of lines) {
     const rect = line.getBoundingClientRect();
+    // `rect` is the line *block*, which is full-width; its `left` is not where
+    // the text ink starts once the headline is centered (or right-aligned). A
+    // range over the line's contents gives the text's true horizontal box, so
+    // the mask registers against the rendered glyphs instead of the block edge.
+    const range = document.createRange();
+    range.selectNodeContents(line);
+    const textRect = range.getBoundingClientRect();
     const styles = getComputedStyle(line);
     // Build the font shorthand by hand — `styles.font` is empty in several
     // browsers when the longhands are set individually.
@@ -158,7 +165,9 @@ function buildGlyphMask(
       metrics.fontBoundingBoxDescent || metrics.actualBoundingBoxDescent;
     const leading = (rect.height - (fontAscent + fontDescent)) / 2;
 
-    const lineLeft = rect.left - canvasRect.left - originX;
+    // Horizontal from the text box (accounts for centering); vertical from the
+    // block's line box (the leading model above is relative to it).
+    const lineLeft = textRect.left - canvasRect.left - originX;
     const lineTop = rect.top - canvasRect.top - originY;
     const baseline = lineTop + leading + fontAscent;
 
