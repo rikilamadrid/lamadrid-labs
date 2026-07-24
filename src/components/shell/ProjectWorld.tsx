@@ -9,7 +9,6 @@ import {
 } from "@/components/i18n/LocaleProvider";
 import { HeroField } from "@/components/hero/HeroField";
 import { useShell } from "@/components/shell/ShellProvider";
-import { MotionReveal } from "@/components/ui/MotionPrimitives";
 import { projects, type ProjectId } from "@/data/projects";
 import { useTheme } from "@/lib/theme";
 
@@ -25,8 +24,12 @@ import { useTheme } from "@/lib/theme";
  * accent below it) into the project's own color — Home and the Work index keep
  * the one canonical signal, so signal scarcity holds outside the world.
  *
- * The world owns its own vertical scroll (a project holds more than one
- * viewport of content); the shell itself never page-scrolls.
+ * The world is a single no-scroll screen, matching the rest of the shell. On
+ * mobile it condenses to a stack — the field-resolved title, statement, a tight
+ * problem/solution/outcome, and the tech tags — all inside one viewport. At `lg`
+ * it opens into a split: the title/statement/actions sit beside the full detail
+ * column (problem/solution/outcome, tech, architecture, results), so the deeper
+ * content lives *next to* the title rather than below a scroll.
  */
 export function ProjectWorld({ id }: { id: ProjectId }) {
   const dict = useDictionary();
@@ -87,6 +90,8 @@ export function ProjectWorld({ id }: { id: ProjectId }) {
   const world = content.world;
   const labels = dict.work.world;
 
+  const hasActions = Boolean(project.url || project.repositoryUrl);
+
   return (
     <div
       ref={rootRef}
@@ -94,37 +99,44 @@ export function ProjectWorld({ id }: { id: ProjectId }) {
       role="region"
       aria-label={content.title}
       style={accentStyle}
-      className="h-full w-full overflow-y-auto overflow-x-hidden bg-lab-bg outline-none"
+      className="relative isolate h-full w-full overflow-hidden bg-lab-bg outline-none"
     >
-      {/* ── Hero: the field resolves the project name in the project's accent ──
-          Content is spread top → middle → bottom so it fills the viewport
-          instead of floating in the center. The wrappers carry no z-index or
-          transform, so the field (z-10) can still sit above the h1 (z-0) while
-          the copy (z-20) stays above the field. */}
-      <section className="lab-section isolate relative flex min-h-svh flex-col justify-between gap-10 overflow-hidden">
-        <HeroField
-          headingRef={headingRef}
-          localeKey={`${locale}-${id}-${settled}`}
-          className="pointer-events-none absolute inset-0 z-10 h-full w-full"
-        />
+      {/* The field resolves the project name in the project's accent, spanning
+          the whole screen. Layering (same as the home hero): the h1 sits below
+          the canvas (z-0) so the field can rasterize and resolve it; the field
+          is z-10; every other piece of copy is z-20, above the field. The layout
+          wrappers below carry no z-index or transform, so those per-element
+          layers all resolve against this `isolate` root. */}
+      <HeroField
+        headingRef={headingRef}
+        localeKey={`${locale}-${id}-${settled}`}
+        className="pointer-events-none absolute inset-0 z-10 h-full w-full"
+      />
 
-        <div className="mx-auto flex w-full max-w-5xl flex-col gap-3">
-          <button
-            type="button"
-            onClick={closeProject}
-            className="lab-label relative z-20 inline-flex w-fit items-center gap-1.5 rounded-lab-sm text-lab-muted outline-none transition-colors hover:text-lab-signal focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
-          >
-            <span aria-hidden="true">&larr;</span>
-            {labels.back}
-          </button>
-          <span className="lab-label relative z-20 text-lab-muted">
-            {labels.overview} · {dict.work.type[toTypeKey(project.type)]}
-          </span>
-        </div>
+      {/* One no-scroll screen: a mobile stack that condenses into a split at lg,
+          so the detail column sits *beside* the title instead of below a scroll. */}
+      <div className="mx-auto flex h-full w-full max-w-6xl flex-col justify-center gap-5 px-6 pb-8 pt-14 sm:gap-6 sm:px-10 lg:grid lg:grid-cols-[minmax(0,5fr)_minmax(0,6fr)] lg:content-center lg:items-center lg:gap-14 lg:px-14 lg:py-14">
+        {/* ── Left: identity — back, meta, title, statement, actions ── */}
+        <div className="flex flex-col gap-4 lg:gap-6">
+          <div className="flex flex-col gap-2">
+            <button
+              type="button"
+              onClick={closeProject}
+              className="lab-label relative z-20 inline-flex w-fit items-center gap-1.5 rounded-lab-sm text-lab-muted outline-none transition-colors hover:text-lab-signal focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
+            >
+              <span aria-hidden="true">&larr;</span>
+              {labels.back}
+            </button>
+            <span className="lab-label relative z-20 inline-flex flex-wrap items-center gap-x-2 gap-y-1 text-lab-muted">
+              {labels.overview} · {dict.work.type[toTypeKey(project.type)]}
+              <span aria-hidden="true" className="text-lab-line-strong">·</span>
+              <span className="inline-flex items-center gap-1.5 text-lab-signal">
+                <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-lab-signal" />
+                {dict.work.status[toStatusKey(project.status)]}
+              </span>
+            </span>
+          </div>
 
-        <div className="mx-auto flex w-full max-w-5xl flex-col items-start gap-6 text-left">
-          {/* Same layering as the home hero: the h1 sits below the canvas so the
-              field can rasterize and resolve it; supporting copy stays above. */}
           <h1 ref={headingRef} className="relative z-0 max-w-3xl">
             {/* Shared-element morph target: this line travels from the Work
                 index card of the same project (`layoutId`), so the title
@@ -141,12 +153,12 @@ export function ProjectWorld({ id }: { id: ProjectId }) {
             </motion.span>
           </h1>
 
-          <p className="relative z-20 max-w-2xl text-2xl leading-snug text-lab-ink">
+          <p className="relative z-20 max-w-2xl text-base leading-snug text-lab-ink sm:text-xl lg:text-2xl">
             {world.statement}
           </p>
 
-          {(project.url || project.repositoryUrl) && (
-            <div className="relative z-20 mt-1 flex flex-wrap gap-3">
+          {hasActions && (
+            <div className="relative z-20 flex flex-wrap gap-3">
               {project.url && (
                 <ExternalAction href={project.url}>
                   {labels.visitLive}
@@ -161,94 +173,90 @@ export function ProjectWorld({ id }: { id: ProjectId }) {
           )}
         </div>
 
-        <div className="mx-auto flex w-full max-w-5xl flex-wrap items-center justify-between gap-4 border-t border-lab-line pt-5">
-          <div className="relative z-20 flex flex-wrap items-center gap-x-3 gap-y-2">
-            <span className="inline-flex items-center gap-1.5 text-sm font-medium text-lab-signal">
-              <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-lab-signal" />
-              {dict.work.status[toStatusKey(project.status)]}
-            </span>
-            <span aria-hidden="true" className="text-lab-line-strong">·</span>
-            <span className="lab-label text-lab-muted">{content.tags.join(" · ")}</span>
+        {/* ── Right: the detail column, beside the title on lg ──
+            Problem/solution/outcome and tech ride along on mobile too (the
+            condensed one-screen set); architecture and results are the deeper
+            reference material, shown only at lg where the split has room for
+            them without a scroll. */}
+        <div className="relative z-20 flex flex-col gap-5 lg:gap-6">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-3 lg:grid-cols-1 lg:gap-4">
+            <NarrativeBlock label={labels.problem} body={world.problem} />
+            <NarrativeBlock label={labels.solution} body={world.solution} />
+            <NarrativeBlock label={labels.outcome} body={world.outcome} />
           </div>
-          <span className="lab-label relative z-20 inline-flex items-center gap-1.5 text-lab-muted">
-            {labels.scroll}
-            <span aria-hidden="true">&darr;</span>
-          </span>
+
+          <DetailBlock label={labels.tech}>
+            <ul className="flex flex-wrap gap-2">
+              {content.tags.map((tag) => (
+                <li key={tag} className="lab-token">
+                  {tag}
+                </li>
+              ))}
+            </ul>
+          </DetailBlock>
+
+          <DetailBlock label={labels.architecture} className="hidden lg:flex">
+            <ul className="flex flex-col gap-2">
+              {world.architecture.map((line) => (
+                <li key={line} className="flex gap-3 text-sm text-lab-muted">
+                  <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-lab-signal" />
+                  <span className="max-w-2xl">{line}</span>
+                </li>
+              ))}
+            </ul>
+          </DetailBlock>
+
+          {/* Results are qualitative only — no fabricated metrics (brand rule).
+              TODO(ricardo): when real figures exist, add a metrics row here
+              (label + value) sourced from project data, distinct from these
+              qualitative outcomes. */}
+          <DetailBlock label={labels.results} className="hidden lg:flex">
+            <ul className="flex flex-col gap-2">
+              {world.results.map((line) => (
+                <li key={line} className="flex gap-3 text-sm text-lab-ink">
+                  <span aria-hidden="true" className="mt-1.5 h-1.5 w-1.5 shrink-0 rounded-full bg-lab-signal" />
+                  <span className="max-w-2xl">{line}</span>
+                </li>
+              ))}
+            </ul>
+          </DetailBlock>
         </div>
-      </section>
-
-      {/* ── Below the fold: the project's narrative and details ── */}
-      <div className="lab-section mx-auto flex w-full max-w-4xl flex-col gap-16 pb-28">
-        <div className="grid grid-cols-1 gap-10 sm:grid-cols-3">
-          <NarrativeBlock label={labels.problem} body={world.problem} />
-          <NarrativeBlock label={labels.solution} body={world.solution} />
-          <NarrativeBlock label={labels.outcome} body={world.outcome} />
-        </div>
-
-        <DetailBlock label={labels.tech}>
-          <ul className="flex flex-wrap gap-2">
-            {content.tags.map((tag) => (
-              <li key={tag} className="lab-token">
-                {tag}
-              </li>
-            ))}
-          </ul>
-        </DetailBlock>
-
-        <DetailBlock label={labels.architecture}>
-          <ul className="flex flex-col gap-3">
-            {world.architecture.map((line) => (
-              <li key={line} className="flex gap-3 text-lab-muted">
-                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-lab-signal" />
-                <span className="max-w-2xl">{line}</span>
-              </li>
-            ))}
-          </ul>
-        </DetailBlock>
-
-        {/* Results are qualitative only — no fabricated metrics (brand rule).
-            TODO(ricardo): when real figures exist, add a metrics row here
-            (label + value) sourced from project data, distinct from these
-            qualitative outcomes. */}
-        <DetailBlock label={labels.results}>
-          <ul className="flex flex-col gap-3">
-            {world.results.map((line) => (
-              <li key={line} className="flex gap-3 text-lab-ink">
-                <span aria-hidden="true" className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-lab-signal" />
-                <span className="max-w-2xl">{line}</span>
-              </li>
-            ))}
-          </ul>
-        </DetailBlock>
       </div>
     </div>
   );
 }
 
+// Plain (not `whileInView`) blocks: the world is one no-scroll screen, so a
+// scroll-triggered reveal with a `-80px` viewport margin could leave the lower
+// blocks stranded at opacity 0. The world's own scale-fade entrance carries the
+// motion; these just render.
 function NarrativeBlock({ label, body }: { label: string; body: string }) {
   return (
-    <MotionReveal className="flex flex-col gap-2">
+    <div className="flex flex-col gap-1.5">
       <span className="lab-label text-lab-signal">{label}</span>
-      <p className="text-lab-muted">{body}</p>
-    </MotionReveal>
+      {/* Clamp on mobile so the condensed one-screen stack never clips mid-line;
+          the full text returns in the lg split, which has room for it. */}
+      <p className="line-clamp-3 text-sm text-lab-muted lg:line-clamp-none">
+        {body}
+      </p>
+    </div>
   );
 }
 
 function DetailBlock({
   label,
+  className,
   children,
 }: {
   label: string;
+  className?: string;
   children: React.ReactNode;
 }) {
   return (
-    <MotionReveal className="flex flex-col gap-4">
-      {/* A plain display heading — the base `h2` rule (serif, sized, ink) owns
-          the look; layered utilities lose to it in this codebase, so we don't
-          fight it (same gotcha noted in Hero / PlaceholderState). */}
-      <h2>{label}</h2>
+    <div className={`flex flex-col gap-2.5${className ? ` ${className}` : ""}`}>
+      <span className="lab-label text-lab-signal">{label}</span>
       {children}
-    </MotionReveal>
+    </div>
   );
 }
 

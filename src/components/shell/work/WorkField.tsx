@@ -25,9 +25,12 @@ import {
  *
  * As in `HeroField`: pointer position lives in a ref, React is never in the
  * animation loop, the loop idles when the field settles and pauses when the tab
- * is hidden. Reduced motion and coarse pointers render a single calm static
- * frame. The canvas is decorative (`aria-hidden`, `pointer-events-none`); the
- * DOM index and previews above it own all interaction and semantics.
+ * is hidden. Only reduced motion renders a single frozen frame; touch devices
+ * get a live field too — the field rests calm and a dragging finger sculpts it
+ * just as the mouse does on desktop (the Work index no longer page-scrolls on
+ * mobile, so a finger drag is free to drive the field). The canvas is decorative
+ * (`aria-hidden`, `pointer-events-none`); the DOM index and previews above it
+ * own all interaction and semantics.
  */
 export function WorkField({ className }: { className?: string }) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
@@ -40,8 +43,12 @@ export function WorkField({ className }: { className?: string }) {
     const context = canvas.getContext("2d");
     if (!context) return;
 
+    // Only reduced motion is fully frozen. A coarse pointer gets a live field
+    // that rests calm and wakes on a finger drag (see the pointer listeners),
+    // so an idle phone still pays nothing but a drag drives the field.
     const coarsePointer = window.matchMedia("(pointer: coarse)").matches;
-    const staticOnly = reducedMotion || coarsePointer;
+    const staticOnly = reducedMotion;
+    const touchMode = coarsePointer && !reducedMotion;
 
     let fragments: Fragment[] = [];
     let colors = readColors(canvas);
@@ -89,6 +96,11 @@ export function WorkField({ className }: { className?: string }) {
       if (staticOnly) {
         // A calm resting field; nothing resolves to signal without a pointer.
         resolveWordStatically(fragments);
+        draw();
+        return;
+      }
+      if (touchMode) {
+        // Rest calm and park the loop until the first finger drag wakes it.
         draw();
         return;
       }
