@@ -478,9 +478,15 @@ p {
   transition: color var(--lab-duration-base) var(--lab-ease-resolve);
 }
 
+/* Home (top-left) is the brand corner: the Dynamic-Frame mark with the
+   "Lamadrid Labs" wordmark stacked directly under it, so it reads as a
+   wordmark rather than an icon + inline label. */
 .shell-corner[data-corner="tl"] {
   top: var(--shell-inset-top);
   left: var(--shell-inset-left);
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.3rem;
 }
 .shell-corner[data-corner="tr"] {
   top: var(--shell-inset-top);
@@ -518,7 +524,7 @@ p {
 }
 
 /* Active indicator is never color alone: a short accent line grows under the
-   label (or under the icon, for label-less Home). */
+   label. */
 .shell-corner__label::after {
   content: "";
   position: absolute;

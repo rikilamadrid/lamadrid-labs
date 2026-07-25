@@ -595,6 +595,10 @@ export function stepRowBand(
   return moving;
 }
 
+/** Half-length of the band, CSS px: it fades fully to nothing this far to
+ *  either side of the focus x, keeping it a contained segment behind the index
+ *  rather than a stripe across the viewport. */
+const BAND_H_REACH = 300;
 /** Core half-height of the resolved band, CSS px — a row's worth of signal. */
 const BAND_CORE_HALF = 24;
 /** Skirt reach beyond the core over which static drifts inward, CSS px. */
@@ -669,10 +673,6 @@ export function drawField(
   const pulling = pull !== undefined && pull.strength > 0;
   const pullReach = Math.hypot(width, height) || 1;
   const banding = band !== undefined && band.strength > 0;
-  // Horizontal taper of the band: brightest around the focus x, never fully
-  // zero across the width, so the band reads as one horizontal signal rather
-  // than a localized blob. Wide sigma; computed per fragment from this reach.
-  const bandHReach = width * 0.75 || 1;
 
   for (const fragment of fragments) {
     const { resolve, inGlyph } = fragment;
@@ -706,9 +706,11 @@ export function drawField(
       //    skirt static inward toward the band line ──
       if (banding) {
         const ady = Math.abs(fragment.y - band.y);
-        const hWeight =
-          0.35 + 0.65 * (1 - clamp01(Math.abs(fragment.x - band.centerX) / bandHReach));
-        if (ady < BAND_CORE_HALF) {
+        // Horizontal taper: the band is a contained segment behind the index,
+        // brightest at the focus x and fully gone by `BAND_H_REACH` — not a
+        // stripe across the whole viewport.
+        const hWeight = 1 - clamp01(Math.abs(fragment.x - band.centerX) / BAND_H_REACH);
+        if (hWeight > 0 && ady < BAND_CORE_HALF) {
           // Core: raise effective resolve so the static aligns horizontal,
           // lengthens and brightens; the brightest center may reach signal.
           const vertical = 0.5 + 0.5 * (1 - ady / BAND_CORE_HALF);

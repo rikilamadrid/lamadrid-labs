@@ -6,10 +6,13 @@ import {
   useDictionary,
   useLocaleContext,
 } from "@/components/i18n/LocaleProvider";
+import { useShell } from "@/components/shell/ShellProvider";
+import { fireCornerActivation } from "@/lib/shell-signal";
 
 export function Hero() {
   const dict = useDictionary();
   const { locale } = useLocaleContext();
+  const { setView } = useShell();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
   return (
@@ -43,12 +46,18 @@ export function Hero() {
         <p className="relative z-20 w-full max-w-md">{dict.hero.lead}</p>
 
         <div className="relative z-20 mt-2">
-          <a
-            href="#work"
+          <button
+            type="button"
+            onClick={() => {
+              // Same hand-off as the nav Work corner: throw the field's pulse
+              // toward the top-right corner as the hero morphs into Work.
+              fireCornerActivation("tr");
+              setView("work");
+            }}
             className="inline-flex items-center justify-center rounded-full border border-lab-line-strong px-6 py-3 text-sm font-medium text-lab-ink outline-none transition-colors hover:border-lab-signal hover:text-lab-signal focus-visible:ring-2 focus-visible:ring-lab-signal"
           >
             {dict.hero.ctaPrimary}
-          </a>
+          </button>
         </div>
       </div>
     </section>

@@ -94,9 +94,9 @@ export function ShellNav() {
               onPointerLeave={() => setHoveredCorner(null)}
               onFocus={() => setHoveredCorner(item.corner)}
               onBlur={() => setHoveredCorner(null)}
-              // Home is icon-only, so it names itself with the brand (which is
-              // also the Home action). The rest are named by their visible label.
-              aria-label={isHome ? "Lamadrid Labs" : undefined}
+              // Every corner is named by its visible label — the brand wordmark
+              // under Home (which is also the Home action), the translated label
+              // for the rest.
               aria-current={isActive ? "page" : undefined}
               data-corner={item.corner}
               data-active={isActive || undefined}
@@ -114,9 +114,9 @@ export function ShellNav() {
                   />
                 )}
               </span>
-              {!isHome && (
-                <span className="shell-corner__label">{dict.nav[item.key]}</span>
-              )}
+              <span className="shell-corner__label">
+                {isHome ? "Lamadrid Labs" : dict.nav[item.key]}
+              </span>
             </button>
           );
         })}

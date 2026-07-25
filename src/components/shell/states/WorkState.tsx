@@ -71,7 +71,12 @@ export function WorkState() {
       const row = rowRefs.current[selected];
       if (!row) return;
       const rect = row.getBoundingClientRect();
-      setWorkBand({ clientY: rect.top + rect.height / 2, clientX: rect.right });
+      // Focus x sits over the row's title (left portion), so the contained band
+      // resolves behind the index text rather than reaching across the screen.
+      setWorkBand({
+        clientY: rect.top + rect.height / 2,
+        clientX: rect.left + rect.width * 0.28,
+      });
     };
     publish();
     window.addEventListener("resize", publish);
