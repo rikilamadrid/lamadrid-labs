@@ -3,6 +3,7 @@ import { Geist, Geist_Mono, Instrument_Serif } from "next/font/google";
 import { LocaleProvider } from "@/components/i18n/LocaleProvider";
 import { ShellNav } from "@/components/shell/ShellNav";
 import { ShellProvider } from "@/components/shell/ShellProvider";
+import { SignalSurface } from "@/components/shell/SignalSurface";
 import { LOCALE_INIT_SCRIPT } from "@/lib/locale";
 import { SOUND_INIT_SCRIPT } from "@/lib/sound";
 import { THEME_INIT_SCRIPT } from "@/lib/theme";
@@ -101,6 +102,10 @@ export default function RootLayout({
           <ShellProvider>
             <ShellNav />
             <main id="main-content" className="relative h-svh w-full">
+              {/* The one persistent Signal / Noise canvas. A sibling of the stage
+                  in the same root stacking context, so it survives every state
+                  swap and interleaves with the state DOM via the LAYERS z-scale. */}
+              <SignalSurface />
               {children}
             </main>
           </ShellProvider>

@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Changed
+
+- Signal / Noise engine substrate, slice 2 — global surface + Home migration: the slice-1 engine is now wired in for the first time. One persistent full-viewport canvas (`shell/SignalSurface.tsx`) mounts in the shell root at `LAYERS.field` and drives a single `SignalEngine` for the app's lifetime — states hand it a config and it morphs (`configure`), never remounts. **Home** no longer owns a canvas: it publishes its `<h1>` to the headline bus (`setHeadlineElement`) and the global field resolves it, with the canvas interleaved between the headline (`LAYERS.contentBelow`) and the supporting copy (`LAYERS.content`) via the shared z-scale (the hero section drops its `isolate` so the fixed canvas can sit between them). Visually identical to the former `HeroField` — headline resolves under the pointer, resting frame stays legible/unresolved, reduced motion renders the static resolved word, touch keeps the headline resolved. A temporary migration gate (`interimConfigForView`) keeps every non-Home view dormant so the legacy `WorkField` still owns Work with no double field; it and the standalone `HeroField` (still used by `ProjectWorld`) are retired in later slices. `ShellStage`'s per-view wrapper deliberately carries no stacking context so the interleave holds; the "field morphs instead of a full-field crossfade" transition rework is deferred to slice 3, when Home and Work both live on the global field.
+
 ### Removed
 
 - Deleted the last parked scroll-era section, `sections/Contact.tsx` (unused — `contact` renders a `PlaceholderState`), and its now-dead exclusively-used styles: `.lab-eyebrow` and `.lab-section-header` in `globals.css`, plus the unused `MotionReveal` / `MotionCard` / `MotionLinkCard` primitives (`ui/MotionPrimitives.tsx` keeps `usePrefersReducedMotion`, still used by the field components). `.lab-eyebrow-dot` and `.lab-section` stay (used by the shell states and hero); `contactLink` stays (used by the footer). The `src/components/sections/` folder now holds only `Hero.tsx`.
