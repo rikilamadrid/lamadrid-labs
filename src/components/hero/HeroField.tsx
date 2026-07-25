@@ -4,15 +4,35 @@ import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/components/ui/MotionPrimitives";
 import {
   DEFAULT_TUNING,
+  createCornerPull,
   createFragments,
   drawField,
   resolveWordStatically,
+  stepCornerPull,
   stepField,
   type FieldColors,
   type Fragment,
   type GlyphMask,
   type Pointer,
 } from "@/lib/pointer-field";
+import {
+  createPointerMotion,
+  createPulse,
+  createTrail,
+  drawCore,
+  drawPulse,
+  drawTrail,
+  firePulse,
+  stepPointerMotion,
+  stepPulse,
+  stepTrail,
+  type SignalColors,
+} from "@/lib/pointer-signal";
+import {
+  cornerPoint,
+  getShellSignal,
+  subscribeShellSignal,
+} from "@/lib/shell-signal";
 
 /**
  * The hero's pointer field — the Feature 3 engine, now carrying the headline.
@@ -58,6 +78,16 @@ function readColors(element: HTMLElement): FieldColors {
       read("--lab-noise-4"),
     ],
     signal: read("--lab-signal"),
+  };
+}
+
+function readSignalColors(element: HTMLElement): SignalColors {
+  const styles = getComputedStyle(element);
+  const read = (token: string) => styles.getPropertyValue(token).trim();
+  return {
+    signal: read("--lab-signal"),
+    signalStrong: read("--lab-signal-strong"),
+    energy: read("--lab-energy"),
   };
 }
 
@@ -117,6 +147,13 @@ function buildGlyphMask(
 
   for (const line of lines) {
     const rect = line.getBoundingClientRect();
+    // `rect` is the line *block*, which is full-width; its `left` is not where
+    // the text ink starts once the headline is centered (or right-aligned). A
+    // range over the line's contents gives the text's true horizontal box, so
+    // the mask registers against the rendered glyphs instead of the block edge.
+    const range = document.createRange();
+    range.selectNodeContents(line);
+    const textRect = range.getBoundingClientRect();
     const styles = getComputedStyle(line);
     // Build the font shorthand by hand — `styles.font` is empty in several
     // browsers when the longhands are set individually.
@@ -135,7 +172,9 @@ function buildGlyphMask(
       metrics.fontBoundingBoxDescent || metrics.actualBoundingBoxDescent;
     const leading = (rect.height - (fontAscent + fontDescent)) / 2;
 
-    const lineLeft = rect.left - canvasRect.left - originX;
+    // Horizontal from the text box (accounts for centering); vertical from the
+    // block's line box (the leading model above is relative to it).
+    const lineLeft = textRect.left - canvasRect.left - originX;
     const lineTop = rect.top - canvasRect.top - originY;
     const baseline = lineTop + leading + fontAscent;
 
@@ -175,20 +214,64 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
 
     let fragments: Fragment[] = [];
     let colors = readColors(canvas);
+    let signalColors = readSignalColors(canvas);
     let width = 0;
     let height = 0;
     let frame: number | null = null;
     let lastTime = 0;
     let disposed = false;
 
-    const draw = () => drawField(context, fragments, width, height, DEFAULT_TUNING, colors);
+    // The velocity-driven foreground: a signal core and directional wake. The
+    // channel split and acid accent are motion artifacts, so they ride along
+    // on every live path (desktop and touch) but never on the static frame.
+    const motion = createPointerMotion();
+    const trail = createTrail();
+    const pulse = createPulse();
+    // The corner nav reaching into the field: a hovered corner leans the ambient
+    // static toward it. Read from the shared signal each tick (never React).
+    const cornerPull = createCornerPull();
+    // Activation nonce already seen — so a corner clicked before this field
+    // mounted does not throw a stale pulse on the first tick.
+    let seenActivation = getShellSignal().activationNonce;
+
+    const draw = () => {
+      drawField(context, fragments, width, height, DEFAULT_TUNING, colors, cornerPull);
+      drawTrail(context, trail, signalColors, true);
+      drawPulse(context, pulse, signalColors);
+      drawCore(context, motion, signalColors, true);
+    };
 
     const tick = (time: number) => {
       frame = null;
       const delta = (time - lastTime) / 1000;
       lastTime = time;
 
-      const moving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
+      const signal = getShellSignal();
+      const hovered = signal.hoveredCorner;
+      const cornerTarget = hovered ? cornerPoint(hovered, width, height) : null;
+      const pullActive = stepCornerPull(cornerPull, cornerTarget, delta);
+
+      // A corner activation throws the pulse from the field center toward that
+      // corner — the signal departing for the chosen destination as the hero
+      // hands off. A deliberate click always reads confidently, so it fires at
+      // least a mid-energy burst even from rest.
+      if (signal.activationNonce !== seenActivation) {
+        seenActivation = signal.activationNonce;
+        if (signal.activationCorner) {
+          firePulse(
+            pulse,
+            width / 2,
+            height / 2,
+            Math.max(motion.energy, 0.5),
+            cornerPoint(signal.activationCorner, width, height),
+          );
+        }
+      }
+
+      const fieldMoving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
+      const motionActive = stepPointerMotion(motion, pointerRef.current, delta);
+      const trailActive = stepTrail(trail, motion, delta);
+      const pulseActive = stepPulse(pulse, delta);
       // On touch the headline stays resolved regardless of the finger — the
       // finger only sculpts the ambient field around it. (On desktop the word
       // resolves under the pointer instead, so this override is touch-only.)
@@ -198,7 +281,8 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
         }
       }
       draw();
-      if (moving) schedule();
+      if (fieldMoving || motionActive || trailActive || pulseActive || pullActive)
+        schedule();
     };
 
     const schedule = () => {
@@ -273,21 +357,43 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       wake();
     };
 
+    const handlePointerDown = (event: PointerEvent) => {
+      // Primary pointer only — a second finger or a right button must not stack
+      // pulses. `firePulse` overwrites any pulse in flight, so this stays cheap.
+      if (!event.isPrimary) return;
+      const rect = canvas.getBoundingClientRect();
+      const x = event.clientX - rect.left;
+      const y = event.clientY - rect.top;
+      pointerRef.current = { x, y };
+      // Fire at the press point (robust for a cold touch tap, where the detector
+      // has not yet moved there), carrying the detector's current energy so a
+      // click mid-flick throws a wider, brighter burst than a click from rest.
+      firePulse(pulse, x, y, motion.present ? motion.energy : 0);
+      wake();
+    };
+
+    // A nav hover reaches into the field even when the pointer is nowhere near
+    // the canvas, so the idle loop must be woken by the signal itself.
+    let unsubscribeShell: (() => void) | null = null;
+
     if (!staticOnly) {
       // `passive` and no `preventDefault`: a finger dragged across the hero
       // still scrolls any scrollable content underneath. On touch, `pointermove`
       // only fires while a finger is down, so a drag is what drives the field;
       // `pointerup` lets the ambient order decay back once the finger lifts.
       window.addEventListener("pointermove", handlePointerMove, { passive: true });
+      window.addEventListener("pointerdown", handlePointerDown, { passive: true });
       window.addEventListener("pointerleave", handlePointerLeave);
       window.addEventListener("pointercancel", handlePointerLeave);
       window.addEventListener("pointerup", handlePointerLeave);
+      unsubscribeShell = subscribeShellSignal(wake);
     }
 
     // Re-read tokens when the theme flips, and repaint. A static frame repaints
     // in place; a live field's next tick already reads the new `colors`.
     const themeObserver = new MutationObserver(() => {
       colors = readColors(canvas);
+      signalColors = readSignalColors(canvas);
       draw();
     });
     themeObserver.observe(document.documentElement, {
@@ -304,9 +410,11 @@ export function HeroField({ headingRef, localeKey, className }: HeroFieldProps) 
       resizeObserver.disconnect();
       themeObserver.disconnect();
       window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("pointerdown", handlePointerDown);
       window.removeEventListener("pointerleave", handlePointerLeave);
       window.removeEventListener("pointercancel", handlePointerLeave);
       window.removeEventListener("pointerup", handlePointerLeave);
+      unsubscribeShell?.();
     };
     // `localeKey` is a dependency: a locale switch rewrites the headline in the
     // DOM, so the mask and fragments must be rebuilt against the new text.

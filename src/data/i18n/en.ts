@@ -11,11 +11,8 @@ export const en = {
     about: "About",
     contact: "Contact",
     skipToContent: "Skip to content",
-    openMenu: "Open menu",
-    closeMenu: "Close menu",
-    // Short visible labels for the corner menu toggle.
-    menu: "Menu",
-    close: "Close",
+    // Accessible name for the corner-navigation landmark.
+    primary: "Primary",
   },
   shell: {
     // Shown on placeholder states whose full-screen state isn't built yet.

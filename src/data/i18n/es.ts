@@ -7,14 +7,11 @@ export const es: Dictionary = {
   },
   nav: {
     home: "Inicio",
-    work: "Trabajo",
+    work: "Proyectos",
     about: "Acerca de",
     contact: "Contacto",
     skipToContent: "Ir al contenido",
-    openMenu: "Abrir menú",
-    closeMenu: "Cerrar menú",
-    menu: "Menú",
-    close: "Cerrar",
+    primary: "Principal",
   },
   shell: {
     inDevelopment: "En desarrollo",

@@ -452,6 +452,163 @@ export function resolveWordStatically(fragments: Fragment[]): void {
 }
 
 /* ═══════════════════════════════════════════════════════════════════════════
+   Corner pull (Feature: context-awareness)
+
+   The nav is not a bar; it is four corners, and each one reaches *into* the
+   field. When a corner is hovered, the ambient static leans toward it — the
+   fragments angle to point at the corner and brighten slightly, strongest near
+   the corner and fading across the field, so the corner reads as exerting a pull
+   on the noise. Positional only: this never touches `resolve` (the pointer owns
+   that), it is a draw-time bias layered over the ambient lattice. Glyph
+   fragments are exempt — they must keep spelling the headline.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export type CornerPull = {
+  /** A corner is currently engaged (hovered / focused). */
+  engaged: boolean;
+  /** The engaged corner's anchor point, in field CSS px. */
+  x: number;
+  y: number;
+  /** Eased engagement, `[0, 1]`. Leads `engaged` in, lags it out. */
+  strength: number;
+};
+
+export function createCornerPull(): CornerPull {
+  return { engaged: false, x: 0, y: 0, strength: 0 };
+}
+
+/** Engage-in time constant, seconds — quick, so the field answers the hover. */
+const CORNER_TAU_IN = 0.22;
+/** Release time constant, seconds — slower, matching the field's own settle/
+ *  decay asymmetry so the lean lingers as the pointer leaves the corner. */
+const CORNER_TAU_OUT = 0.55;
+
+/**
+ * Advance the corner pull toward `target` (its anchor point, or `null` to
+ * release). Returns `true` while the lean is still easing, so the caller keeps
+ * the loop alive until it has fully relaxed.
+ */
+export function stepCornerPull(
+  pull: CornerPull,
+  target: { x: number; y: number } | null,
+  delta: number,
+): boolean {
+  const step = Math.min(delta, MAX_STEP);
+  pull.engaged = target !== null;
+  if (target) {
+    pull.x = target.x;
+    pull.y = target.y;
+  }
+
+  const goal = pull.engaged ? 1 : 0;
+  const tau = pull.engaged ? CORNER_TAU_IN : CORNER_TAU_OUT;
+  const t = 1 - Math.exp(-step / tau);
+  pull.strength = lerp(pull.strength, goal, t);
+
+  if (!pull.engaged && pull.strength < SETTLED_EPSILON) {
+    pull.strength = 0;
+    return false;
+  }
+  return true;
+}
+
+/** How far an ambient fragment rotates toward the corner at full local pull, as
+ *  a fraction of the way from its own angle to the corner bearing. Below 1 so
+ *  even the nearest static only leans, never snaps into a hard radial fan. */
+const CORNER_MAX_LEAN = 0.7;
+/** Opacity added to a leaning fragment at full local pull — the brighten that
+ *  reads as the static being drawn out of noise. Kept small: the corner tints
+ *  the field, it does not resolve it to signal. */
+const CORNER_MAX_LIFT = 0.16;
+
+/* ═══════════════════════════════════════════════════════════════════════════
+   Row band (Work state: field attracted to the selected project)
+
+   Where the corner pull only tints, the row band *resolves*. A selected project
+   row anchors a horizontal band: ambient static in a skirt above and below
+   drifts toward the band line, and static within the core aligns horizontal and
+   brightens — a few marks at the focus reach the signal accent — so the row
+   reads as extracted from noise. The band's `y` eases between rows, so changing
+   selection morphs the field smoothly rather than cutting. Positional only, like
+   the corner pull: a draw-time layer that never touches `resolve`.
+   ═══════════════════════════════════════════════════════════════════════════ */
+
+export type RowBand = {
+  /** A row is currently selected. */
+  active: boolean;
+  /** Eased band-center y, field CSS px. Chases `targetY`. */
+  y: number;
+  /** The selected row's center y, field CSS px. */
+  targetY: number;
+  /** The x the band brightens around and the skirt drifts toward — the focus,
+   *  set toward the project preview so the band leans into it. */
+  centerX: number;
+  /** Eased presence, `[0, 1]`. */
+  strength: number;
+};
+
+export function createRowBand(): RowBand {
+  return { active: false, y: 0, targetY: 0, centerX: 0, strength: 0 };
+}
+
+/** Band-center follow constant, seconds — a quick, legible morph between rows. */
+const BAND_Y_TAU = 0.16;
+/** Presence ease-in / ease-out constants, seconds. */
+const BAND_TAU_IN = 0.2;
+const BAND_TAU_OUT = 0.45;
+
+/**
+ * Advance the row band toward `target` (the selected row's center + focus x, in
+ * field CSS px, or `null` when nothing is selected). Returns `true` while the
+ * band is still moving — easing presence or morphing between rows — so the loop
+ * idles once a selection has fully resolved and stays parked until it changes.
+ */
+export function stepRowBand(
+  band: RowBand,
+  target: { y: number; centerX: number } | null,
+  delta: number,
+): boolean {
+  const step = Math.min(delta, MAX_STEP);
+  const wasActive = band.active;
+  band.active = target !== null;
+
+  if (target) {
+    band.targetY = target.y;
+    band.centerX = target.centerX;
+    // First appearance snaps onto the row so the band does not swoop in from a
+    // stale y; subsequent row changes ease (the morph).
+    if (!wasActive) band.y = target.y;
+  }
+
+  const ky = 1 - Math.exp(-step / BAND_Y_TAU);
+  band.y = lerp(band.y, band.targetY, ky);
+
+  const goal = band.active ? 1 : 0;
+  const tau = band.active ? BAND_TAU_IN : BAND_TAU_OUT;
+  const ks = 1 - Math.exp(-step / tau);
+  band.strength = lerp(band.strength, goal, ks);
+
+  const moving =
+    Math.abs(band.y - band.targetY) > 0.3 ||
+    Math.abs(band.strength - goal) > SETTLED_EPSILON;
+  if (!moving && !band.active) band.strength = 0;
+  return moving;
+}
+
+/** Half-length of the band, CSS px: it fades fully to nothing this far to
+ *  either side of the focus x, keeping it a contained segment behind the index
+ *  rather than a stripe across the viewport. */
+const BAND_H_REACH = 300;
+/** Core half-height of the resolved band, CSS px — a row's worth of signal. */
+const BAND_CORE_HALF = 24;
+/** Skirt reach beyond the core over which static drifts inward, CSS px. */
+const BAND_SKIRT = 130;
+/** How hard skirt static leans toward the band line, at full local weight. */
+const BAND_SKIRT_LEAN = 0.55;
+/** Opacity lifted onto drifting skirt static at full local weight. */
+const BAND_SKIRT_LIFT = 0.14;
+
+/* ═══════════════════════════════════════════════════════════════════════════
    Drawing
    ═══════════════════════════════════════════════════════════════════════════ */
 
@@ -504,13 +661,85 @@ export function drawField(
   height: number,
   tuning: FieldTuning,
   colors: FieldColors,
+  pull?: CornerPull,
+  band?: RowBand,
 ): void {
   context.clearRect(0, 0, width, height);
   context.lineCap = "round";
 
+  // Reach over which a corner's pull fades to nothing — the field diagonal, so
+  // the far corner barely leans while the near static leans hardest. Computed
+  // once per frame, not per fragment.
+  const pulling = pull !== undefined && pull.strength > 0;
+  const pullReach = Math.hypot(width, height) || 1;
+  const banding = band !== undefined && band.strength > 0;
+
   for (const fragment of fragments) {
     const { resolve, inGlyph } = fragment;
-    const angle = lerp(fragment.noiseAngle, fragment.signalAngle, resolve);
+
+    // Effective resolve drives every visual below. The pointer owns the base
+    // `resolve`; the row band can raise it (core static resolves into signal),
+    // and it can flag ambient static as signal-eligible where a corner/pointer
+    // never would. Leans (corner pull, band skirt) rotate the drawn segment
+    // after the base angle is chosen from the effective resolve.
+    let effResolve = resolve;
+    let signalEligible = inGlyph;
+    let lift = 0;
+    let leanBearing = 0;
+    let leanAmount = 0;
+
+    if (!inGlyph && (pulling || banding)) {
+      // ── Corner pull: lean toward the engaged corner and tint ──
+      if (pulling) {
+        const dx = pull.x - fragment.x;
+        const dy = pull.y - fragment.y;
+        const proximity = 1 - clamp01(Math.hypot(dx, dy) / pullReach);
+        const weight = pull.strength * proximity * proximity;
+        if (weight > 0.001) {
+          leanBearing = Math.atan2(dy, dx);
+          leanAmount = weight * CORNER_MAX_LEAN;
+          lift += weight * CORNER_MAX_LIFT;
+        }
+      }
+
+      // ── Row band: resolve the core into a horizontal signal band, drift the
+      //    skirt static inward toward the band line ──
+      if (banding) {
+        const ady = Math.abs(fragment.y - band.y);
+        // Horizontal taper: the band is a contained segment behind the index,
+        // brightest at the focus x and fully gone by `BAND_H_REACH` — not a
+        // stripe across the whole viewport.
+        const hWeight = 1 - clamp01(Math.abs(fragment.x - band.centerX) / BAND_H_REACH);
+        if (hWeight > 0 && ady < BAND_CORE_HALF) {
+          // Core: raise effective resolve so the static aligns horizontal,
+          // lengthens and brightens; the brightest center may reach signal.
+          const vertical = 0.5 + 0.5 * (1 - ady / BAND_CORE_HALF);
+          const b = band.strength * hWeight * vertical;
+          effResolve = Math.max(effResolve, b);
+          if (b >= SIGNAL_THRESHOLD) signalEligible = true;
+        } else if (ady < BAND_CORE_HALF + BAND_SKIRT) {
+          // Skirt: drift toward the band line — the noise pulled in around the
+          // resolved row. The nearer the core, the harder the lean.
+          const s =
+            band.strength *
+            hWeight *
+            (1 - (ady - BAND_CORE_HALF) / BAND_SKIRT);
+          // A skirt lean toward the band focus overrides a corner lean here:
+          // the band is the stronger, nearer attractor for these fragments.
+          leanBearing = Math.atan2(band.y - fragment.y, band.centerX - fragment.x);
+          leanAmount = Math.max(leanAmount, s * BAND_SKIRT_LEAN);
+          lift += s * BAND_SKIRT_LIFT;
+        }
+      }
+    }
+
+    let angle = lerp(fragment.noiseAngle, fragment.signalAngle, effResolve);
+    if (leanAmount > 0.001) {
+      // Rotate toward the lean bearing along the shortest arc (a segment is
+      // symmetric, so its nearest equivalent angle never spins more than a
+      // quarter turn to get there).
+      angle = lerp(angle, nearestEquivalentAngle(leanBearing, angle), leanAmount);
+    }
 
     // Glyph fragments are short and fine so their marks tile a letterform
     // rather than overrun it; ambient fragments keep the coarser field sizes.
@@ -521,17 +750,15 @@ export function drawField(
     const widthNoise = inGlyph ? tuning.glyphWidthNoise : tuning.widthNoise;
     const widthSignal = inGlyph ? tuning.glyphWidthSignal : tuning.widthSignal;
 
-    const half = lerp(lengthNoise, lengthSignal, resolve) / 2;
+    const half = lerp(lengthNoise, lengthSignal, effResolve) / 2;
     const dx = Math.cos(angle) * half;
     const dy = Math.sin(angle) * half;
 
-    context.globalAlpha = lerp(
-      tuning.opacityNoise,
-      tuning.opacitySignal,
-      resolve,
+    context.globalAlpha = clamp01(
+      lerp(tuning.opacityNoise, tuning.opacitySignal, effResolve) + lift,
     );
-    context.lineWidth = lerp(widthNoise, widthSignal, resolve);
-    context.strokeStyle = colorFor(resolve, inGlyph, colors);
+    context.lineWidth = lerp(widthNoise, widthSignal, effResolve);
+    context.strokeStyle = colorFor(effResolve, signalEligible, colors);
 
     context.beginPath();
     context.moveTo(fragment.x - dx, fragment.y - dy);

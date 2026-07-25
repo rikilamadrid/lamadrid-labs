@@ -9,7 +9,24 @@ import { ProjectPreview } from "@/components/shell/work/ProjectPreview";
 import { WorkField } from "@/components/shell/work/WorkField";
 import { projects } from "@/data/projects";
 import type { LabProject } from "@/data/projects";
+import { EASE } from "@/lib/motion";
 import { useTheme } from "@/lib/theme";
+import { setWorkBand } from "@/lib/work-signal";
+
+/**
+ * Entering Work reveals the index rows once with a fast stagger, as the field
+ * reorganizes behind them. A one-shot intro (WorkState mounts fresh per view),
+ * not the ongoing active-row state — that is owned by the field band. Reduced
+ * motion opts out of both the stagger and the per-row rise.
+ */
+const LIST_VARIANTS = {
+  hidden: {},
+  visible: { transition: { staggerChildren: 0.06, delayChildren: 0.04 } },
+};
+const ROW_VARIANTS = {
+  hidden: { opacity: 0, y: 8 },
+  visible: { opacity: 1, y: 0, transition: { duration: 0.3, ease: EASE.resolve } },
+};
 
 /**
  * Work mode — the home Signal / Noise field reorganizing into an interactive
@@ -27,6 +44,7 @@ export function WorkState() {
   const dict = useDictionary();
   const { openProject, activeProject } = useShell();
   const { theme } = useTheme();
+  const reduce = useReducedMotion();
   const [selected, setSelected] = useState(0);
   const rowRefs = useRef<(HTMLButtonElement | null)[]>([]);
 
@@ -42,6 +60,31 @@ export function WorkState() {
       rowRefs.current[selected]?.focus();
     }
   }, [activeProject, selected]);
+
+  // Publish the selected row's band target to the field (viewport CSS px): its
+  // vertical center, and a focus x at the row's end so the resolved band leans
+  // toward the preview. Re-measured on selection change and on resize; cleared
+  // when Work unmounts so the band releases. WorkField morphs the band toward
+  // whatever this last published (see `work-signal`).
+  useEffect(() => {
+    const publish = () => {
+      const row = rowRefs.current[selected];
+      if (!row) return;
+      const rect = row.getBoundingClientRect();
+      // Focus x sits over the row's title (left portion), so the contained band
+      // resolves behind the index text rather than reaching across the screen.
+      setWorkBand({
+        clientY: rect.top + rect.height / 2,
+        clientX: rect.left + rect.width * 0.28,
+      });
+    };
+    publish();
+    window.addEventListener("resize", publish);
+    return () => {
+      window.removeEventListener("resize", publish);
+      setWorkBand(null);
+    };
+  }, [selected]);
 
   const selectedProject = projects[selected];
   const selectedContent = dict.work.projects[selectedProject.id];
@@ -83,7 +126,12 @@ export function WorkState() {
             </p>
           </header>
 
-          <ul className="flex flex-col">
+          <motion.ul
+            className="flex flex-col"
+            variants={reduce ? undefined : LIST_VARIANTS}
+            initial={reduce ? false : "hidden"}
+            animate={reduce ? false : "visible"}
+          >
             {projects.map((project, index) => (
               <IndexRow
                 key={project.id}
@@ -99,7 +147,7 @@ export function WorkState() {
                 onKeyDown={(event) => onRowKeyDown(event, index)}
               />
             ))}
-          </ul>
+          </motion.ul>
         </div>
 
         {/* ── Right: living preview, tinted into the active project's accent ──
@@ -147,7 +195,20 @@ const IndexRow = ({
   const content = dict.work.projects[project.id];
 
   return (
-    <li style={active ? accentStyle : undefined} className="relative">
+    <motion.li
+      variants={reduce ? undefined : ROW_VARIANTS}
+      style={active ? accentStyle : undefined}
+      className="relative"
+    >
+      {/* The band surfacing into the DOM: a thin signal tick on the active row,
+          tying the resolved field behind the index to the row itself. Static,
+          so reduced motion keeps it. */}
+      {active && (
+        <span
+          aria-hidden="true"
+          className="absolute left-0 top-1/2 h-7 w-px -translate-x-2 -translate-y-1/2 bg-lab-signal"
+        />
+      )}
       <button
         ref={ref}
         type="button"
@@ -204,7 +265,7 @@ const IndexRow = ({
           <span aria-hidden="true">&rarr;</span>
         </button>
       )}
-    </li>
+    </motion.li>
   );
 };
 

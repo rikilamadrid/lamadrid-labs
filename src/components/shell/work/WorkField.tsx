@@ -4,14 +4,24 @@ import { useEffect, useRef } from "react";
 import { usePrefersReducedMotion } from "@/components/ui/MotionPrimitives";
 import {
   DEFAULT_TUNING,
+  createCornerPull,
   createFragments,
+  createRowBand,
   drawField,
   resolveWordStatically,
+  stepCornerPull,
   stepField,
+  stepRowBand,
   type Fragment,
   type FieldColors,
   type Pointer,
 } from "@/lib/pointer-field";
+import {
+  cornerPoint,
+  getShellSignal,
+  subscribeShellSignal,
+} from "@/lib/shell-signal";
+import { getWorkBand, subscribeWorkBand } from "@/lib/work-signal";
 
 /**
  * The Work stage's shared Signal / Noise environment.
@@ -54,20 +64,42 @@ export function WorkField({ className }: { className?: string }) {
     let colors = readColors(canvas);
     let width = 0;
     let height = 0;
+    // Canvas origin in viewport CSS px — the index publishes the band target in
+    // viewport coords, so the loop subtracts this to localize it. Refreshed on
+    // every layout.
+    let originLeft = 0;
+    let originTop = 0;
     let frame: number | null = null;
     let lastTime = 0;
     let disposed = false;
 
+    // The corner nav reaching into the Work field, exactly as in the hero: a
+    // hovered corner leans the ambient static toward it.
+    const cornerPull = createCornerPull();
+    // The selected project row resolving a signal band behind it. Target comes
+    // from the index via the work-signal bus, in viewport coords.
+    const rowBand = createRowBand();
+
     const draw = () =>
-      drawField(context, fragments, width, height, DEFAULT_TUNING, colors);
+      drawField(context, fragments, width, height, DEFAULT_TUNING, colors, cornerPull, rowBand);
 
     const tick = (time: number) => {
       frame = null;
       const delta = (time - lastTime) / 1000;
       lastTime = time;
+      const hovered = getShellSignal().hoveredCorner;
+      const cornerTarget = hovered ? cornerPoint(hovered, width, height) : null;
+      const pullActive = stepCornerPull(cornerPull, cornerTarget, delta);
+
+      const bandSource = getWorkBand();
+      const bandTarget = bandSource
+        ? { y: bandSource.clientY - originTop, centerX: bandSource.clientX - originLeft }
+        : null;
+      const bandActive = stepRowBand(rowBand, bandTarget, delta);
+
       const moving = stepField(fragments, pointerRef.current, delta, DEFAULT_TUNING);
       draw();
-      if (moving) schedule();
+      if (moving || pullActive || bandActive) schedule();
     };
 
     const schedule = () => {
@@ -85,6 +117,8 @@ export function WorkField({ className }: { className?: string }) {
       if (rect.width === 0 || rect.height === 0) return;
       width = rect.width;
       height = rect.height;
+      originLeft = rect.left;
+      originTop = rect.top;
 
       const ratio = Math.min(window.devicePixelRatio || 1, 2);
       canvas.width = Math.round(width * ratio);
@@ -124,11 +158,18 @@ export function WorkField({ className }: { className?: string }) {
       wake();
     };
 
+    // A nav hover or a selection change reaches into the field even when the
+    // pointer is elsewhere, so the idle loop must be woken by the signals.
+    let unsubscribeShell: (() => void) | null = null;
+    let unsubscribeBand: (() => void) | null = null;
+
     if (!staticOnly) {
       window.addEventListener("pointermove", handlePointerMove, { passive: true });
       window.addEventListener("pointerleave", clearPointer);
       window.addEventListener("pointercancel", clearPointer);
       window.addEventListener("pointerup", clearPointer);
+      unsubscribeShell = subscribeShellSignal(wake);
+      unsubscribeBand = subscribeWorkBand(wake);
     }
 
     // Stop burning frames while the tab is backgrounded; resume on return.
@@ -158,6 +199,8 @@ export function WorkField({ className }: { className?: string }) {
       window.removeEventListener("pointerleave", clearPointer);
       window.removeEventListener("pointercancel", clearPointer);
       window.removeEventListener("pointerup", clearPointer);
+      unsubscribeShell?.();
+      unsubscribeBand?.();
     };
   }, [reducedMotion]);
 

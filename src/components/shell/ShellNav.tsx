@@ -1,73 +1,139 @@
 "use client";
 
+import { useCallback, useEffect, useState } from "react";
 import { useDictionary } from "@/components/i18n/LocaleProvider";
-import { ShellMenu } from "@/components/shell/ShellMenu";
+import { CORNER_ICONS } from "@/components/shell/nav/icons";
 import { useShell } from "@/components/shell/ShellProvider";
+import { cornerNavItems, type Corner, type ViewKey } from "@/data/navigation";
+import { fireCornerActivation, setHoveredCorner } from "@/lib/shell-signal";
 import { LanguageToggle } from "@/components/ui/LanguageToggle";
 import { SoundToggle } from "@/components/ui/SoundToggle";
 import { ThemeToggle } from "@/components/ui/ThemeToggle";
 
 /**
- * Minimal corner marks for the no-scroll shell: a temporary neutral wordmark
- * top-left (returns to Home) and the controls + menu toggle top-right. The bar
- * itself is non-interactive (`pointer-events-none`) so it never eats clicks
- * meant for the state underneath; only the marks re-enable pointer events.
+ * Persistent corner navigation for the no-scroll shell — there is no menu. Each
+ * of the four states owns a fixed corner and morphs the central Signal / Noise
+ * field into itself:
+ *
+ *   top-left  Home (the Dynamic Frame logo)   top-right  Work
+ *   bottom-left  About                        bottom-right  Contact
+ *
+ * The `<nav>` spans the viewport but is `pointer-events-none`, so it never eats
+ * pointer/touch meant for the field underneath; only the corner controls
+ * (`pointer-events-auto`) take input, and a tap on one always wins over the
+ * ambient field because the control handles the click itself. Offsets come from
+ * `--shell-inset-*` (safe-area aware) so no control is ever clipped.
+ *
+ * The small utility cluster (language / sound / theme) sits top-center, clear of
+ * all four corners — the language switch there updates the corner labels live.
  */
 export function ShellNav() {
   const dict = useDictionary();
-  const { setView, menuOpen, toggleMenu } = useShell();
+  const { view, setView, activeProject, closeProject } = useShell();
+
+  // Which corner last fired, and a nonce that remounts its pulse element so the
+  // activation animation re-triggers on every click (not just the first).
+  const [pulse, setPulse] = useState<{ key: ViewKey; n: number } | null>(null);
+
+  const activate = useCallback(
+    (key: ViewKey, corner: Corner) => {
+      setPulse((prev) => ({ key, n: (prev?.n ?? 0) + 1 }));
+      // Tell the field so it throws its pulse toward this corner, then switch.
+      fireCornerActivation(corner);
+      setView(key);
+    },
+    [setView],
+  );
+
+  // Escape resolves back out of an active state: first collapse an open project
+  // world, otherwise return to Home. On Home with nothing open it is a no-op.
+  useEffect(() => {
+    const onKey = (event: KeyboardEvent) => {
+      if (event.key !== "Escape") return;
+      if (activeProject) {
+        closeProject();
+      } else if (view !== "home") {
+        setView("home");
+      }
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [activeProject, view, closeProject, setView]);
 
   return (
     <>
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:absolute focus:left-4 focus:top-4 focus:z-[60] focus:rounded-lab-sm focus:bg-lab-surface-strong focus:px-4 focus:py-2 focus:text-sm focus:text-lab-ink focus:outline-none focus:ring-2 focus:ring-lab-signal-strong"
+        className="sr-only focus:not-sr-only focus:absolute focus:left-1/2 focus:top-4 focus:z-[60] focus:-translate-x-1/2 focus:rounded-lab-sm focus:bg-lab-surface-strong focus:px-4 focus:py-2 focus:text-sm focus:text-lab-ink focus:outline-none focus:ring-2 focus:ring-lab-signal-strong"
       >
         {dict.nav.skipToContent}
       </a>
 
-      {/* Safe-area-aware gutter so no corner mark is ever clipped at the viewport
-          edge (notches, rounded display corners, the Menu control on narrow
-          screens). `max()` keeps the base 1.25/1.5rem inset and only grows it
-          where the device reports an inset. */}
-      <div
-        style={{
-          paddingTop: "max(1.25rem, env(safe-area-inset-top))",
-          paddingLeft: "max(1.25rem, env(safe-area-inset-left))",
-          paddingRight: "max(1.25rem, env(safe-area-inset-right))",
-        }}
-        className="pointer-events-none fixed inset-x-0 top-0 z-50 flex items-center justify-between gap-3 sm:gap-4"
+      {/* Spans the viewport but passes pointer/touch straight through to the
+          field; only the corner controls re-enable pointer events. */}
+      <nav
+        aria-label={dict.nav.primary}
+        className="shell-nav pointer-events-none fixed inset-0 z-50"
       >
-        {/* Temporary neutral wordmark — stands in until the Signal / Noise mark
-            is designed. Returns to the Home state. */}
-        <button
-          type="button"
-          onClick={() => setView("home")}
-          aria-label="Lamadrid Labs"
-          className="shell-wordmark pointer-events-auto min-w-0 shrink truncate rounded-lab-sm outline-none focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
-        >
-          Lamadrid Labs
-        </button>
+        {cornerNavItems.map((item) => {
+          const Icon = CORNER_ICONS[item.key];
+          const isActive = view === item.key;
+          const isHome = item.key === "home";
+          return (
+            <button
+              key={item.key}
+              type="button"
+              onClick={() => activate(item.key, item.corner)}
+              // Hover / focus leans the central field's static toward this
+              // corner (see `shell-signal`). Mouse only — a touch tap must not
+              // linger as a pull; keyboard focus counts, so the field answers
+              // tabbing too. Leaving or blurring releases it.
+              onPointerEnter={(event) => {
+                if (event.pointerType === "mouse") setHoveredCorner(item.corner);
+              }}
+              onPointerLeave={() => setHoveredCorner(null)}
+              onFocus={() => setHoveredCorner(item.corner)}
+              onBlur={() => setHoveredCorner(null)}
+              // Every corner is named by its visible label — the brand wordmark
+              // under Home (which is also the Home action), the translated label
+              // for the rest.
+              aria-current={isActive ? "page" : undefined}
+              data-corner={item.corner}
+              data-active={isActive || undefined}
+              className="shell-corner pointer-events-auto"
+            >
+              <span className="shell-corner__icon">
+                <Icon />
+                {/* Remounts per click so the CSS pulse re-fires each activation;
+                    the global reduced-motion rule collapses it. */}
+                {pulse?.key === item.key && (
+                  <span
+                    key={pulse.n}
+                    aria-hidden="true"
+                    className="shell-corner__pulse"
+                  />
+                )}
+              </span>
+              <span className="shell-corner__label">
+                {isHome ? "Lamadrid Labs" : dict.nav[item.key]}
+              </span>
+            </button>
+          );
+        })}
+      </nav>
 
-        <div className="pointer-events-auto flex shrink-0 items-center gap-2 sm:gap-3">
+      {/* Utility cluster — not part of the primary nav. Kept clear of the four
+          corners so nothing overlaps or clips. */}
+      <div
+        style={{ paddingTop: "max(1rem, env(safe-area-inset-top))" }}
+        className="pointer-events-none fixed inset-x-0 top-0 z-50 flex justify-center"
+      >
+        <div className="pointer-events-auto flex items-center gap-2 sm:gap-3">
           <LanguageToggle />
           <SoundToggle />
           <ThemeToggle />
-
-          <button
-            type="button"
-            onClick={toggleMenu}
-            aria-expanded={menuOpen}
-            aria-controls="shell-menu"
-            aria-label={menuOpen ? dict.nav.closeMenu : dict.nav.openMenu}
-            className="shell-control rounded-lab-sm px-1 py-1 outline-none focus-visible:ring-2 focus-visible:ring-lab-signal-strong"
-          >
-            {menuOpen ? dict.nav.close : dict.nav.menu}
-          </button>
         </div>
       </div>
-
-      <ShellMenu />
     </>
   );
 }
