@@ -1,8 +1,6 @@
 "use client";
 
-import { motion } from "motion/react";
-import { useSyncExternalStore, type ReactNode } from "react";
-import { transition } from "@/lib/motion";
+import { useSyncExternalStore } from "react";
 
 const REDUCED_MOTION_QUERY = "(prefers-reduced-motion: reduce)";
 
@@ -25,98 +23,5 @@ export function usePrefersReducedMotion() {
     subscribeToReducedMotion,
     getReducedMotionSnapshot,
     getReducedMotionServerSnapshot,
-  );
-}
-
-type MotionRevealProps = {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-  distance?: number;
-};
-
-export function MotionReveal({
-  children,
-  delay = 0,
-  distance = 16,
-  ...props
-}: MotionRevealProps) {
-  const shouldReduceMotion = usePrefersReducedMotion();
-
-  if (shouldReduceMotion) {
-    return <div {...props}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: distance }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-80px" }}
-      transition={{ ...transition("slow"), delay }}
-      {...props}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-type MotionCardProps = {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-};
-
-export function MotionCard({ children, delay = 0, ...props }: MotionCardProps) {
-  const shouldReduceMotion = usePrefersReducedMotion();
-
-  if (shouldReduceMotion) {
-    return <div {...props}>{children}</div>;
-  }
-
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -6 }}
-      viewport={{ once: true, margin: "-70px" }}
-      transition={{ ...transition("slow"), delay }}
-      {...props}
-    >
-      {children}
-    </motion.div>
-  );
-}
-
-type MotionLinkCardProps = {
-  children: ReactNode;
-  className?: string;
-  delay?: number;
-  href: string;
-  rel?: string;
-  target?: string;
-};
-
-export function MotionLinkCard({
-  children,
-  delay = 0,
-  ...props
-}: MotionLinkCardProps) {
-  const shouldReduceMotion = usePrefersReducedMotion();
-
-  if (shouldReduceMotion) {
-    return <a {...props}>{children}</a>;
-  }
-
-  return (
-    <motion.a
-      initial={{ opacity: 0, y: 14 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      whileHover={{ y: -6 }}
-      viewport={{ once: true, margin: "-70px" }}
-      transition={{ ...transition("slow"), delay }}
-      {...props}
-    >
-      {children}
-    </motion.a>
   );
 }

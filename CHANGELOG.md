@@ -6,6 +6,10 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/),
 
 ## [Unreleased]
 
+### Removed
+
+- Deleted the last parked scroll-era section, `sections/Contact.tsx` (unused — `contact` renders a `PlaceholderState`), and its now-dead exclusively-used styles: `.lab-eyebrow` and `.lab-section-header` in `globals.css`, plus the unused `MotionReveal` / `MotionCard` / `MotionLinkCard` primitives (`ui/MotionPrimitives.tsx` keeps `usePrefersReducedMotion`, still used by the field components). `.lab-eyebrow-dot` and `.lab-section` stay (used by the shell states and hero); `contactLink` stays (used by the footer). The `src/components/sections/` folder now holds only `Hero.tsx`.
+
 ### Added
 
 - About state (`states/AboutState.tsx`): the About corner now opens a real full-screen founder statement instead of the noise-register placeholder. Removed the dead scroll-era `sections/About.tsx` and its exclusively-used `.lab-card-surface` styles (both themes) now that the state replaces it. A split editorial composition inside the no-scroll shell — eyebrow, title, and lead anchor the left column; the two founder paragraphs, a `RICARDO LAMADRID` signature, and a quiet **Contact bridge** sit on the right. The bridge mirrors the hero's Work hand-off: it fires the field pulse toward the bottom-right corner (`fireCornerActivation("br")`) as About morphs into Contact, so the corner nav and the in-content action read as one system. On-mount stagger reveal (matching Work's entrance, not a scroll reveal — the shell never scrolls); stacks to a single column on mobile; `prefers-reduced-motion` opts out of the stagger and rise. Signal scarcity holds — the accent lives only on the eyebrow dot and the Contact bridge on hover. `ShellStage` routes `about` here; `contact` stays a placeholder. Reuses the existing `about` dictionary content (EN/ES/FR).
