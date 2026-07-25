@@ -265,12 +265,33 @@ export function createFragments(
   seed = 1,
   mask?: GlyphMask,
 ): Fragment[] {
+  const fragments = createAmbientFragments(width, height, tuning, seed);
+  if (mask) {
+    fragments.push(...createGlyphFragments(mask, tuning, seed));
+  }
+  return fragments;
+}
+
+/**
+ * The ambient population only — the Feature 3 grid at `tuning.spacing`,
+ * everywhere. These read as scatter and resolve only into grey local order;
+ * they never take the signal accent.
+ *
+ * Split out from `createFragments` so the global engine can keep the ambient
+ * field alive across a state change and swap only the glyph population in and
+ * out (the headline the field resolves is per-state) — the field morphs rather
+ * than being cleared and recreated.
+ */
+export function createAmbientFragments(
+  width: number,
+  height: number,
+  tuning: FieldTuning,
+  seed = 1,
+): Fragment[] {
   if (width <= 0 || height <= 0) return [];
 
   const random = createRandom(seed);
   const fragments: Fragment[] = [];
-
-  /* ── Ambient grid ─────────────────────────────────────────────────── */
 
   const area = width * height;
   const wanted = Math.floor(area / (tuning.spacing * tuning.spacing));
@@ -304,45 +325,62 @@ export function createFragments(
     }
   }
 
-  /* ── Glyph grid ───────────────────────────────────────────────────── */
+  return fragments;
+}
 
-  if (mask) {
-    const maskWidthCss = mask.width * mask.scale;
-    const maskHeightCss = mask.height * mask.scale;
-    const glyphCols = Math.max(1, Math.ceil(maskWidthCss / tuning.glyphSpacing));
-    const glyphRows = Math.max(1, Math.ceil(maskHeightCss / tuning.glyphSpacing));
-    // Jitter is smaller here (a quarter cell): the glyph lattice is dense and
-    // a bigger wobble smears the letterforms it is meant to describe.
-    const jitterRange = tuning.glyphSpacing * 0.25;
+/**
+ * The glyph population only — a much finer grid at `tuning.glyphSpacing`, laid
+ * over the mask's ink and tagged `inGlyph`. These resolve *into the word* and
+ * are the only fragments that reach the signal color. Bounded by the mask box,
+ * not the ambient cap.
+ *
+ * The seed is offset from the ambient seed so the two populations do not share
+ * a random sequence (which would visibly correlate their jitter); passing the
+ * same base seed still keeps a given headline's layout stable across rebuilds.
+ */
+export function createGlyphFragments(
+  mask: GlyphMask,
+  tuning: FieldTuning,
+  seed = 1,
+): Fragment[] {
+  const random = createRandom(seed ^ 0x9e3779b9);
+  const fragments: Fragment[] = [];
 
-    for (let row = 0; row < glyphRows; row += 1) {
-      for (let column = 0; column < glyphCols; column += 1) {
-        const x =
-          mask.originX +
-          (column + 0.5) * tuning.glyphSpacing +
-          (random() - 0.5) * jitterRange;
-        const y =
-          mask.originY +
-          (row + 0.5) * tuning.glyphSpacing +
-          (random() - 0.5) * jitterRange;
+  const maskWidthCss = mask.width * mask.scale;
+  const maskHeightCss = mask.height * mask.scale;
+  const glyphCols = Math.max(1, Math.ceil(maskWidthCss / tuning.glyphSpacing));
+  const glyphRows = Math.max(1, Math.ceil(maskHeightCss / tuning.glyphSpacing));
+  // Jitter is smaller here (a quarter cell): the glyph lattice is dense and
+  // a bigger wobble smears the letterforms it is meant to describe.
+  const jitterRange = tuning.glyphSpacing * 0.25;
 
-        if (sampleCoverage(mask, x, y) < GLYPH_COVERAGE_THRESHOLD) continue;
+  for (let row = 0; row < glyphRows; row += 1) {
+    for (let column = 0; column < glyphCols; column += 1) {
+      const x =
+        mask.originX +
+        (column + 0.5) * tuning.glyphSpacing +
+        (random() - 0.5) * jitterRange;
+      const y =
+        mask.originY +
+        (row + 0.5) * tuning.glyphSpacing +
+        (random() - 0.5) * jitterRange;
 
-        // Glyph fragments resolve to the same shared alignment as the ambient
-        // field — "structure" reads as *order*, one direction, not as a woven
-        // trace of each pen stroke. (Per-fragment stroke-direction sampling was
-        // built and tried; it read as busy hatching. See the feature findings.)
-        const signalAngle = tuning.alignment + (random() - 0.5) * 0.21;
+      if (sampleCoverage(mask, x, y) < GLYPH_COVERAGE_THRESHOLD) continue;
 
-        fragments.push({
-          x,
-          y,
-          noiseAngle: nearestEquivalentAngle(random() * Math.PI * 2, signalAngle),
-          signalAngle,
-          resolve: 0,
-          inGlyph: true,
-        });
-      }
+      // Glyph fragments resolve to the same shared alignment as the ambient
+      // field — "structure" reads as *order*, one direction, not as a woven
+      // trace of each pen stroke. (Per-fragment stroke-direction sampling was
+      // built and tried; it read as busy hatching. See the feature findings.)
+      const signalAngle = tuning.alignment + (random() - 0.5) * 0.21;
+
+      fragments.push({
+        x,
+        y,
+        noiseAngle: nearestEquivalentAngle(random() * Math.PI * 2, signalAngle),
+        signalAngle,
+        resolve: 0,
+        inGlyph: true,
+      });
     }
   }
 
