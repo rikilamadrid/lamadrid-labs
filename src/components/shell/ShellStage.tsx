@@ -7,6 +7,7 @@ import { AboutState } from "@/components/shell/states/AboutState";
 import { PlaceholderState } from "@/components/shell/states/PlaceholderState";
 import { WorkState } from "@/components/shell/states/WorkState";
 import { useShell } from "@/components/shell/ShellProvider";
+import { LAYERS } from "@/lib/signal/layers";
 import { DURATION, EASE } from "@/lib/motion";
 
 /**
@@ -56,6 +57,16 @@ export function ShellStage() {
   return (
     <div className="relative h-svh w-full overflow-hidden">
       <AnimatePresence mode="wait">
+        {/* No z-index here on purpose: the state wrapper must NOT establish a
+            stacking context, or Home's <h1> (LAYERS.contentBelow) could not sit
+            *below* the global field while its copy (LAYERS.content) sits above.
+            The h1/copy z-bands resolve against the root context, interleaving
+            with the fixed SignalSurface canvas.
+
+            Interim (slice 2): this opacity crossfade is correct at rest but, mid-
+            transition, briefly groups the whole state under one context. The full
+            "field morphs instead of a full-field crossfade" rework lands in slice
+            3, once Home and Work both live on the global field. */}
         <motion.div
           key={view}
           className="absolute inset-0"
@@ -82,7 +93,8 @@ export function ShellStage() {
         {activeProject && (
           <motion.div
             key={activeProject}
-            className="absolute inset-0 z-30 origin-center"
+            className="absolute inset-0 origin-center"
+            style={{ zIndex: LAYERS.projectWorld }}
             {...worldMotion}
           >
             <ProjectWorld id={activeProject} />

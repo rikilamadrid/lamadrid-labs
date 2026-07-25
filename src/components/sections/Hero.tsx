@@ -1,13 +1,13 @@
 "use client";
 
-import { useRef } from "react";
-import { HeroField } from "@/components/hero/HeroField";
+import { useEffect, useRef } from "react";
 import {
   useDictionary,
   useLocaleContext,
 } from "@/components/i18n/LocaleProvider";
 import { useShell } from "@/components/shell/ShellProvider";
 import { fireCornerActivation } from "@/lib/shell-signal";
+import { setHeadlineElement } from "@/lib/signal/headline-signal";
 
 export function Hero() {
   const dict = useDictionary();
@@ -15,24 +15,27 @@ export function Hero() {
   const { setView } = useShell();
   const headingRef = useRef<HTMLHeadingElement>(null);
 
-  return (
-    <section className="lab-section isolate flex min-h-svh flex-col justify-center overflow-hidden">
-      {/* The field spans the section and sits above the muted headline (which
-          it resolves) but below the supporting copy (which stays crisp).
-          Decorative and non-interactive — the CTA underneath stays clickable. */}
-      <HeroField
-        headingRef={headingRef}
-        localeKey={locale}
-        className="pointer-events-none absolute inset-0 z-10 h-full w-full"
-      />
+  // Publish the <h1> to the global engine, which resolves it out of the field.
+  // Home no longer owns a canvas — the one persistent SignalSurface reads this
+  // element off the bus and sharpens it. Re-publish on a locale change (the
+  // headline text differs per locale, so the glyph mask must rebuild) and clear
+  // it on unmount so other states run the field ambient-only.
+  useEffect(() => {
+    setHeadlineElement(headingRef.current);
+    return () => setHeadlineElement(null);
+  }, [locale]);
 
+  return (
+    <section className="lab-section flex min-h-svh flex-col justify-center overflow-hidden">
       <div className="relative mx-auto flex w-full max-w-4xl flex-col items-center gap-6 text-center">
-        <span className="lab-label relative z-20">{dict.hero.eyebrow}</span>
+        <span className="lab-label relative z-30">{dict.hero.eyebrow}</span>
 
         {/* Resting register: legible but unresolved (noise ramp), never full
-            ink. The field brightens it toward the signal accent under the
-            pointer. Real DOM text — the accessible, indexable source. */}
-        <h1 ref={headingRef} className="relative z-0 max-w-3xl">
+            ink. The global field — layered above this at LAYERS.field — brightens
+            it toward the signal accent under the pointer. Real DOM text (the
+            accessible, indexable source), pinned below the field at
+            LAYERS.contentBelow so the canvas draws over it. */}
+        <h1 ref={headingRef} className="relative z-10 max-w-3xl">
           {dict.hero.titleLines.map((line, index) => (
             // Colored on the span, not the h1: the unlayered `h1` base color
             // rule outranks a layered utility, but a direct declaration on the
@@ -43,9 +46,11 @@ export function Hero() {
           ))}
         </h1>
 
-        <p className="relative z-20 w-full max-w-md">{dict.hero.lead}</p>
+        {/* Supporting copy sits above the field (LAYERS.content) so ambient
+            fragments never scatter over the paragraph or the button. */}
+        <p className="relative z-30 w-full max-w-md">{dict.hero.lead}</p>
 
-        <div className="relative z-20 mt-2">
+        <div className="relative z-30 mt-2">
           <button
             type="button"
             onClick={() => {
