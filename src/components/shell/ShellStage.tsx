@@ -3,6 +3,7 @@
 import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Hero } from "@/components/sections/Hero";
 import { ProjectWorld } from "@/components/shell/ProjectWorld";
+import { AboutState } from "@/components/shell/states/AboutState";
 import { PlaceholderState } from "@/components/shell/states/PlaceholderState";
 import { WorkState } from "@/components/shell/states/WorkState";
 import { useShell } from "@/components/shell/ShellProvider";
@@ -10,8 +11,8 @@ import { DURATION, EASE } from "@/lib/motion";
 
 /**
  * Renders the active full-screen state, crossfading between states with no page
- * scroll. `home` is the hero and `work` is the project index; `about` /
- * `contact` are still placeholders until their states land.
+ * scroll. `home` is the hero, `work` is the project index, and `about` is the
+ * founder statement; `contact` is still a placeholder until its state lands.
  *
  * A project micro-universe layers *over* the active state (it is entered from
  * the Work index, which stays mounted underneath): entering a project zooms the
@@ -69,6 +70,8 @@ export function ShellStage() {
             <Hero />
           ) : view === "work" ? (
             <WorkState />
+          ) : view === "about" ? (
+            <AboutState />
           ) : (
             <PlaceholderState viewKey={view} />
           )}
