@@ -60,9 +60,9 @@
   --lab-line: rgba(18, 20, 23, 0.1);
   --lab-line-strong: rgba(18, 20, 23, 0.2);
 
-  --lab-noise-1: #d9dce0;
-  --lab-noise-2: #bcc1c8;
-  --lab-noise-3: #9aa1aa;
+  --lab-noise-1: #bcc1c8;
+  --lab-noise-2: #9aa1aa;
+  --lab-noise-3: #858c96;
   --lab-noise-4: #767e8a;
 
   --lab-signal: #2f5fe0;

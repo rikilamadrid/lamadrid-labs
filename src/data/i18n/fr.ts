@@ -3,7 +3,7 @@ import type { Dictionary } from "./en";
 export const fr: Dictionary = {
   meta: {
     title: "Lamadrid Labs",
-    description: "Lamadrid Labs — un studio logiciel indépendant.",
+    description: "Lamadrid Labs : un studio logiciel indépendant.",
   },
   nav: {
     home: "Accueil",
@@ -27,7 +27,7 @@ export const fr: Dictionary = {
     title: "Le travail, résolu.",
     supporting:
       "Quatre problèmes différents. Quatre systèmes façonnés en quelque chose d'utilisable.",
-    lead: "Un échantillon de ce qui est déjà livré — projets réels, utilisateurs réels.",
+    lead: "Un échantillon de ce qui est déjà livré : projets réels, utilisateurs réels.",
     featuredLabel: "En vedette",
     restTitle: "Plus de travail",
     viewProject: "Voir le projet",
@@ -67,32 +67,32 @@ export const fr: Dictionary = {
           statement:
             "Un portfolio personnel réinventé comme un système d'exploitation que l'on peut vraiment utiliser.",
           problem:
-            "Un CV et une liste de liens disent ce que quelqu'un a fait. Ils ne laissent pas sentir comment il pense. Le portfolio devait être l'argument lui-même — la preuve du savoir-faire, pas sa description.",
+            "Un CV et une liste de liens disent ce que quelqu'un a fait. Ils ne laissent pas sentir comment il pense. Le portfolio devait être l'argument lui-même : la preuve du savoir-faire, pas sa description.",
           solution:
-            "RicardoOS transforme le portfolio en un environnement de bureau : des fenêtres, un dock et des applications qui ouvrent chacune une facette du travail. On ne fait pas défiler une page — on explore un système, comme on explorerait n'importe quel produit que conçoit Ricardo.",
+            "RicardoOS transforme le portfolio en un environnement de bureau : des fenêtres, un dock et des applications qui ouvrent chacune une facette du travail. On ne fait pas défiler une page, on explore un système, comme on explorerait n'importe quel produit que conçoit Ricardo.",
           outcome:
-            "Le médium devient le message. Le temps d'ouvrir une fenêtre et de la déplacer, on a déjà ressenti le savoir-faire d'interaction que le portfolio cherche à transmettre — sans étude de cas.",
+            "Le médium devient le message. Le temps d'ouvrir une fenêtre et de la déplacer, on a déjà ressenti le savoir-faire d'interaction que le portfolio cherche à transmettre, sans étude de cas.",
           architecture: [
             "Next.js App Router avec un gestionnaire de fenêtres côté client pour des fenêtres déplaçables, focusables et empilables.",
             "Un registre d'applications typé : ajouter une fenêtre est une donnée, pas une reconstruction.",
-            "État local et éphémère — sans backend, exportable en statique, rapide à charger.",
+            "État local et éphémère : sans backend, exportable en statique, rapide à charger.",
           ],
           results: [
             "Publié et en ligne sur ricardolamadrid.com.",
-            "Se lit comme un produit, pas comme une page — l'interaction elle-même est la preuve du savoir-faire.",
+            "Se lit comme un produit, pas comme une page : l'interaction elle-même est la preuve du savoir-faire.",
           ],
         },
       },
       "marina-cuesta": {
         title: "Marina Cuesta",
         summary:
-          "Un site web soigné et sur mesure conçu pour Marina Cuesta — un exemple de design épuré et d'exécution soignée.",
+          "Un site web soigné et sur mesure conçu pour Marina Cuesta : un exemple de design épuré et d'exécution soignée.",
         tags: ["Design web", "Next.js", "Projet client"],
         world: {
           statement:
             "Un site web sur mesure et apaisé qui laisse le travail parler d'abord.",
           problem:
-            "Marina avait besoin d'un foyer en ligne aussi réfléchi que son propre travail — ni un modèle ni un constructeur de pages, quelque chose qui se lise comme intentionnel.",
+            "Marina avait besoin d'un foyer en ligne aussi réfléchi que son propre travail, ni un modèle ni un constructeur de pages, quelque chose qui se lise comme intentionnel.",
           solution:
             "Un site sur mesure avec une mise en page sobre, une typographie soignée et juste ce qu'il faut de mouvement pour se sentir vivant sans gêner.",
           outcome:
@@ -113,11 +113,11 @@ export const fr: Dictionary = {
           statement:
             "Transformez un flux YouTube bruyant en salles ciblées.",
           problem:
-            "Un seul flux d'abonnements mélange tout — code, cuisine, musique — si bien que rien ne reçoit toute votre attention.",
+            "Un seul flux d'abonnements mélange tout (code, cuisine, musique), si bien que rien ne reçoit toute votre attention.",
           solution:
             "SubRooms range les chaînes dans des salles dédiées, pour que chaque session de visionnage ait un seul objectif, clair.",
           outcome:
-            "Un flux d'abonnements qui correspond enfin à la façon dont on regarde vraiment — un contexte à la fois.",
+            "Un flux d'abonnements qui correspond enfin à la façon dont on regarde vraiment : un contexte à la fois.",
           architecture: [
             "Application monopage en React et TypeScript avec un petit design system cohérent.",
             "Déployé sur Vercel.",
@@ -153,14 +153,14 @@ export const fr: Dictionary = {
     title: "La personne derrière le laboratoire",
     lead: "Lamadrid Labs, c'est une seule personne qui travaille comme un petit studio.",
     paragraphs: [
-      "Ricardo Lamadrid est un ingénieur logiciel qui conçoit des produits de bout en bout — des détails d'interface jusqu'aux systèmes qui les sous-tendent. Lamadrid Labs, c'est là où vit ce travail : projets personnels, projets clients et, à l'occasion, une expérience qui ne trouve sa place nulle part ailleurs.",
-      "Le fil conducteur, c'est le soin apporté. Chaque projet reçoit la même attention, qu'il s'agisse d'un outil personnel ou du produit d'un client — un code propre, un design réfléchi et un logiciel qui semble pensé plutôt qu'assemblé.",
+      "Ricardo Lamadrid est un ingénieur logiciel qui conçoit des produits de bout en bout, des détails d'interface jusqu'aux systèmes qui les sous-tendent. Lamadrid Labs, c'est là où vit ce travail : projets personnels, projets clients et, à l'occasion, une expérience qui ne trouve sa place nulle part ailleurs.",
+      "Le fil conducteur, c'est le soin apporté. Chaque projet reçoit la même attention, qu'il s'agisse d'un outil personnel ou du produit d'un client : un code propre, un design réfléchi et un logiciel qui semble pensé plutôt qu'assemblé.",
     ],
   },
   contact: {
     eyebrow: "Contact",
     title: "Un projet en tête ?",
-    lead: "Écrivez-moi directement — pas de formulaire, pas d'allers-retours.",
+    lead: "Écrivez-moi directement : pas de formulaire, pas d'allers-retours.",
     cta: "Envoyer un e-mail à hello@lamadridlabs.com",
   },
   footer: {

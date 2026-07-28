@@ -11,16 +11,15 @@ import type { ViewKey } from "@/data/navigation";
  * expressions" contract in one object.
  *
  * New primitives added later (waveform traces, topology maps, …) extend
- * `primitives` here and register a module in the engine — states opt in by
+ * `primitives` here and register a module in the engine: states opt in by
  * flipping a flag, with no new rendering code per state.
  */
 export type SignalEngineConfig = {
   /**
    * Eased master presence of the whole field, `[0, 1]`, applied as the canvas
-   * element's opacity. 1 for states that live inside the field (Home, Work); 0
-   * for states that currently present as plain surfaces (About, Contact) — the
-   * canvas stays mounted for continuity but fades to invisible, so those states
-   * read exactly as they do today.
+   * element's opacity. 1 for states that live inside the field (Home, Work);
+   * partial for the calmer editorial states (About, Contact), where the field
+   * is texture behind the copy rather than a foreground register.
    */
   presence: number;
   /** Field tuning (spacing, radius, alignment, resolve/decay, …). */
@@ -40,7 +39,8 @@ export type SignalEngineConfig = {
     pulse: boolean;
     /** Corner-nav pull: a hovered corner leans the ambient static toward it. */
     cornerPull: boolean;
-    /** Work's selected-row signal band, resolved behind the index. */
+    /** A signal band resolved behind a state's one focal element: Work's
+     *  selected row, or About/Contact's primary CTA. */
     rowBand: boolean;
   };
   /**
@@ -52,7 +52,7 @@ export type SignalEngineConfig = {
 };
 
 /**
- * Home — the exploratory open field: the full velocity-driven foreground (core,
+ * Home: the exploratory open field. The full velocity-driven foreground (core,
  * trail, pulse), the headline resolving out of the glyph population, and the
  * corner pull. This reproduces the former `HeroField`.
  */
@@ -65,7 +65,7 @@ const HOME_CONFIG: SignalEngineConfig = {
 };
 
 /**
- * Work — the same field with no headline, the foreground pointer layer quieted,
+ * Work: the same field with no headline, the foreground pointer layer quieted,
  * and the selected-row band live. This replaced the former `WorkField`.
  */
 const WORK_CONFIG: SignalEngineConfig = {
@@ -77,24 +77,29 @@ const WORK_CONFIG: SignalEngineConfig = {
 };
 
 /**
- * About / Contact — no field today. The canvas fades to invisible (`presence`
- * 0) while staying mounted, so these states keep their current plain surfaces
- * and the field is ready to receive a real configuration in a later pass
- * without a remount.
+ * About / Contact: the calm editorial register. Ambient ground, ticked over to
+ * ~1/3 presence so the field reads as texture behind the copy rather than
+ * competing with it, and no headline resolve (neither state rasterizes a
+ * word). `cornerPull` and `pulse` stay live so the corner nav and the
+ * About-to-Contact bridge button (`fireCornerActivation`) still register on
+ * the field instead of firing into an invisible canvas. `rowBand` is live too:
+ * each state anchors it on its one primary action (About's Contact bridge,
+ * Contact's mailto CTA) so the field resolves a quiet, memorable band there
+ * instead of sitting flat.
  */
-const DORMANT_CONFIG: SignalEngineConfig = {
-  presence: 0,
+const EDITORIAL_CONFIG: SignalEngineConfig = {
+  presence: 0.32,
   tuning: DEFAULT_TUNING,
   headline: false,
-  primitives: { core: false, trail: false, pulse: false, cornerPull: false, rowBand: false },
+  primitives: { core: false, trail: false, pulse: true, cornerPull: true, rowBand: true },
   touchResolvesHeadline: false,
 };
 
 const CONFIG_BY_VIEW: Record<ViewKey, SignalEngineConfig> = {
   home: HOME_CONFIG,
   work: WORK_CONFIG,
-  about: DORMANT_CONFIG,
-  contact: DORMANT_CONFIG,
+  about: EDITORIAL_CONFIG,
+  contact: EDITORIAL_CONFIG,
 };
 
 /**

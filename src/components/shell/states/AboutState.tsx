@@ -1,14 +1,16 @@
 "use client";
 
+import { useEffect, useRef } from "react";
 import { motion, useReducedMotion } from "motion/react";
 import { useDictionary } from "@/components/i18n/LocaleProvider";
 import { useShell } from "@/components/shell/ShellProvider";
 import { useStageBand } from "@/components/shell/stage-transition";
 import { fireCornerActivation } from "@/lib/shell-signal";
 import { EASE } from "@/lib/motion";
+import { setSpotlight } from "@/lib/spotlight-signal";
 
 /**
- * Entering About reveals the editorial column once with a fast stagger — an
+ * Entering About reveals the editorial column once with a fast stagger, an
  * on-mount intro (AboutState mounts fresh per view), matching Work's entrance
  * rhythm rather than a scroll reveal (the shell never scrolls). Reduced motion
  * opts out of both the stagger and the per-item rise.
@@ -23,24 +25,46 @@ const ITEM_VARIANTS = {
 };
 
 /**
- * About mode — the founder statement behind the lab.
+ * About mode: the founder statement behind the lab.
  *
  * A split editorial composition inside the no-scroll shell: the eyebrow, title,
  * and lead anchor the left column; the substance (the paragraphs) and a quiet
  * signature sit on the right, closing with a bridge into Contact. That bridge
- * mirrors the hero's Work hand-off — it throws the field pulse toward the
- * bottom-right corner as the state morphs — so the corner nav and the in-content
- * action feel like one system. Signal scarcity holds: the accent lives only on
- * the eyebrow dot and the Contact bridge on hover.
+ * mirrors the hero's Work hand-off: it throws the field pulse toward the
+ * bottom-right corner as the state morphs, so the corner nav and the in-content
+ * action feel like one system. The field also resolves a quiet band behind the
+ * bridge itself (the same row-band primitive Work uses, anchored on this
+ * state's one focal element), so the one action reads as memorable rather than
+ * the state sitting flat. Signal scarcity holds: the accent lives only there
+ * and on the eyebrow dot.
  */
 export function AboutState() {
   const dict = useDictionary();
   const { setView } = useShell();
   const reduce = useReducedMotion();
   const aboveField = useStageBand("above");
+  const bridgeRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    const publish = () => {
+      const bridge = bridgeRef.current;
+      if (!bridge) return;
+      const rect = bridge.getBoundingClientRect();
+      setSpotlight({
+        clientY: rect.top + rect.height / 2,
+        clientX: rect.left + rect.width / 2,
+      });
+    };
+    publish();
+    window.addEventListener("resize", publish);
+    return () => {
+      window.removeEventListener("resize", publish);
+      setSpotlight(null);
+    };
+  }, []);
 
   return (
-    // About is one band, entirely above the field (which is dormant here — the
+    // About is one band, entirely above the field (which is dormant here, the
     // canvas fades to `presence` 0 but stays mounted). See `stage-transition`.
     <motion.section
       className="relative h-full w-full overflow-hidden"
@@ -91,6 +115,7 @@ export function AboutState() {
           >
             <span className="lab-label text-lab-muted">Ricardo Lamadrid</span>
             <button
+              ref={bridgeRef}
               type="button"
               onClick={() => {
                 // Same hand-off as the nav Contact corner: throw the field's
