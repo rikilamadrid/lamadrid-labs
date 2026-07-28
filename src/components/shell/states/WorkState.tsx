@@ -6,7 +6,7 @@ import { motion, useReducedMotion } from "motion/react";
 import { useDictionary } from "@/components/i18n/LocaleProvider";
 import { useShell } from "@/components/shell/ShellProvider";
 import { ProjectPreview } from "@/components/shell/work/ProjectPreview";
-import { WorkField } from "@/components/shell/work/WorkField";
+import { useStageBand } from "@/components/shell/stage-transition";
 import { projects } from "@/data/projects";
 import type { LabProject } from "@/data/projects";
 import { EASE } from "@/lib/motion";
@@ -33,8 +33,12 @@ const ROW_VARIANTS = {
  * project index, not a separate list page.
  *
  * A split spatial composition: a compact editorial index lower-left, a large
- * living preview center/right, all sitting inside the shared `WorkField` canvas
- * (the same field engine as the hero). Selecting a project (hover, focus, or
+ * living preview center/right, all sitting inside the one global Signal / Noise
+ * field (`SignalSurface` — the same engine and the same canvas the hero runs on,
+ * configured for Work: ambient field, corner pull, and the selected-row band,
+ * with the headline and the velocity foreground off). Work owns no canvas; it
+ * only publishes its band target and reads as one band *above* the field.
+ * Selecting a project (hover, focus, or
  * keyboard) morphs the preview and tints the active row into that project's
  * accent — signal scarcity still holds, the accent lives only on the one active
  * entry and its preview. Opening is a second, explicit action (`Enter`), so a
@@ -47,6 +51,7 @@ export function WorkState() {
   const reduce = useReducedMotion();
   const [selected, setSelected] = useState(0);
   const rowRefs = useRef<(HTMLButtonElement | null)[]>([]);
+  const aboveField = useStageBand("above");
 
   // Return focus to the row that was entered once its world closes, so a
   // keyboard/AT user comes back exactly where they left off instead of at the
@@ -64,7 +69,7 @@ export function WorkState() {
   // Publish the selected row's band target to the field (viewport CSS px): its
   // vertical center, and a focus x at the row's end so the resolved band leans
   // toward the preview. Re-measured on selection change and on resize; cleared
-  // when Work unmounts so the band releases. WorkField morphs the band toward
+  // when Work unmounts so the band releases. The engine morphs the band toward
   // whatever this last published (see `work-signal`).
   useEffect(() => {
     const publish = () => {
@@ -109,10 +114,13 @@ export function WorkState() {
   };
 
   return (
-    <section className="relative h-full w-full overflow-hidden">
-      <WorkField className="pointer-events-none absolute inset-0 z-0 h-full w-full" />
-
-      <div className="relative z-10 mx-auto grid h-full w-full max-w-6xl grid-cols-1 content-center items-center gap-6 px-6 pb-8 pt-20 sm:px-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:content-center lg:gap-12 lg:px-14 lg:py-14">
+    // Work is one band, entirely above the field: nothing here is drawn over by
+    // the canvas, so the whole section fades as a unit (see `stage-transition`).
+    <motion.section
+      className="relative h-full w-full overflow-hidden"
+      {...aboveField}
+    >
+      <div className="relative mx-auto grid h-full w-full max-w-6xl grid-cols-1 content-center items-center gap-6 px-6 pb-8 pt-20 sm:px-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:content-center lg:gap-12 lg:px-14 lg:py-14">
         {/* ── Left: heading + editorial index ── */}
         <div className="flex flex-col justify-center gap-6 lg:justify-between lg:gap-10 lg:h-full lg:max-h-[560px]">
           <header className="flex flex-col gap-3">
@@ -167,7 +175,7 @@ export function WorkState() {
           {selectedContent.world.statement}
         </p>
       </div>
-    </section>
+    </motion.section>
   );
 }
 

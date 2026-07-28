@@ -7,13 +7,19 @@ import { AboutState } from "@/components/shell/states/AboutState";
 import { PlaceholderState } from "@/components/shell/states/PlaceholderState";
 import { WorkState } from "@/components/shell/states/WorkState";
 import { useShell } from "@/components/shell/ShellProvider";
+import { useStageViewPresence } from "@/components/shell/stage-transition";
 import { LAYERS } from "@/lib/signal/layers";
 import { DURATION, EASE } from "@/lib/motion";
 
 /**
- * Renders the active full-screen state, crossfading between states with no page
- * scroll. `home` is the hero, `work` is the project index, and `about` is the
- * founder statement; `contact` is still a placeholder until its state lands.
+ * Renders the active full-screen state, transitioning between states with no
+ * page scroll. `home` is the hero, `work` is the project index, and `about` is
+ * the founder statement; `contact` is still a placeholder until its state lands.
+ *
+ * The state DOM crossfades *per z-band*, not per state: this wrapper only
+ * broadcasts variant labels and each state fades its own bands (see
+ * `stage-transition`). The field underneath never crossfades at all — it morphs
+ * toward the new state's configuration on the one persistent canvas.
  *
  * A project micro-universe layers *over* the active state (it is entered from
  * the Work index, which stays mounted underneath): entering a project zooms the
@@ -23,20 +29,7 @@ import { DURATION, EASE } from "@/lib/motion";
 export function ShellStage() {
   const { view, activeProject } = useShell();
   const reduce = useReducedMotion();
-
-  const stateMotion = reduce
-    ? {
-        initial: { opacity: 1 },
-        animate: { opacity: 1 },
-        exit: { opacity: 1 },
-        transition: { duration: 0 },
-      }
-    : {
-        initial: { opacity: 0 },
-        animate: { opacity: 1 },
-        exit: { opacity: 0 },
-        transition: { duration: DURATION.base, ease: EASE.resolve },
-      };
+  const viewPresence = useStageViewPresence();
 
   // Zoom-into-another-system: the world scales up from just behind the plane and
   // fades in; leaving reverses it. Reduced motion gets a plain cut.
@@ -57,16 +50,13 @@ export function ShellStage() {
   return (
     <div className="relative h-svh w-full overflow-hidden">
       <AnimatePresence mode="wait">
-        {/* No z-index here on purpose: the state wrapper must NOT establish a
-            stacking context, or Home's <h1> (LAYERS.contentBelow) could not sit
-            *below* the global field while its copy (LAYERS.content) sits above.
-            The h1/copy z-bands resolve against the root context, interleaving
-            with the fixed SignalSurface canvas.
-
-            Interim (slice 2): this opacity crossfade is correct at rest but, mid-
-            transition, briefly groups the whole state under one context. The full
-            "field morphs instead of a full-field crossfade" rework lands in slice
-            3, once Home and Work both live on the global field. */}
+        {/* Neither a z-index nor an animated property here, on purpose: this
+            wrapper must NOT establish a stacking context, or Home's <h1>
+            (LAYERS.contentBelow) could not sit *below* the global field while
+            its copy (LAYERS.content) sits above. It carries variant labels only
+            and each state fades its own bands, so every band's z-index resolves
+            against the root context and stays interleaved with the fixed
+            SignalSurface canvas for the whole transition. */}
         <motion.div
           key={view}
           className="absolute inset-0"
@@ -75,7 +65,7 @@ export function ShellStage() {
           // accessibility tree too, so keyboard and screen-reader users can't
           // wander into the hidden index behind the world.
           inert={activeProject ? true : undefined}
-          {...stateMotion}
+          {...viewPresence}
         >
           {view === "home" ? (
             <Hero />

@@ -66,7 +66,7 @@ const HOME_CONFIG: SignalEngineConfig = {
 
 /**
  * Work — the same field with no headline, the foreground pointer layer quieted,
- * and the selected-row band live. This reproduces the former `WorkField`.
+ * and the selected-row band live. This replaced the former `WorkField`.
  */
 const WORK_CONFIG: SignalEngineConfig = {
   presence: 1,
@@ -97,20 +97,10 @@ const CONFIG_BY_VIEW: Record<ViewKey, SignalEngineConfig> = {
   contact: DORMANT_CONFIG,
 };
 
+/**
+ * The configuration for a view. Returns a stable per-view object, so
+ * `SignalEngine.configure` can identity-compare and no-op on an unchanged view.
+ */
 export function configForView(view: ViewKey): SignalEngineConfig {
   return CONFIG_BY_VIEW[view];
-}
-
-/**
- * TEMPORARY — slice 2 migration gate. Only Home is wired onto the global engine
- * so far; every other view resolves to the dormant config (`presence` 0) so the
- * legacy per-state fields — chiefly `WorkField` — still own their state with no
- * double field. (About / Contact are dormant in the real map anyway, so Work is
- * the only view this actually diverges for.)
- *
- * Delete this and call `configForView` directly in slice 3, once Work migrates
- * onto the engine and `WorkField` is removed.
- */
-export function interimConfigForView(view: ViewKey): SignalEngineConfig {
-  return view === "home" ? CONFIG_BY_VIEW.home : DORMANT_CONFIG;
 }
