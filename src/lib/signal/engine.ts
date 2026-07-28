@@ -35,7 +35,7 @@ import {
   getShellSignal,
   subscribeShellSignal,
 } from "@/lib/shell-signal";
-import { getWorkBand, subscribeWorkBand } from "@/lib/work-signal";
+import { getSpotlight, subscribeSpotlight } from "@/lib/spotlight-signal";
 import { buildGlyphMask } from "@/lib/signal/glyph-mask";
 import { getHeadlineElement, subscribeHeadline } from "@/lib/signal/headline-signal";
 import type { SignalEngineConfig } from "@/lib/signal/config";
@@ -222,7 +222,7 @@ export class SignalEngine {
       // A nav hover or a Work selection reaches into the field even when the
       // pointer is nowhere near it, so the idle loop must be woken by the buses.
       this.cleanups.push(subscribeShellSignal(() => this.wake()));
-      this.cleanups.push(subscribeWorkBand(() => this.wake()));
+      this.cleanups.push(subscribeSpotlight(() => this.wake()));
     }
 
     // The headline the field resolves is published on a bus (Home registers its
@@ -384,11 +384,12 @@ export class SignalEngine {
     }
 
     // ── Row band: always stepped so it eases out when disabled ──
-    const bandSource = primitives.rowBand ? getWorkBand() : null;
+    const bandSource = primitives.rowBand ? getSpotlight() : null;
     const bandTarget = bandSource
       ? {
           y: bandSource.clientY - this.originTop,
           centerX: bandSource.clientX - this.originLeft,
+          signal: bandSource.signal,
         }
       : null;
     const bandActive = stepRowBand(this.rowBand, bandTarget, delta);

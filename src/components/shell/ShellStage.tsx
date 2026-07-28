@@ -4,7 +4,7 @@ import { AnimatePresence, motion, useReducedMotion } from "motion/react";
 import { Hero } from "@/components/sections/Hero";
 import { ProjectWorld } from "@/components/shell/ProjectWorld";
 import { AboutState } from "@/components/shell/states/AboutState";
-import { PlaceholderState } from "@/components/shell/states/PlaceholderState";
+import { ContactState } from "@/components/shell/states/ContactState";
 import { WorkState } from "@/components/shell/states/WorkState";
 import { useShell } from "@/components/shell/ShellProvider";
 import { useStageViewPresence } from "@/components/shell/stage-transition";
@@ -13,8 +13,8 @@ import { DURATION, EASE } from "@/lib/motion";
 
 /**
  * Renders the active full-screen state, transitioning between states with no
- * page scroll. `home` is the hero, `work` is the project index, and `about` is
- * the founder statement; `contact` is still a placeholder until its state lands.
+ * page scroll. `home` is the hero, `work` is the project index, `about` is the
+ * founder statement, and `contact` is the closing invitation to reach out.
  *
  * The state DOM crossfades *per z-band*, not per state: this wrapper only
  * broadcasts variant labels and each state fades its own bands (see
@@ -74,7 +74,7 @@ export function ShellStage() {
           ) : view === "about" ? (
             <AboutState />
           ) : (
-            <PlaceholderState viewKey={view} />
+            <ContactState />
           )}
         </motion.div>
       </AnimatePresence>

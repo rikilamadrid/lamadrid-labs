@@ -11,12 +11,12 @@ import { projects } from "@/data/projects";
 import type { LabProject } from "@/data/projects";
 import { EASE } from "@/lib/motion";
 import { useTheme } from "@/lib/theme";
-import { setWorkBand } from "@/lib/work-signal";
+import { setSpotlight } from "@/lib/spotlight-signal";
 
 /**
  * Entering Work reveals the index rows once with a fast stagger, as the field
  * reorganizes behind them. A one-shot intro (WorkState mounts fresh per view),
- * not the ongoing active-row state — that is owned by the field band. Reduced
+ * not the ongoing active-row state (that is owned by the field band). Reduced
  * motion opts out of both the stagger and the per-row rise.
  */
 const LIST_VARIANTS = {
@@ -29,20 +29,21 @@ const ROW_VARIANTS = {
 };
 
 /**
- * Work mode — the home Signal / Noise field reorganizing into an interactive
+ * Work mode: the home Signal / Noise field reorganizing into an interactive
  * project index, not a separate list page.
  *
  * A split spatial composition: a compact editorial index lower-left, a large
  * living preview center/right, all sitting inside the one global Signal / Noise
- * field (`SignalSurface` — the same engine and the same canvas the hero runs on,
+ * field (`SignalSurface`, the same engine and the same canvas the hero runs on,
  * configured for Work: ambient field, corner pull, and the selected-row band,
  * with the headline and the velocity foreground off). Work owns no canvas; it
- * only publishes its band target and reads as one band *above* the field.
- * Selecting a project (hover, focus, or
- * keyboard) morphs the preview and tints the active row into that project's
- * accent — signal scarcity still holds, the accent lives only on the one active
- * entry and its preview. Opening is a second, explicit action (`Enter`), so a
- * touch tap selects first and never opens by accident.
+ * only publishes its spotlight target and reads as one band *above* the field.
+ * Selecting a project (hover, focus, or keyboard) morphs the preview, tints the
+ * active row, and retints the field's resolved row band into that project's own
+ * accent, so each project is a distinct, memorable color rather than one shared
+ * signal. Signal scarcity still holds in the sense that matters: exactly one
+ * row is ever accented at a time. Opening is a second, explicit action
+ * (`Enter`), so a touch tap selects first and never opens by accident.
  */
 export function WorkState() {
   const dict = useDictionary();
@@ -66,11 +67,25 @@ export function WorkState() {
     }
   }, [activeProject, selected]);
 
-  // Publish the selected row's band target to the field (viewport CSS px): its
-  // vertical center, and a focus x at the row's end so the resolved band leans
-  // toward the preview. Re-measured on selection change and on resize; cleared
-  // when Work unmounts so the band releases. The engine morphs the band toward
-  // whatever this last published (see `work-signal`).
+  const selectedProject = projects[selected];
+  const selectedContent = dict.work.projects[selectedProject.id];
+
+  // Per-project accent override (same mechanism as ProjectWorld): retint the
+  // canonical --lab-signal* on the active row, the preview, and the field's
+  // resolved row band, so each project reads as its own memorable color.
+  const accentStyle = useMemo<CSSProperties | undefined>(
+    () => accentFor(selectedProject, theme),
+    [selectedProject, theme],
+  );
+  const accentSignal = signalHexFor(selectedProject, theme);
+
+  // Publish the selected row's spotlight target to the field (viewport CSS
+  // px): its vertical center, a focus x at the row's end so the resolved band
+  // leans toward the preview, and the project's own accent so the band takes
+  // that color instead of the canonical signal. Re-measured on selection or
+  // theme change and on resize; cleared when Work unmounts so the band
+  // releases. The engine morphs the band toward whatever this last published
+  // (see `spotlight-signal`).
   useEffect(() => {
     const publish = () => {
       const row = rowRefs.current[selected];
@@ -78,28 +93,19 @@ export function WorkState() {
       const rect = row.getBoundingClientRect();
       // Focus x sits over the row's title (left portion), so the contained band
       // resolves behind the index text rather than reaching across the screen.
-      setWorkBand({
+      setSpotlight({
         clientY: rect.top + rect.height / 2,
         clientX: rect.left + rect.width * 0.28,
+        signal: accentSignal,
       });
     };
     publish();
     window.addEventListener("resize", publish);
     return () => {
       window.removeEventListener("resize", publish);
-      setWorkBand(null);
+      setSpotlight(null);
     };
-  }, [selected]);
-
-  const selectedProject = projects[selected];
-  const selectedContent = dict.work.projects[selectedProject.id];
-
-  // Per-project accent override (same mechanism as ProjectWorld): retint the
-  // canonical --lab-signal* on the active row and the preview only.
-  const accentStyle = useMemo<CSSProperties | undefined>(
-    () => accentFor(selectedProject, theme),
-    [selectedProject, theme],
-  );
+  }, [selected, accentSignal]);
 
   // Roving arrow-key navigation between index rows; focus itself selects.
   const onRowKeyDown = (event: React.KeyboardEvent, index: number) => {
@@ -276,6 +282,13 @@ const IndexRow = ({
     </motion.li>
   );
 };
+
+/** The resolved `--lab-signal` hex for a project's accent, or `undefined` for
+ *  canonical. Shared by `accentFor` (DOM override) and the field spotlight
+ *  publish, so the row, the preview, and the resolved band always agree. */
+function signalHexFor(project: LabProject, theme: string): string | undefined {
+  return project.accent?.signal[theme === "light" ? 0 : 1];
+}
 
 /** Build the --lab-signal* override for a project, or undefined for canonical. */
 function accentFor(

@@ -109,8 +109,8 @@ export type FieldTuning = {
 };
 
 export const DEFAULT_TUNING: FieldTuning = {
-  spacing: 30,
-  maxFragments: 1600,
+  spacing: 26,
+  maxFragments: 2200,
   jitter: 0.4,
   radius: 200,
   falloff: 1.5,
@@ -578,18 +578,30 @@ export type RowBand = {
   y: number;
   /** The selected row's center y, field CSS px. */
   targetY: number;
-  /** The x the band brightens around and the skirt drifts toward — the focus,
+  /** The x the band brightens around and the skirt drifts toward: the focus,
    *  set toward the project preview so the band leans into it. */
   centerX: number;
   /** Eased presence, `[0, 1]`. */
   strength: number;
+  /** The resolved `--lab-signal` hex to color the band's core with, or
+   *  `undefined` for the canonical signal. Set (not eased) from the latest
+   *  target, so it switches the instant the focus does; only the band's
+   *  position and presence morph. */
+  signalOverride: string | undefined;
 };
 
 export function createRowBand(): RowBand {
-  return { active: false, y: 0, targetY: 0, centerX: 0, strength: 0 };
+  return {
+    active: false,
+    y: 0,
+    targetY: 0,
+    centerX: 0,
+    strength: 0,
+    signalOverride: undefined,
+  };
 }
 
-/** Band-center follow constant, seconds — a quick, legible morph between rows. */
+/** Band-center follow constant, seconds: a quick, legible morph between rows. */
 const BAND_Y_TAU = 0.16;
 /** Presence ease-in / ease-out constants, seconds. */
 const BAND_TAU_IN = 0.2;
@@ -598,12 +610,12 @@ const BAND_TAU_OUT = 0.45;
 /**
  * Advance the row band toward `target` (the selected row's center + focus x, in
  * field CSS px, or `null` when nothing is selected). Returns `true` while the
- * band is still moving — easing presence or morphing between rows — so the loop
+ * band is still moving (easing presence or morphing between rows), so the loop
  * idles once a selection has fully resolved and stays parked until it changes.
  */
 export function stepRowBand(
   band: RowBand,
-  target: { y: number; centerX: number } | null,
+  target: { y: number; centerX: number; signal?: string } | null,
   delta: number,
 ): boolean {
   const step = Math.min(delta, MAX_STEP);
@@ -613,6 +625,7 @@ export function stepRowBand(
   if (target) {
     band.targetY = target.y;
     band.centerX = target.centerX;
+    band.signalOverride = target.signal;
     // First appearance snaps onto the row so the band does not swoop in from a
     // stale y; subsequent row changes ease (the morph).
     if (!wasActive) band.y = target.y;
@@ -654,8 +667,8 @@ const BAND_SKIRT_LIFT = 0.14;
  * Resolution at which a fragment takes the signal accent.
  *
  * This value, the radius, and the falloff exponent together decide how many
- * fragments are ever accent-colored — the signal-scarcity rule in practice.
- * At the tuned defaults it works out to a core of roughly 50px, a handful of
+ * fragments are ever accent-colored: the signal-scarcity rule in practice. At
+ * the tuned defaults it works out to a core of roughly 50px, a handful of
  * hairlines. Raising it much further makes the accent vanish entirely, which
  * is what the first prototype pass did.
  */
@@ -669,17 +682,21 @@ const SIGNAL_THRESHOLD = 0.62;
  * through them keeps the field reading as *quantized* ambiguity resolving,
  * which suits the concept better than a smooth blend.
  *
- * The signal color is reserved for `inGlyph` fragments at the top of the
- * range. Ambient fragments cap at the brightest noise step no matter how
- * resolved — so the assembled headline is the only accent-colored thing on
- * screen, which is the signal-scarcity rule made literal (Feature 4).
+ * The signal color is reserved for `signalEligible` fragments at the top of
+ * the range (headline glyphs, or row-band core static once it resolves).
+ * Ambient fragments cap at the brightest noise step no matter how resolved,
+ * so only that one eligible population is ever accent-colored on screen: the
+ * signal-scarcity rule made literal (Feature 4). `override` retints that
+ * accent to a project's own color (the row band only; glyphs always take the
+ * canonical signal).
  */
 function colorFor(
   resolve: number,
-  inGlyph: boolean,
+  signalEligible: boolean,
   colors: FieldColors,
+  override?: string,
 ): string {
-  if (inGlyph && resolve >= SIGNAL_THRESHOLD) return colors.signal;
+  if (signalEligible && resolve >= SIGNAL_THRESHOLD) return override ?? colors.signal;
   if (resolve >= 0.4) return colors.noise[3];
   if (resolve >= 0.22) return colors.noise[2];
   if (resolve >= 0.08) return colors.noise[1];
@@ -796,7 +813,7 @@ export function drawField(
       lerp(tuning.opacityNoise, tuning.opacitySignal, effResolve) + lift,
     );
     context.lineWidth = lerp(widthNoise, widthSignal, effResolve);
-    context.strokeStyle = colorFor(effResolve, signalEligible, colors);
+    context.strokeStyle = colorFor(effResolve, signalEligible, colors, band?.signalOverride);
 
     context.beginPath();
     context.moveTo(fragment.x - dx, fragment.y - dy);

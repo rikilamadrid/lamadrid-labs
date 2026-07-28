@@ -1,6 +1,6 @@
 /**
  * A DOM-free bus carrying the headline element the global field should resolve
- * into — the same subscribe-to-wake pattern as `shell-signal` / `work-signal`,
+ * into, the same subscribe-to-wake pattern as `shell-signal` / `spotlight-signal`,
  * so a state component and the framework-free engine can hand off a live DOM
  * node without React in the animation path and without effect-ordering hazards
  * (a child's effect runs before its parent's, so a context handoff would race).
