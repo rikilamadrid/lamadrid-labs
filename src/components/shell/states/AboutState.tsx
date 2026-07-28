@@ -3,6 +3,7 @@
 import { motion, useReducedMotion } from "motion/react";
 import { useDictionary } from "@/components/i18n/LocaleProvider";
 import { useShell } from "@/components/shell/ShellProvider";
+import { useStageBand } from "@/components/shell/stage-transition";
 import { fireCornerActivation } from "@/lib/shell-signal";
 import { EASE } from "@/lib/motion";
 
@@ -36,11 +37,17 @@ export function AboutState() {
   const dict = useDictionary();
   const { setView } = useShell();
   const reduce = useReducedMotion();
+  const aboveField = useStageBand("above");
 
   return (
-    <section className="relative h-full w-full overflow-hidden">
+    // About is one band, entirely above the field (which is dormant here — the
+    // canvas fades to `presence` 0 but stays mounted). See `stage-transition`.
+    <motion.section
+      className="relative h-full w-full overflow-hidden"
+      {...aboveField}
+    >
       <motion.div
-        className="relative z-10 mx-auto grid h-full w-full max-w-6xl grid-cols-1 content-center gap-8 px-6 pb-8 pt-20 sm:px-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:content-center lg:gap-14 lg:px-14 lg:py-14"
+        className="relative mx-auto grid h-full w-full max-w-6xl grid-cols-1 content-center gap-8 px-6 pb-8 pt-20 sm:px-10 lg:grid-cols-[minmax(0,5fr)_minmax(0,7fr)] lg:content-center lg:gap-14 lg:px-14 lg:py-14"
         variants={reduce ? undefined : COLUMN_VARIANTS}
         initial={reduce ? false : "hidden"}
         animate={reduce ? false : "visible"}
@@ -102,6 +109,6 @@ export function AboutState() {
           </motion.div>
         </div>
       </motion.div>
-    </section>
+    </motion.section>
   );
 }

@@ -8,7 +8,7 @@ import type { ProjectId } from "@/data/projects";
 
 /**
  * The living preview for the selected project — semantic DOM/SVG layered above
- * the shared `WorkField` canvas.
+ * the one global Signal / Noise canvas (`SignalSurface`).
  *
  * Each project has its own abstract interface system, built from its real
  * concept rather than a fake screenshot: fragments that assemble into a legible

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { useShell } from "@/components/shell/ShellProvider";
 import { SignalEngine } from "@/lib/signal/engine";
-import { interimConfigForView } from "@/lib/signal/config";
+import { configForView } from "@/lib/signal/config";
 import { LAYERS } from "@/lib/signal/layers";
 
 /**
@@ -34,7 +34,7 @@ export function SignalSurface() {
     const canvas = canvasRef.current;
     if (!canvas) return;
 
-    const engine = new SignalEngine(canvas, interimConfigForView(view));
+    const engine = new SignalEngine(canvas, configForView(view));
     engineRef.current = engine;
     return () => {
       engine.dispose();
@@ -46,10 +46,10 @@ export function SignalSurface() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Morph, never remount, on a state change. `interimConfigForView` returns a
-  // stable per-view object, so `configure` no-ops when the config is unchanged.
+  // Morph, never remount, on a state change. `configForView` returns a stable
+  // per-view object, so `configure` no-ops when the config is unchanged.
   useEffect(() => {
-    engineRef.current?.configure(interimConfigForView(view));
+    engineRef.current?.configure(configForView(view));
   }, [view]);
 
   return (

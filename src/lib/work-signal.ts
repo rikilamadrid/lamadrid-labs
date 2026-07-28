@@ -1,9 +1,10 @@
 /**
- * A DOM-free channel from the Work index (React) to the Work field loop.
+ * A DOM-free channel from the Work index (React) to the global field loop.
  *
  * The same seam as `shell-signal`, scoped to the Work state: the index measures
- * the selected project row and publishes a band target; `WorkField` localizes it
- * to canvas space each tick and resolves a signal band behind the row. Kept out
+ * the selected project row and publishes a band target; `SignalEngine` localizes
+ * it to canvas space each tick and resolves a signal band behind the row (only
+ * while the active configuration enables the `rowBand` primitive). Kept out
  * of React state for the same reason — the field loop reads it straight from
  * inside `tick`, and a hover/selection change wakes an idle loop via subscribe.
  *
